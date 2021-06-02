@@ -1,0 +1,8 @@
+.idea/*
+out/*
+build/*
+wz/*
+nbproject./*
+META-INF/*
+scripts/.vscode/*
+
