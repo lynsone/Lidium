@@ -53,7 +53,50 @@ public class CashShopOperation {
     }
 
     public static void EnterCS(final int playerid, final MapleClient c) {
-        c.getSession().write(CWvsContext.enableActions());
+        CharacterTransfer transfer = CashShopServer.getPlayerStorage().getPendingCharacter(playerid);
+        boolean mts = false;
+        if (transfer == null) {
+            transfer = CashShopServer.getPlayerStorageMTS().getPendingCharacter(playerid);
+            mts = true;
+            if (transfer == null) {
+                c.getSession().close();
+                return;
+            }
+        }
+        MapleCharacter chr = MapleCharacter.ReconstructChr(transfer, c, false);
+
+        c.setPlayer(chr);
+        c.setAccID(chr.getAccountID());
+
+        if (!c.CheckIPAddress()) { // Remote hack
+            c.getSession().close();
+            return;
+        }
+
+        final int state = c.getLoginState();
+        boolean allowLogin = false;
+        if (state == MapleClient.LOGIN_SERVER_TRANSITION || state == MapleClient.CHANGE_CHANNEL) {
+            if (!World.isCharacterListConnected(c.loadCharacterNames(c.getWorld()))) {
+                allowLogin = true;
+            }
+        }
+        if (!allowLogin) {
+            c.setPlayer(null);
+            c.getSession().close();
+            return;
+        }
+        c.updateLoginState(MapleClient.LOGIN_LOGGEDIN, c.getSessionIPAddress());
+        if (mts) {
+            CashShopServer.getPlayerStorageMTS().registerPlayer(chr);
+            c.getSession().write(MTSCSPacket.startMTS(chr));
+            final MTSCart cart = MTSStorage.getInstance().getCart(c.getPlayer().getId());
+            cart.refreshCurrentView();
+            MTSOperation.MTSUpdate(cart, c);
+        } else {
+            CashShopServer.getPlayerStorage().registerPlayer(chr);
+            c.getSession().write(MTSCSPacket.warpCS(c));
+            CSUpdate(c);
+        }
     }
 
     public static void CSUpdate(final MapleClient c) {
@@ -433,8 +476,8 @@ public class CashShopOperation {
             c.getSession().write(MTSCSPacket.updatePurchaseRecord());
         } else if (action == 91) { // Open random box.
             final int uniqueid = (int) slea.readLong();
-			
-			//c.getSession().write(MTSCSPacket.sendRandomBox(uniqueid, new Item(1302000, (short) 1, (short) 1, (short) 0, 10), (short) 0));
+
+            //c.getSession().write(MTSCSPacket.sendRandomBox(uniqueid, new Item(1302000, (short) 1, (short) 1, (short) 0, 10), (short) 0));
         } else {
             System.out.println("New Action: " + action + " Remaining: " + slea.toString());
             c.getSession().write(MTSCSPacket.sendCSFail(0));
