@@ -40,9 +40,9 @@ import tools.Triple;
 public class MapleItemInformationProvider {
 
     private final static MapleItemInformationProvider instance = new MapleItemInformationProvider();
-    protected final MapleDataProvider chrData = MapleDataProviderFactory.getDataProvider(new File("C:/WZ" + "/Character.wz"));
-    protected final MapleDataProvider etcData = MapleDataProviderFactory.getDataProvider(new File("C:/WZ" + "/Etc.wz"));
-    protected final MapleDataProvider itemData = MapleDataProviderFactory.getDataProvider(new File("C:/WZ" + "/Item.wz"));
+    protected final MapleDataProvider chrData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Character.wz"));
+    protected final MapleDataProvider etcData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Etc.wz"));
+    protected final MapleDataProvider itemData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Item.wz"));
     protected final Map<Integer, ItemInformation> dataCache = new HashMap<Integer, ItemInformation>();
     protected final Map<String, List<Triple<String, Point, Point>>> afterImage = new HashMap<String, List<Triple<String, Point, Point>>>();
     protected final Map<Integer, List<StructItemOption>> potentialCache = new HashMap<Integer, List<StructItemOption>>();
@@ -349,7 +349,6 @@ public class MapleItemInformationProvider {
             ps.close();
 
             // Load Item Equipment Data
-
             ps = con.prepareStatement("SELECT * FROM wz_itemequipdata ORDER BY itemid");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -359,7 +358,6 @@ public class MapleItemInformationProvider {
             ps.close();
 
             // Load Item Addition Data
-
             ps = con.prepareStatement("SELECT * FROM wz_itemadddata ORDER BY itemid");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -369,7 +367,6 @@ public class MapleItemInformationProvider {
             ps.close();
 
             // Load Item Reward Data
-
             ps = con.prepareStatement("SELECT * FROM wz_itemrewarddata ORDER BY itemid");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -379,7 +376,6 @@ public class MapleItemInformationProvider {
             ps.close();
 
             // Finalize all Equipments
-
             for (Entry<Integer, ItemInformation> entry : dataCache.entrySet()) {
                 if (GameConstants.getInventoryType(entry.getKey()) == MapleInventoryType.EQUIP) {
                     finalizeEquipData(entry.getValue());
@@ -1331,7 +1327,6 @@ public class MapleItemInformationProvider {
         if (item.equipStats == null) {
             item.equipStats = new HashMap<String, Integer>();
         }
-
 
         item.eq = new Equip(itemId, (byte) 0, -1, (byte) 0);
         short stats = GameConstants.getStat(itemId, 0);

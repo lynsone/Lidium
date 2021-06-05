@@ -24,7 +24,7 @@ import java.io.File;
 
 public class MapleDataProviderFactory {
 
-    private final static String wzPath = System.getProperty("net.sf.odinms.wzpath");
+    private final static String wzPath = System.getProperty("net.sf.odinms.wzpath", "wz");
 
     private static MapleDataProvider getWZ(Object in) {
         if (in instanceof File) {

@@ -100,6 +100,9 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
         }
         logIPMap.clear();
         try {
+            if (!loggedIPs.exists()) {
+                loggedIPs.createNewFile();
+            }
             Scanner sc = new Scanner(loggedIPs);
             while (sc.hasNextLine()) {
                 String line = sc.nextLine().trim();
@@ -354,7 +357,6 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
         MaplePacketDecoder.DecoderState decoderState = new MaplePacketDecoder.DecoderState();
         session.setAttribute(MaplePacketDecoder.DECODER_STATE_KEY, decoderState);
 
-
         session.write(LoginPacket.getHello(ServerConstants.MAPLE_VERSION, ivSend, ivRecv));
         //System.out.println("GETHELLO SENT TO " + address);
         session.setAttribute(MapleClient.CLIENT_KEY, client);
@@ -468,7 +470,6 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
         //final StringBuilder sb = new StringBuilder("Received data :\n");
         //sb.append(HexTool.toString((byte[]) message)).append("\n").append(HexTool.toStringFromAscii((byte[]) message));
         //System.out.println(sb.toString());
-
         for (final RecvPacketOpcode recv : RecvPacketOpcode.values()) {
             if (recv.getValue() == header_num) {
                 if (recv.NeedsChecking()) {
@@ -617,9 +618,9 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                     type_str = "Exception";
                 }
                 int unk = slea.readInt();
-				if (unk == 0) { // i don't wanna log error code 0 stuffs, (usually some bounceback to login)
-					return;
-				}
+                if (unk == 0) { // i don't wanna log error code 0 stuffs, (usually some bounceback to login)
+                    return;
+                }
                 short data_length = slea.readShort();
                 slea.skip(4); // ?				
                 FileoutputUtil.log("ErrorCodes.rtf", "Client sent crashing packet: Type: " + type_str + "; Error code: " + unk + "; Length: " + data_length + "; Packet: " + slea.toString());

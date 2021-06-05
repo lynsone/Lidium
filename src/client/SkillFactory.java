@@ -51,9 +51,9 @@ public class SkillFactory {
     private static final Map<Integer, SummonSkillEntry> SummonSkillInformation = new HashMap<Integer, SummonSkillEntry>();
 
     public static void load() {
-        final MapleData delayData = MapleDataProviderFactory.getDataProvider(new File("C:/WZ" + "/Character.wz")).getData("00002000.img");
-        final MapleData stringData = MapleDataProviderFactory.getDataProvider(new File("C:/WZ" + "/String.wz")).getData("Skill.img");
-        final MapleDataProvider datasource = MapleDataProviderFactory.getDataProvider(new File("C:/WZ" + "/Skill.wz"));
+        final MapleData delayData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Character.wz")).getData("00002000.img");
+        final MapleData stringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")).getData("Skill.img");
+        final MapleDataProvider datasource = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Skill.wz"));
         final MapleDataDirectoryEntry root = datasource.getRoot();
         int del = 0; //buster is 67 but its the 57th one!
         for (MapleData delay : delayData) {
@@ -69,7 +69,7 @@ public class SkillFactory {
 
         for (MapleDataFileEntry topDir : root.getFiles()) { // Loop thru jobs
             if (topDir.getName().length() <= 8) {
-				for (MapleData data : datasource.getData(topDir.getName())) { // Loop thru each jobs
+                for (MapleData data : datasource.getData(topDir.getName())) { // Loop thru each jobs
                     if (data.getName().equals("skill")) {
                         for (MapleData data2 : data) { // Loop thru each jobs
                             if (data2 != null) {
@@ -204,8 +204,8 @@ public class SkillFactory {
 
         return null;
     }
-	
-	 public static long getDefaultSExpiry(final Skill skill) {
+
+    public static long getDefaultSExpiry(final Skill skill) {
         if (skill == null) {
             return -1;
         }
@@ -373,7 +373,7 @@ public class SkillFactory {
         dragonstrike(GameConstants.GMS ? 0x77 : 0x66),
         doublefire(GameConstants.GMS ? 0x78 : 0x67),
         triplefire(GameConstants.GMS ? 0x79 : 0x68),
-		fake(GameConstants.GMS ? 0x7A : 0x69),
+        fake(GameConstants.GMS ? 0x7A : 0x69),
         airstrike(GameConstants.GMS ? 0x7B : 0x6A),
         edrain(GameConstants.GMS ? 0x7C : 0x6B),
         octopus(GameConstants.GMS ? 0x7D : 0x6C),

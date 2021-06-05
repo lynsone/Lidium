@@ -29,8 +29,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import org.graalvm.polyglot.Context;
 
-
-
 import client.MapleClient;
 import java.io.FileNotFoundException;
 import javax.script.ScriptException;
@@ -55,23 +53,31 @@ public abstract class AbstractScriptManager {
             path = "scripts/" + path;
             ScriptEngine engine = null;
 
-            if (c != null) engine = c.getScriptEngine(path);
-            if (npc) System.out.println(path);
-            
+            if (c != null) {
+                engine = c.getScriptEngine(path);
+            }
+            if (npc) {
+                System.out.println(path);
+            }
+
             if (engine == null) {
                 File scriptFile = new File(path);
-                if (!scriptFile.exists())  return null;
-                
+                if (!scriptFile.exists()) {
+                    return null;
+                }
+
                 engine = sem.getEngineByName("graal.js");
-                if (c != null) c.setScriptEngine(path, engine);
+                if (c != null) {
+                    c.setScriptEngine(path, engine);
+                }
                 fr = new FileReader(scriptFile);
                 engine.eval("load('nashorn:mozilla_compat.js');" + System.lineSeparator());
-                    engine.eval(fr);
+                engine.eval(fr);
             } else if (c != null && npc) {
-            c.removeClickedNPC();
-            NPCScriptManager.getInstance().dispose(c);
-            c.getSession().write(CWvsContext.enableActions());
-            return null;
+                c.removeClickedNPC();
+                NPCScriptManager.getInstance().dispose(c);
+                c.getSession().write(CWvsContext.enableActions());
+                return null;
             }
             return (Invocable) engine;
         } catch (FileNotFoundException | ScriptException e) {
@@ -80,7 +86,9 @@ public abstract class AbstractScriptManager {
             return null;
         } finally {
             try {
-                if (fr != null) fr.close();
+                if (fr != null) {
+                    fr.close();
+                }
             } catch (IOException ignore) {
             }
         }
