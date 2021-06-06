@@ -23,7 +23,7 @@ package handling.channel.handler;
 import client.MapleClient;
 import client.MapleCharacter;
 import client.MapleCharacterUtil;
-//import client.messages.CommandProcessor;
+import client.messages.CommandProcessor;
 import constants.ServerConstants.CommandType;
 import handling.channel.ChannelServer;
 import handling.world.MapleMessenger;
@@ -36,6 +36,7 @@ import tools.packet.CWvsContext;
 public class ChatHandler {
 
     public static final void GeneralChat(final String text, final byte unk, final MapleClient c, final MapleCharacter chr) {
+        if (text.length() > 0 && chr != null && chr.getMap() != null && !CommandProcessor.processCommand(c, text, chr.getBattle() == null ? CommandType.NORMAL : CommandType.POKEMON)) {
             if (!chr.isIntern() && text.length() >= 80) {
                 return;
             }
@@ -68,6 +69,7 @@ public class ChatHandler {
                 c.getSession().write(CWvsContext.serverNotice(6, "You have been muted and are therefore unable to talk."));
             }
         }
+    }
 
     public static final void Others(final LittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
         final int type = slea.readByte();
@@ -107,7 +109,7 @@ public class ChatHandler {
             }
             World.Broadcast.broadcastGMMessage(
                     CWvsContext.serverNotice(6, "[GM Message] " + MapleCharacterUtil.makeMapleReadable(chr.getName())
-                    + " said (" + chattype + "): " + chattext));
+                            + " said (" + chattype + "): " + chattext));
 
         }
         chr.getCheatTracker().checkMsg();
@@ -143,7 +145,7 @@ public class ChatHandler {
     }
 
     public static final void Messenger(final LittleEndianAccessor slea, final MapleClient c) {
-		String input;
+        String input;
         MapleMessenger messenger = c.getPlayer().getMessenger();
 
         switch (slea.readByte()) {
@@ -218,13 +220,13 @@ public class ChatHandler {
                 if (messenger != null) {
                     final String charname = slea.readMapleAsciiString();
                     final String text = slea.readMapleAsciiString();
-					final String chattext = charname + "" + text;
+                    final String chattext = charname + "" + text;
                     World.Messenger.messengerChat(messenger.getId(), charname, text, c.getPlayer().getName());
                     if (messenger.isMonitored() && chattext.length() > c.getPlayer().getName().length() + 3) { //name : NOT name0 or name1
                         World.Broadcast.broadcastGMMessage(
                                 CWvsContext.serverNotice(
-                                6, "[GM Message] " + MapleCharacterUtil.makeMapleReadable(c.getPlayer().getName()) + "(Messenger: "
-                                + messenger.getMemberNamesDEBUG() + ") said: " + chattext));
+                                        6, "[GM Message] " + MapleCharacterUtil.makeMapleReadable(c.getPlayer().getName()) + "(Messenger: "
+                                        + messenger.getMemberNamesDEBUG() + ") said: " + chattext));
                     }
                 }
                 break;

@@ -93,8 +93,7 @@ public class LoginInformationProvider {
     }
 
     protected LoginInformationProvider() {
-        final String WZpath = "C:/WZ";
-        final MapleDataProvider prov = MapleDataProviderFactory.getDataProvider(new File(WZpath + "/Etc.wz"));
+        final MapleDataProvider prov = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Etc.wz"));
         MapleData nameData = prov.getData("ForbiddenName.img");
         for (final MapleData data : nameData.getChildren()) {
             ForbiddenName.add(MapleDataTool.getString(data));

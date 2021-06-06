@@ -50,8 +50,8 @@ import tools.StringUtil;
 
 public class MapleMapFactory {
 
-    private final MapleDataProvider source = MapleDataProviderFactory.getDataProvider(new File("C:/WZ" + "/Map.wz"));
-    private final MapleData nameData = MapleDataProviderFactory.getDataProvider(new File("C:/WZ" + "/String.wz")).getData("Map.img");
+    private final MapleDataProvider source = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Map.wz"));
+    private final MapleData nameData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")).getData("Map.img");
     private final HashMap<Integer, MapleMap> maps = new HashMap<Integer, MapleMap>();
     private final HashMap<Integer, MapleMap> instanceMap = new HashMap<Integer, MapleMap>();
     private final ReentrantLock lock = new ReentrantLock();
@@ -898,35 +898,35 @@ public class MapleMapFactory {
                 pos3 = new Point(208, 255);
             }
             case 910000000 -> {
-            // FM
-            switch (channel) {
-                case 7:
-                    mobtime = 3600;
-                    monsterid = 9420015;
-                    msg = "NooNoo has appeared out of anger.";
-                    pos1 = new Point(498, 4);
-                    pos2 = new Point(498, 4);
-                    pos3 = new Point(498, 4);
-                    break;
-                case 8:
-                    mobtime = 3600;
-                    monsterid = 9400700;
-                    msg = "Giant Tomato has appeared.";
-                    pos1 = new Point(498, 4);
-                    pos2 = new Point(498, 4);
-                    pos3 = new Point(498, 4);
-                    break;
-                case 9:
-                    mobtime = 3600;
-                    monsterid = 9400734;
-                    msg = "Giant Tomato has appeared.";
-                    pos1 = new Point(498, 4);
-                    pos2 = new Point(498, 4);
-                    pos3 = new Point(498, 4);
-                    break;
-                default:
-                    break;
-            }
+                // FM
+                switch (channel) {
+                    case 7:
+                        mobtime = 3600;
+                        monsterid = 9420015;
+                        msg = "NooNoo has appeared out of anger.";
+                        pos1 = new Point(498, 4);
+                        pos2 = new Point(498, 4);
+                        pos3 = new Point(498, 4);
+                        break;
+                    case 8:
+                        mobtime = 3600;
+                        monsterid = 9400700;
+                        msg = "Giant Tomato has appeared.";
+                        pos1 = new Point(498, 4);
+                        pos2 = new Point(498, 4);
+                        pos3 = new Point(498, 4);
+                        break;
+                    case 9:
+                        mobtime = 3600;
+                        monsterid = 9400734;
+                        msg = "Giant Tomato has appeared.";
+                        pos1 = new Point(498, 4);
+                        pos2 = new Point(498, 4);
+                        pos3 = new Point(498, 4);
+                        break;
+                    default:
+                        break;
+                }
             }
             case 209000000 -> {
                 // Happyvile
@@ -1098,12 +1098,12 @@ public class MapleMapFactory {
             final MapleData mc = mapData.getChildByPath("directionInfo");
             for (MapleData area : mc) {
                 DirectionInfo di = new DirectionInfo(Integer.parseInt(area.getName()), MapleDataTool.getInt("x", area, 0), MapleDataTool.getInt("y", area, 0), MapleDataTool.getInt("forcedInput", area, 0) > 0);
-				final MapleData mc2 = area.getChildByPath("eventQ");
-				if (mc2 != null) {
-					for (MapleData event : mc2) {
-						di.eventQ.add(MapleDataTool.getString(event));
-					}
-				}
+                final MapleData mc2 = area.getChildByPath("eventQ");
+                if (mc2 != null) {
+                    for (MapleData event : mc2) {
+                        di.eventQ.add(MapleDataTool.getString(event));
+                    }
+                }
                 nodeInfo.addDirection(Integer.parseInt(area.getName()), di);
             }
         }
