@@ -109,7 +109,7 @@ public class DatabaseConnection {
             try {
                 final Connection con = DriverManager.getConnection(
 					"jdbc:mysql://localhost:3306/v111?autoReconnect=true", 
-					"root", "");
+					"root", "root");
                 allConnections.add(con);
                 return con;
             } catch (SQLException e) {
