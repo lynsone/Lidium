@@ -67,14 +67,14 @@ public class ShutdownServer implements ShutdownServerMBean {
                             cs.shutdown();
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        System.err.println(e);
                     }
                 }
 	        LoginServer.shutdown();
                 //CashShopServer.shutdown();
                 DatabaseConnection.closeAll();
             } catch (SQLException e) {
-                System.err.println("THROW" + e);
+                System.err.println(e);
             }
             WorldTimer.getInstance().stop();
             MapTimer.getInstance().stop();
@@ -87,7 +87,7 @@ public class ShutdownServer implements ShutdownServerMBean {
 		try {
                 Thread.sleep(5000);
             } catch(Exception e) {
-                //shutdown
+                System.err.println(e);
             }
             System.exit(0); //not sure if this is really needed for ChannelServer
 	}
