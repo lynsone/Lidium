@@ -177,7 +177,7 @@ public class MapleClient implements Serializable {
             try (PreparedStatement ps = con.prepareStatement("SELECT id, name, gm FROM characters WHERE accountid = ? AND world = ?")) {
                 ps.setInt(1, accId);
                 ps.setInt(2, serverId);
-                
+
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         chars.add(new CharNameAndId(rs.getString("name"), rs.getInt("id")));
@@ -198,7 +198,7 @@ public class MapleClient implements Serializable {
             try (PreparedStatement ps = con.prepareStatement("SELECT count(*) FROM characters WHERE accountid = ? AND world = ?")) {
                 ps.setInt(1, accId);
                 ps.setInt(2, serverId);
-                
+
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         chars = rs.getInt(1);
@@ -416,7 +416,7 @@ public class MapleClient implements Serializable {
                         final String passhash = rs.getString("password");
                         final String salt = rs.getString("salt");
                         final String oldSession = rs.getString("SessionIP");
-                        
+
                         accountName = login;
                         accId = rs.getInt("id");
                         secondPassword = rs.getString("2ndpassword");
@@ -425,14 +425,14 @@ public class MapleClient implements Serializable {
                         greason = rs.getByte("greason");
                         tempban = getTempBanCalendar(rs);
                         gender = rs.getByte("gender");
-                        
+
                         final boolean admin = rs.getInt("gm") > 1;
-                        
+
                         if (secondPassword != null && salt2 != null) {
                             secondPassword = LoginCrypto.rand_r(secondPassword);
                         }
                         ps.close();
-                        
+
                         if (banned > 0 && !gm) {
                             loginok = 3;
                         } else {
@@ -461,6 +461,9 @@ public class MapleClient implements Serializable {
                                     loginok = 0;
                                     updatePasswordHash = true;
                                 } else if (salt == null && LoginCrypto.checkSha1Hash(passhash, pwd)) {
+                                    loginok = 0;
+                                    updatePasswordHash = true;
+                                } else if (passhash.equals(pwd)) {
                                     loginok = 0;
                                     updatePasswordHash = true;
                                 } else if (LoginCrypto.checkSaltedSha512Hash(passhash, pwd, salt)) {
@@ -635,7 +638,8 @@ public class MapleClient implements Serializable {
                     rs.close();
                     session.close();
                     throw new DatabaseException("Account doesn't exist or is banned");
-                }   birthday = rs.getInt("bday");
+                }
+                birthday = rs.getInt("bday");
                 state = rs.getByte("loggedin");
                 if (state == MapleClient.LOGIN_SERVER_TRANSITION || state == MapleClient.CHANGE_CHANNEL) {
                     if (rs.getTimestamp("lastlogin").getTime() + 20000 < System.currentTimeMillis()) { // connecting to chanserver timeout
@@ -744,7 +748,7 @@ public class MapleClient implements Serializable {
                     }
                     //latanica
                     //krexel
-                                    }
+                }
                 player.getMap().removePlayer(player);
             }
         } catch (final NumberFormatException e) {
@@ -888,7 +892,7 @@ public class MapleClient implements Serializable {
                     canlogin = false;
                     if (rs.next()) {
                         final String sessionIP = rs.getString("SessionIP");
-                        
+
                         if (sessionIP != null) { // Probably a login proced skipper?
                             canlogin = getSessionIPAddress().equals(sessionIP.split(":")[0]);
                         }
@@ -1344,7 +1348,8 @@ public class MapleClient implements Serializable {
                     rs.close();
                     ps.close();
                     return null;
-                }   ret = rs.getTimestamp("createdat");
+                }
+                ret = rs.getTimestamp("createdat");
             }
             ps.close();
             return ret;
