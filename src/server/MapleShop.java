@@ -277,7 +277,7 @@ public class MapleShop {
                 ps.close();
                 return null;
             }
-            ps = con.prepareStatement("SELECT * FROM shopitems WHERE shopid = ? ORDER BY position ASC");
+            ps = con.prepareStatement("SELECT * FROM shopitems WHERE shopid = ? ORDER BY position ASC;");
             ps.setInt(1, shopId);
             rs = ps.executeQuery();
             List<Integer> recharges = new ArrayList<Integer>(rechargeableItems);
@@ -301,7 +301,7 @@ public class MapleShop {
             rs.close();
             ps.close();
 
-            ps = con.prepareStatement("SELECT * FROM shopranks WHERE shopid = ? ORDER BY rank ASC");
+            ps = con.prepareStatement("SELECT * FROM shopranks WHERE shopid = ? ORDER BY rank ASC;");
             ps.setInt(1, shopId);
             rs = ps.executeQuery();
             while (rs.next()) {
