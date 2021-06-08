@@ -89,7 +89,7 @@ public class ShutdownServer implements ShutdownServerMBean {
             } catch(Exception e) {
                 System.err.println(e);
             }
-            System.exit(0); //not sure if this is really needed for ChannelServer
+            //DO NOT USE System.exit(0) HERE!! It causes issues on linux and is not needed.
 	}
     }
 }
