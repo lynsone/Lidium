@@ -111,6 +111,7 @@ public class ChannelServer {
         try {
             expRate = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.exp"));
             mesoRate = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.meso"));
+			dropRate = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.dropRate"));
             serverMessage = ServerProperties.getProperty("net.sf.odinms.world.serverMessage");
             serverName = ServerProperties.getProperty("net.sf.odinms.login.serverName");
             flags = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.flags", "0"));
