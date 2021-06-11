@@ -1,6 +1,8 @@
 # Lidium
 v111.1 Server Emulator
 
+!!THE LIVE INSTANCE DOES NOT EXACTLY MATCH THIS REPO!! 
+
 Live instance: http://newbms.org/
 
 Lidium Development Server: https://discord.gg/deYbTkckBe
