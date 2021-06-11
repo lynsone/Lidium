@@ -1,7 +1,7 @@
 # Lidium
 v111.1 Server Emulator
 
-!! THE LIVE INSTANCE DOES NOT EXACTLY MATCH THIS REPO !! 
+!! THE LIVE INSTANCE DOES NOT MATCH THIS REPO !! 
 
 Live instance: http://newbms.org/
 
