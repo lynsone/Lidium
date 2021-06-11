@@ -3,6 +3,8 @@ v111.1 Server Emulator
 
 !! THE LIVE INSTANCE DOES NOT MATCH THIS REPO !! 
 
+It is highly recommended that you use Java 16 for this project.
+
 Live instance: http://newbms.org/
 
 Lidium Development Server: https://discord.gg/deYbTkckBe
