@@ -46,9 +46,11 @@ public class CashShopOperation {
             final String s = c.getSessionIPAddress();
             LoginServer.addIPAuth(s.substring(s.indexOf('/') + 1, s.length()));
             chr.saveToDB(false, true);
-            c.setPlayer(null);
+            
+			/* c.setPlayer(null);
             c.setReceiving(false);
             c.getSession().close();
+			*/
         }
     }
 
