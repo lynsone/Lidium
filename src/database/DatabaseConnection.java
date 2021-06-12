@@ -102,7 +102,7 @@ public class DatabaseConnection {
         @Override
         protected final Connection initialValue() {
             try {
-                Class.forName("com.mysql.jdbc.Driver"); // touch the mysql driver
+                Class.forName("com.mysql.cj.jdbc.Driver"); // touch the mysql driver
             } catch (final ClassNotFoundException e) {
                 System.err.println("ERROR" + e);
             }
