@@ -56,8 +56,9 @@ public abstract class AbstractScriptManager {
             if (c != null) {
                 engine = c.getScriptEngine(path);
             }
-            if (npc) {
-                System.out.println(path);
+            if (npc && c != null && c.getPlayer() != null && c.getPlayer().isStaff()) {
+                System.out.println("[Script] : " + path);
+                c.getPlayer().dropMessage(5, "[Script] : " + path);
             }
 
             if (engine == null) {
