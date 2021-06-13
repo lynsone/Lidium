@@ -165,10 +165,12 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
     private byte gmLevel, gender, initialSpawnPoint, skinColor, guildrank = 5, allianceRank = 5,
             world, fairyExp, numClones, subcategory;
     private short level, mulung_energy, combo, force, availableCP, fatigue, totalCP, hpApUsed, job, remainingAp, scrolledPosition;
+
     private int accountid, id, meso, exp, hair, face, demonMarking, mapid, fame, pvpExp, pvpPoints, totalWins, totalLosses,
-            guildid = 0, fallcounter, maplepoints, acash, chair, itemEffect, points, vpoints,
+            guildid = 0, fallcounter, maplepoints, NxPrepaid, NXCredit, chair, itemEffect, points, vpoints,
             rank = 1, rankMove = 0, jobRank = 1, jobRankMove = 0, marriageId, marriageItemId, dotHP,
             currentrep, totalrep, coconutteam, followid, battleshipHP, gachexp, challenge, guildContribution = 0;
+
     private Point old;
     private MonsterFamiliar summonedFamiliar;
     private int[] wishlist, rocks, savedLocations, regrocks, hyperrocks, remainingSp = new int[10];
@@ -236,10 +238,10 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
     private boolean changed_wishlist, changed_trocklocations, changed_regrocklocations, changed_hyperrocklocations, changed_skillmacros, changed_achievements,
             changed_savedlocations, changed_pokemon, changed_questinfo, changed_skills, changed_reports, changed_extendedSlots;
     /*Start of Custom Feature*/
-    /*All custom shit declare here*/
+ /*All custom shit declare here*/
     private int reborns, apstorage;
-    /*End of Custom Feature*/
 
+    /*End of Custom Feature*/
     private MapleCharacter(final boolean ChannelServer) {
         setStance(0);
         setPosition(new Point(0, 0));
@@ -383,8 +385,10 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     ret.client.setAccountName(rs.getString("name"));
-                    ret.acash = rs.getInt("ACash");
+                    ret.NxPrepaid = rs.getInt("NxPrepaid");
                     ret.maplepoints = rs.getInt("mPoints");
+                    ret.NXCredit = rs.getInt("NxCredit");
+
                     ret.points = rs.getInt("points");
                     ret.vpoints = rs.getInt("vpoints");
                 }
@@ -545,8 +549,9 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         ret.storage = (MapleStorage) ct.storage;
         ret.cs = (CashShop) ct.cs;
         client.setAccountName(ct.accountname);
-        ret.acash = ct.ACash;
+        ret.NxPrepaid = ct.NxPrepaid;
         ret.maplepoints = ct.MaplePoints;
+        ret.NXCredit = ct.NxCredit;
         ret.numClones = ct.clonez;
         ret.imps = ct.imps;
         ret.anticheat = (CheatTracker) ct.anticheat;
@@ -760,7 +765,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 rs = ps.executeQuery();
                 if (rs.next()) {
                     ret.getClient().setAccountName(rs.getString("name"));
-                    ret.acash = rs.getInt("ACash");
+                    ret.NxPrepaid = rs.getInt("NxPrepaid");
+                    ret.NXCredit = rs.getInt("NxCredit");
                     ret.maplepoints = rs.getInt("mPoints");
                     ret.points = rs.getInt("points");
                     ret.vpoints = rs.getInt("vpoints");
@@ -769,7 +775,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                         final Calendar cal = Calendar.getInstance();
                         cal.setTimeInMillis(rs.getTimestamp("lastlogon").getTime());
                         if (cal.get(Calendar.DAY_OF_WEEK) + 1 == Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
-                            ret.acash += 500;
+                            ret.NxPrepaid += 500;
                         }
                     }
                     if (rs.getInt("banned") > 0) {
@@ -1209,9 +1215,9 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             ps.execute();
             ps.close();
 
-        final int[] array1 = {2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 23, 25, 26, 27, 29, 31, 34, 35, 37, 38, 40, 41, 43, 44, 45, 46, 48, 50, 56, 57, 59, 60, 61, 62, 63, 64, 65};
-        final int[] array2 = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 4, 4, 4, 5, 5, 6, 6, 6, 6, 6, 6, 6};
-        final int[] array3 = {10, 12, 13, 18, 24, 21, 8, 5, 0, 4, 1, 19, 14, 15, 52, 2, 17, 11, 3, 20, 16, 23, 9, 50, 51, 6, 22, 7, 53, 54, 100, 101, 102, 103, 104, 105, 106};
+            final int[] array1 = {2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 23, 25, 26, 27, 29, 31, 34, 35, 37, 38, 40, 41, 43, 44, 45, 46, 48, 50, 56, 57, 59, 60, 61, 62, 63, 64, 65};
+            final int[] array2 = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 4, 4, 4, 5, 5, 6, 6, 6, 6, 6, 6, 6};
+            final int[] array3 = {10, 12, 13, 18, 24, 21, 8, 5, 0, 4, 1, 19, 14, 15, 52, 2, 17, 11, 3, 20, 16, 23, 9, 50, 51, 6, 22, 7, 53, 54, 100, 101, 102, 103, 104, 105, 106};
 
             ps = con.prepareStatement("INSERT INTO keymap (characterid, `key`, `type`, `action`) VALUES (?, ?, ?, ?)");
             ps.setInt(1, chr.id);
@@ -1521,7 +1527,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 ps.close();
             }
 
-
             if (changed_savedlocations) {
                 deleteWhereCharacterId(con, "DELETE FROM savedlocations WHERE characterid = ?");
                 ps = con.prepareStatement("INSERT INTO savedlocations (characterid, `locationtype`, `map`) VALUES (?, ?, ?)");
@@ -1576,12 +1581,13 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 buddylist.setChanged(false);
             }
 
-            ps = con.prepareStatement("UPDATE accounts SET `ACash` = ?, `mPoints` = ?, `points` = ?, `vpoints` = ? WHERE id = ?");
-            ps.setInt(1, acash);
-            ps.setInt(2, maplepoints);
-            ps.setInt(3, points);
-            ps.setInt(4, vpoints);
-            ps.setInt(5, client.getAccID());
+            ps = con.prepareStatement("UPDATE accounts SET `NxPrepaid` = ?,`NxCredit` = ?, `mPoints` = ?, `points` = ?, `vpoints` = ? WHERE id = ?");
+            ps.setInt(1, NxPrepaid);
+            ps.setInt(2, NXCredit);
+            ps.setInt(3, maplepoints);
+            ps.setInt(4, points);
+            ps.setInt(5, vpoints);
+            ps.setInt(6, client.getAccID());
             ps.executeUpdate();
             ps.close();
 
@@ -2197,7 +2203,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
 
     /**
      * @param effect
-     * @param overwrite when overwrite is set no data is sent and all the Buffstats in the StatEffect are deregistered
+     * @param overwrite when overwrite is set no data is sent and all the
+     * Buffstats in the StatEffect are deregistered
      * @param startTime
      */
     public void cancelEffect(final MapleStatEffect effect, final boolean overwrite, final long startTime) {
@@ -2385,11 +2392,11 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 case 5111005, 5121003, 15111002, 13111005 -> {
                     return; // Since we can't have more than 1, save up on loops
                 }
-default ->      {
-    if (mbsvh.effect.isMorph()) {
-        cancelEffect(mbsvh.effect, false, mbsvh.startTime);
-        continue;
-    }
+                default -> {
+                    if (mbsvh.effect.isMorph()) {
+                        cancelEffect(mbsvh.effect, false, mbsvh.startTime);
+                        continue;
+                    }
                 }
             }
         }
@@ -2508,9 +2515,9 @@ default ->      {
                 combo = SkillFactory.getSkill(11111001);
                 advcombo = SkillFactory.getSkill(11110005);
             }
-default ->  {
-    combo = SkillFactory.getSkill(1111002);
-    advcombo = SkillFactory.getSkill(1120003);
+            default -> {
+                combo = SkillFactory.getSkill(1111002);
+                advcombo = SkillFactory.getSkill(1120003);
             }
         }
 
@@ -2546,8 +2553,10 @@ default ->  {
         Skill combo;
 
         combo = switch (getJob()) {
-            case 1110, 1111, 1112 -> SkillFactory.getSkill(11111001);
-            default -> SkillFactory.getSkill(1111002);
+            case 1110, 1111, 1112 ->
+                SkillFactory.getSkill(11111001);
+            default ->
+                SkillFactory.getSkill(1111002);
         };
         if (getSkillLevel(combo) <= 0) {
             return;
@@ -2972,7 +2981,8 @@ default ->  {
                     maxhp += Randomizer.rand(100, 150);
                     maxmp += Randomizer.rand(25, 50);
                 }
-                case 110, 120, 130, 1110, 2110, 3210 -> maxhp += Randomizer.rand(300, 350);
+                case 110, 120, 130, 1110, 2110, 3210 ->
+                    maxhp += Randomizer.rand(300, 350);
                 case 210, 220, 230 -> // Magician
                     // Cleric
                     maxmp += Randomizer.rand(400, 450);
@@ -3118,7 +3128,7 @@ default ->  {
             changeSkillsLevel(list);
         }
         //redemption for completed quests. holy fk. ex
-	    /*List<MapleQuestStatus> cq = getCompletedQuests();
+        /*List<MapleQuestStatus> cq = getCompletedQuests();
         for (MapleQuestStatus q : cq) {
         for (MapleQuestAction qs : q.getQuest().getCompleteActs()) {
         if (qs.getType() == MapleQuestActionType.skill) {
@@ -3236,9 +3246,12 @@ default ->  {
             changeProfessionLevelExp(id, ret + 1, newExp - GameConstants.getProfessionEXP(ret));
             int traitGain = (int) Math.pow(2, ret + 1);
             switch (id) {
-                case 92000000 -> traits.get(MapleTraitType.sense).addExp(traitGain, this);
-                case 92010000 -> traits.get(MapleTraitType.will).addExp(traitGain, this);
-                case 92020000, 92030000, 92040000 -> traits.get(MapleTraitType.craft).addExp(traitGain, this);
+                case 92000000 ->
+                    traits.get(MapleTraitType.sense).addExp(traitGain, this);
+                case 92010000 ->
+                    traits.get(MapleTraitType.will).addExp(traitGain, this);
+                case 92020000, 92030000, 92040000 ->
+                    traits.get(MapleTraitType.craft).addExp(traitGain, this);
             }
             return true;
         } else {
@@ -3447,7 +3460,8 @@ default ->  {
     }
 
     /**
-     * Convenience function which adds the supplied parameter to the current hp then directly does a updateSingleStat.
+     * Convenience function which adds the supplied parameter to the current hp
+     * then directly does a updateSingleStat.
      *
      * @see MapleCharacter#setHp(int)
      * @param delta
@@ -3459,7 +3473,8 @@ default ->  {
     }
 
     /**
-     * Convenience function which adds the supplied parameter to the current mp then directly does a updateSingleStat.
+     * Convenience function which adds the supplied parameter to the current mp
+     * then directly does a updateSingleStat.
      *
      * @see MapleCharacter#setMp(int)
      * @param delta
@@ -3497,8 +3512,9 @@ default ->  {
     }
 
     /**
-     * Updates a single stat of this MapleCharacter for the client. This method only creates and sends an update packet,
-     * it does not update the stat stored in this MapleCharacter instance.
+     * Updates a single stat of this MapleCharacter for the client. This method
+     * only creates and sends an update packet, it does not update the stat
+     * stored in this MapleCharacter instance.
      *
      * @param stat
      * @param newval
@@ -4127,8 +4143,10 @@ default ->  {
         familyUpdate();
         if (GameConstants.isAran(job)) {
             switch (level) {
-                case 70 -> client.getSession().write(CField.startMapEffect("You have reached level 70! To job advance, talk to your job instructor in El Nath.", 5120000, true));
-                case 120 -> client.getSession().write(CField.startMapEffect("You have reached level 120! To job advance, talk to your job instructor in Leafre.", 5120000, true));
+                case 70 ->
+                    client.getSession().write(CField.startMapEffect("You have reached level 70! To job advance, talk to your job instructor in El Nath.", 5120000, true));
+                case 120 ->
+                    client.getSession().write(CField.startMapEffect("You have reached level 120! To job advance, talk to your job instructor in Leafre.", 5120000, true));
             }
         }
         if (GameConstants.isKOC(job) && level == 70) {
@@ -4136,7 +4154,8 @@ default ->  {
         }
         if (GameConstants.isEvan(job)) {
             switch (level) {
-                case 9 -> client.getSession().write(CField.startMapEffect("Make sure you finish all the Required quests before reaching level 10, or you will not be able to continue.", 5120000, true));
+                case 9 ->
+                    client.getSession().write(CField.startMapEffect("Make sure you finish all the Required quests before reaching level 10, or you will not be able to continue.", 5120000, true));
                 case 10, 20, 30, 40, 50, 60, 80, 100, 120, 160 -> {
                     if (job < 2218) {
                         changeJob(job == 2001 ? 2200 : (job == 2200 ? 2210 : (job + 1))); //automatic
@@ -4146,14 +4165,22 @@ default ->  {
         }
         if (getSubcategory() == 1) { //db level 2
             switch (level) {
-                case 2 -> client.getSession().write(CField.startMapEffect("Click the lightbulb and accept the [Required] quest.", 5120009, true));
-                case 10 -> client.getSession().write(CField.startMapEffect("Go and advance to a Rogue at Dark Lord in Kerning City. Make sure you do ALL the [Required] quests.", 5120000, true));
-                case 15 -> client.getSession().write(CField.startMapEffect("Make sure you have been doing all the required quests. Remember that saving SP is possible.", 5120000, true));
-                case 20 -> client.getSession().write(CField.startMapEffect("You have reached level 20. If you have done all your required quests, you can enter Secret Garden and advance.", 5120000, true));
-                case 30 -> client.getSession().write(CField.startMapEffect("You have reached level 30. Please go to Lady Syl to advance.", 5120000, true));
-                case 55 -> client.getSession().write(CField.startMapEffect("You have reached level 55. Please go to Lady Syl and do a few quests to advance.", 5120000, true));
-                case 70 -> client.getSession().write(CField.startMapEffect("You have reached level 70. Please go to your job instructor in Elnath to advance.", 5120000, true));
-                case 120 -> client.getSession().write(CField.startMapEffect("You have reached level 120. Please go to your job instructor in Leafre to advance.", 5120000, true));
+                case 2 ->
+                    client.getSession().write(CField.startMapEffect("Click the lightbulb and accept the [Required] quest.", 5120009, true));
+                case 10 ->
+                    client.getSession().write(CField.startMapEffect("Go and advance to a Rogue at Dark Lord in Kerning City. Make sure you do ALL the [Required] quests.", 5120000, true));
+                case 15 ->
+                    client.getSession().write(CField.startMapEffect("Make sure you have been doing all the required quests. Remember that saving SP is possible.", 5120000, true));
+                case 20 ->
+                    client.getSession().write(CField.startMapEffect("You have reached level 20. If you have done all your required quests, you can enter Secret Garden and advance.", 5120000, true));
+                case 30 ->
+                    client.getSession().write(CField.startMapEffect("You have reached level 30. Please go to Lady Syl to advance.", 5120000, true));
+                case 55 ->
+                    client.getSession().write(CField.startMapEffect("You have reached level 55. Please go to Lady Syl and do a few quests to advance.", 5120000, true));
+                case 70 ->
+                    client.getSession().write(CField.startMapEffect("You have reached level 70. Please go to your job instructor in Elnath to advance.", 5120000, true));
+                case 120 ->
+                    client.getSession().write(CField.startMapEffect("You have reached level 120. Please go to your job instructor in Leafre to advance.", 5120000, true));
             }
         }
         //if (map.getForceMove() > 0 && map.getForceMove() <= getLevel()) {
@@ -4292,37 +4319,38 @@ default ->  {
                         psb.setInt(3, gmlevel);
                         psb.execute();
                     }
-                    
-                    if (gmlevel > 100) { try ( //admin ban
-                            PreparedStatement psa = con.prepareStatement("SELECT * FROM accounts WHERE id = ?")) {
-                        psa.setInt(1, z);
-                        try (ResultSet rsa = psa.executeQuery()) {
-                            if (rsa.next()) {
-                                String sessionIP = rsa.getString("sessionIP");
-                                if (sessionIP != null && sessionIP.matches("/[0-9]{1,3}\\..*")) {
-                                    try (PreparedStatement psz = con.prepareStatement("INSERT INTO ipbans VALUES (DEFAULT, ?)")) {
-                                        psz.setString(1, sessionIP);
-                                        psz.execute();
-                                    }
-                                }
-                                if (rsa.getString("macs") != null) {
-                                    String[] macData = rsa.getString("macs").split(", ");
-                                    if (macData.length > 0) {
-                                        MapleClient.banMacs(macData);
-                                    }
-                                }
-                                if (hellban) {
-                                    try (PreparedStatement pss = con.prepareStatement("UPDATE accounts SET banned = 1, banreason = ? WHERE email = ?" + (sessionIP == null ? "" : " OR SessionIP = ?"))) {
-                                        pss.setString(1, reason);
-                                        pss.setString(2, rsa.getString("email"));
-                                        if (sessionIP != null) {
-                                            pss.setString(3, sessionIP);
+
+                    if (gmlevel > 100) {
+                        try ( //admin ban
+                                PreparedStatement psa = con.prepareStatement("SELECT * FROM accounts WHERE id = ?")) {
+                            psa.setInt(1, z);
+                            try (ResultSet rsa = psa.executeQuery()) {
+                                if (rsa.next()) {
+                                    String sessionIP = rsa.getString("sessionIP");
+                                    if (sessionIP != null && sessionIP.matches("/[0-9]{1,3}\\..*")) {
+                                        try (PreparedStatement psz = con.prepareStatement("INSERT INTO ipbans VALUES (DEFAULT, ?)")) {
+                                            psz.setString(1, sessionIP);
+                                            psz.execute();
                                         }
-                                        pss.execute();
+                                    }
+                                    if (rsa.getString("macs") != null) {
+                                        String[] macData = rsa.getString("macs").split(", ");
+                                        if (macData.length > 0) {
+                                            MapleClient.banMacs(macData);
+                                        }
+                                    }
+                                    if (hellban) {
+                                        try (PreparedStatement pss = con.prepareStatement("UPDATE accounts SET banned = 1, banreason = ? WHERE email = ?" + (sessionIP == null ? "" : " OR SessionIP = ?"))) {
+                                            pss.setString(1, reason);
+                                            pss.setString(2, rsa.getString("email"));
+                                            if (sessionIP != null) {
+                                                pss.setString(3, sessionIP);
+                                            }
+                                            pss.execute();
+                                        }
                                     }
                                 }
                             }
-                        }
                         }
                     }
                     ret = true;
@@ -4972,19 +5000,18 @@ default ->  {
     }
 
     public void modifyCSPoints(int type, int quantity, boolean show) {
+        String strType = "";
 
         switch (type) {
-            case 1, 4 -> {
-                if (acash + quantity < 0) {
+            case 1 -> {
+               if (NXCredit + quantity < 0) {
                     if (show) {
-                        dropMessage(-1, "You have gained the max cash. No cash will be awarded.");
+                        dropMessage(-1, "You have gained the max maple points. No cash will be awarded.");
                     }
                     return;
                 }
-                if (quantity > 0 && GameConstants.GMS) {
-                    quantity = (quantity / 2); //stuff is cheaper lol
-                }
-                acash += quantity;
+                NXCredit += quantity;
+                strType = "NX Credit";
             }
             case 2 -> {
                 if (maplepoints + quantity < 0) {
@@ -4994,21 +5021,53 @@ default ->  {
                     return;
                 }
                 maplepoints += quantity;
+
+                strType = "Maple Points";
             }
-default ->  {
+            case 3 -> { if (NxPrepaid + quantity < 0) {
+                    if (show) {
+                        dropMessage(-1, "You have gained the max cash. No cash will be awarded.");
+                    }
+                    return;
+                }
+                if (quantity > 0 && GameConstants.GMS) {
+                    quantity = (quantity / 2); //stuff is cheaper lol
+                }
+                NxPrepaid += quantity;
+                strType = "NX Prepaid";
+                
+            }
+            default -> {
             }
         }
         if (show && quantity != 0) {
-            dropMessage(-1, "You have " + (quantity > 0 ? "gained " : "lost ") + quantity + (type == 1 ? " cash." : " maple points."));
+            dropMessage(-1, "You have " + (quantity > 0 ? "gained " : "lost ") + quantity + " " + strType);
             //client.getSession().write(EffectPacket.showForeignEffect(20));
         }
     }
 
-    public int getCSPoints(int type) {
+    public enum CashShopType {
+        NX_PREPAID,
+        MAPLE_POINTS,
+        NX_CREDIT
+    }
+
+    public int getCSPoints(CashShopType type) {
+        /*
+            mplew.writeInt(11110); // NX Credit
+            mplew.writeInt(chr.getCSPoints(2)); // MPoint
+            mplew.writeInt(chr.getCSPoints(1)); // NX Prepaid
+         */
+
         return switch (type) {
-            case 1, 4 -> acash;
-            case 2 -> maplepoints;
-            default -> 0;
+            case NX_PREPAID -> //1 = NX PREPAID.
+                NxPrepaid;
+            case MAPLE_POINTS -> //2 = Maple Points
+                maplepoints;
+            case NX_CREDIT -> //3 =  NX CREDIT
+                NXCredit;
+            default ->
+                0;
         };
     }
 
@@ -5488,15 +5547,24 @@ default ->  {
 
     public void dropMessage(int type, String message) {
         switch (type) {
-            case -1 -> client.getSession().write(CWvsContext.getTopMsg(message));
-            case -2 -> client.getSession().write(PlayerShopPacket.shopChat(message, 0)); //0 or what
-            case -3 -> client.getSession().write(CField.getChatText(getId(), message, isSuperGM(), 0)); //1 = hide
-            case -4 -> client.getSession().write(CField.getChatText(getId(), message, isSuperGM(), 1)); //1 = hide
-            case -5 -> client.getSession().write(CField.getGameMessage(message, false)); //pink
-            case -6 -> client.getSession().write(CField.getGameMessage(message, true)); //white bg
-            case -7 -> client.getSession().write(CWvsContext.getMidMsg(message, false, 0));
-            case -8 -> client.getSession().write(CWvsContext.getMidMsg(message, true, 0));
-            default -> client.getSession().write(CWvsContext.serverNotice(type, message));
+            case -1 ->
+                client.getSession().write(CWvsContext.getTopMsg(message));
+            case -2 ->
+                client.getSession().write(PlayerShopPacket.shopChat(message, 0)); //0 or what
+            case -3 ->
+                client.getSession().write(CField.getChatText(getId(), message, isSuperGM(), 0)); //1 = hide
+            case -4 ->
+                client.getSession().write(CField.getChatText(getId(), message, isSuperGM(), 1)); //1 = hide
+            case -5 ->
+                client.getSession().write(CField.getGameMessage(message, false)); //pink
+            case -6 ->
+                client.getSession().write(CField.getGameMessage(message, true)); //white bg
+            case -7 ->
+                client.getSession().write(CWvsContext.getMidMsg(message, false, 0));
+            case -8 ->
+                client.getSession().write(CWvsContext.getMidMsg(message, true, 0));
+            default ->
+                client.getSession().write(CWvsContext.serverNotice(type, message));
         }
     }
 
@@ -5842,53 +5910,53 @@ default ->  {
                     MapleInventoryManipulator.removeFromSlot(client, MapleInventoryType.CASH, slot, (short) 1, false);
                 }
             }
-default ->  {
-    final MaplePet pet = item.getPet();
-    if (pet != null && (item.getItemId() != 5000054 || pet.getSecondsLeft() > 0) && (item.getExpiration() == -1 || item.getExpiration() > System.currentTimeMillis())) {
-        if (pet.getSummoned()) { // Already summoned, let's keep it
-            unequipPet(pet, true, false);
-        } else {
-            int leadid = 8;
-            if (GameConstants.isKOC(getJob())) {
-                leadid = 10000018;
-            } else if (GameConstants.isAran(getJob())) {
-                leadid = 20000024;
-            } else if (GameConstants.isEvan(getJob())) {
-                leadid = 20011024;
-            } else if (GameConstants.isMercedes(getJob())) {
-                leadid = 20021024;
-            } else if (GameConstants.isDemon(getJob())) {
-                leadid = 30011024;
-            } else if (GameConstants.isResist(getJob())) {
-                leadid = 30001024;
-                //} else if (GameConstants.isCannon(getJob())) {
-                //    leadid = 10008; //idk, TODO JUMP
-            }
-            if (getSkillLevel(SkillFactory.getSkill(leadid)) == 0 && getPet(0) != null) {
-                unequipPet(getPet(0), false, false);
-            } else if (lead && getSkillLevel(SkillFactory.getSkill(leadid)) > 0) { // Follow the Lead
-                //			    shiftPetsRight();
-            }
-            final Point pos = getPosition();
-            pet.setPos(pos);
-            try {
-                pet.setFh(getMap().getFootholds().findBelow(pos).getId());
-            } catch (NullPointerException e) {
-                pet.setFh(0); //lol, it can be fixed by movement
-            }
-            pet.setStance(0);
-            pet.setSummoned(1); //let summoned be true..
-            addPet(pet);
-            pet.setSummoned(getPetIndex(pet) + 1); //then get the index
-            if (broadcast && getMap() != null) {
-                getMap().broadcastMessage(this, PetPacket.showPet(this, pet, false, false), true);
-                client.getSession().write(PetPacket.showPetUpdate(this, pet.getUniqueId(), (byte) (pet.getSummonedValue() - 1)));
-                if (GameConstants.GMS) {
-                    client.getSession().write(PetPacket.petStatUpdate(this));
+            default -> {
+                final MaplePet pet = item.getPet();
+                if (pet != null && (item.getItemId() != 5000054 || pet.getSecondsLeft() > 0) && (item.getExpiration() == -1 || item.getExpiration() > System.currentTimeMillis())) {
+                    if (pet.getSummoned()) { // Already summoned, let's keep it
+                        unequipPet(pet, true, false);
+                    } else {
+                        int leadid = 8;
+                        if (GameConstants.isKOC(getJob())) {
+                            leadid = 10000018;
+                        } else if (GameConstants.isAran(getJob())) {
+                            leadid = 20000024;
+                        } else if (GameConstants.isEvan(getJob())) {
+                            leadid = 20011024;
+                        } else if (GameConstants.isMercedes(getJob())) {
+                            leadid = 20021024;
+                        } else if (GameConstants.isDemon(getJob())) {
+                            leadid = 30011024;
+                        } else if (GameConstants.isResist(getJob())) {
+                            leadid = 30001024;
+                            //} else if (GameConstants.isCannon(getJob())) {
+                            //    leadid = 10008; //idk, TODO JUMP
+                        }
+                        if (getSkillLevel(SkillFactory.getSkill(leadid)) == 0 && getPet(0) != null) {
+                            unequipPet(getPet(0), false, false);
+                        } else if (lead && getSkillLevel(SkillFactory.getSkill(leadid)) > 0) { // Follow the Lead
+                            //			    shiftPetsRight();
+                        }
+                        final Point pos = getPosition();
+                        pet.setPos(pos);
+                        try {
+                            pet.setFh(getMap().getFootholds().findBelow(pos).getId());
+                        } catch (NullPointerException e) {
+                            pet.setFh(0); //lol, it can be fixed by movement
+                        }
+                        pet.setStance(0);
+                        pet.setSummoned(1); //let summoned be true..
+                        addPet(pet);
+                        pet.setSummoned(getPetIndex(pet) + 1); //then get the index
+                        if (broadcast && getMap() != null) {
+                            getMap().broadcastMessage(this, PetPacket.showPet(this, pet, false, false), true);
+                            client.getSession().write(PetPacket.showPetUpdate(this, pet.getUniqueId(), (byte) (pet.getSummonedValue() - 1)));
+                            if (GameConstants.GMS) {
+                                client.getSession().write(PetPacket.petStatUpdate(this));
+                            }
+                        }
+                    }
                 }
-            }
-        }
-    }
             }
         }
         client.getSession().write(CWvsContext.enableActions());
@@ -5991,7 +6059,8 @@ default ->  {
         ret.storage = storage;
         ret.cs = this.cs;
         ret.client.setAccountName(client.getAccountName());
-        ret.acash = acash;
+        ret.NxPrepaid = NxPrepaid;
+        ret.NXCredit = NXCredit;
         ret.maplepoints = maplepoints;
         ret.clone = true;
         ret.client.setChannel(this.client.getChannel());
@@ -6309,7 +6378,8 @@ default ->  {
                     updateInfoQuest(questid, "min=0;sec=0;date=0000-00-00;have0=0;have1=0;have2=0;have3=0;rank=F;try=0;cmp=0;CR=0;VR=0");
                 case 1206 -> //ellin pq
                     updateInfoQuest(questid, "min=0;sec=0;date=0000-00-00;have0=0;have1=0;rank=F;try=0;cmp=0;CR=0;VR=0");
-                default ->      updateInfoQuest(questid, "min=0;sec=0;date=0000-00-00;have=0;rank=F;try=0;cmp=0;CR=0;VR=0");
+                default ->
+                    updateInfoQuest(questid, "min=0;sec=0;date=0000-00-00;have=0;rank=F;try=0;cmp=0;CR=0;VR=0");
             }
             ret = true;
         } //started the quest.
@@ -6365,11 +6435,16 @@ default ->  {
             }
             String newRank = null;
             switch (oldRank) {
-                case "A" -> newRank = "S";
-                case "B" -> newRank = "A";
-                case "C" -> newRank = "B";
-                case "D" -> newRank = "C";
-                case "F" -> newRank = "D";
+                case "A" ->
+                    newRank = "S";
+                case "B" ->
+                    newRank = "A";
+                case "C" ->
+                    newRank = "B";
+                case "D" ->
+                    newRank = "C";
+                case "F" ->
+                    newRank = "D";
                 default -> {
                     return;
                 }
@@ -6391,9 +6466,12 @@ default ->  {
                     return;
                 }
                 switch (q.left) {
-                    case "less" -> found = vall < q.right.right;
-                    case "more" -> found = vall > q.right.right;
-                    case "equal" -> found = vall == q.right.right;
+                    case "less" ->
+                        found = vall < q.right.right;
+                    case "more" ->
+                        found = vall > q.right.right;
+                    case "equal" ->
+                        found = vall == q.right.right;
                     default -> {
                     }
                 }
@@ -6449,29 +6527,38 @@ default ->  {
     public void havePartyQuest(final int itemId) {
         int questid = 0, index = -1;
         switch (itemId) {
-            case 1002798 -> questid = 1200; //henesys
-            case 1072369 -> questid = 1201; //kerning
-            case 1022073 -> questid = 1202; //ludi
-            case 1082232 -> questid = 1203; //orbis
+            case 1002798 ->
+                questid = 1200; //henesys
+            case 1072369 ->
+                questid = 1201; //kerning
+            case 1022073 ->
+                questid = 1202; //ludi
+            case 1082232 ->
+                questid = 1203; //orbis
             case 1002571, 1002572, 1002573, 1002574 -> {
                 questid = 1204; //herbtown
                 index = itemId - 1002571;
             }
-            case 1102226 -> questid = 1303; //ghost
+            case 1102226 ->
+                questid = 1303; //ghost
             case 1102227 -> {
                 questid = 1303; //ghost
                 index = 0;
             }
-            case 1122010 -> questid = 1205; //magatia
+            case 1122010 ->
+                questid = 1205; //magatia
             case 1032061, 1032060 -> {
                 questid = 1206; //ellin
                 index = itemId - 1032060;
             }
-            case 3010018 -> questid = 1300; //ariant
-            case 1122007 -> questid = 1301; //carnival
-            case 1122058 -> questid = 1302; //carnival2
-default ->  {
-    return;
+            case 3010018 ->
+                questid = 1300; //ariant
+            case 1122007 ->
+                questid = 1301; //carnival
+            case 1122058 ->
+                questid = 1302; //carnival2
+            default -> {
+                return;
             }
         }
         if (MapleQuest.getInstance(questid) == null || !MapleQuest.getInstance(questid).isPartyQuest()) {
@@ -6487,11 +6574,15 @@ default ->  {
         switch (baseJob) {
             case 100 -> //first job = warrior
                 resetStats(UA ? 4 : 35, 4, 4, 4);
-            case 200 -> resetStats(4, 4, UA ? 4 : 20, 4);
-            case 300, 400 -> resetStats(4, UA ? 4 : 25, 4, 4);
-            case 500 -> resetStats(4, UA ? 4 : 20, 4, 4);
-            case 0 -> resetStats(4, 4, 4, 4);
-default ->  {
+            case 200 ->
+                resetStats(4, 4, UA ? 4 : 20, 4);
+            case 300, 400 ->
+                resetStats(4, UA ? 4 : 25, 4, 4);
+            case 500 ->
+                resetStats(4, UA ? 4 : 20, 4, 4);
+            case 0 ->
+                resetStats(4, 4, 4, 4);
+            default -> {
             }
         }
     }
@@ -7204,8 +7295,9 @@ default ->  {
                 if (getTotalSkillLevel(divine) > 0) {
                     final MapleStatEffect divineShield = divine.getEffect(getTotalSkillLevel(divine));
                     if (divineShield.makeChanceResult()) {
-                        if (attacke instanceof MapleMonster mapleMonster) {
-                            final MapleMonster attacker = mapleMonster;
+                        if (attacke instanceof MapleMonster) {// if (attacke instanceof MapleMonster mapleMonster) {
+
+                            final MapleMonster attacker = (MapleMonster) attacke; //final MapleMonster attacker = mapleMonster;
                             final int theDmg = (int) (divineShield.getDamage() * getStat().getCurrentMaxBaseDamage() / 100.0);
                             attacker.damage(this, theDmg, true);
                             getMap().broadcastMessage(MobPacket.damageMonster(attacker.getObjectId(), theDmg));
@@ -7223,8 +7315,8 @@ default ->  {
                     if (divineShield.makeChanceResult()) {
                         client.getSession().write(CField.skillCooldown(divine.getId(), divineShield.getCooldown(this)));
                         addCooldown(divine.getId(), System.currentTimeMillis(), divineShield.getCooldown(this) * 1000);
-                        if (attacke instanceof MapleMonster mapleMonster) {
-                            final MapleMonster attacker = mapleMonster;
+                        if (attacke instanceof MapleMonster) {//if (attacke instanceof MapleMonster mapleMonster) {
+                            final MapleMonster attacker = (MapleMonster) attacke;
                             final int theDmg = (int) (divineShield.getDamage() * getStat().getCurrentMaxBaseDamage() / 100.0);
                             attacker.damage(this, theDmg, true);
                             getMap().broadcastMessage(MobPacket.damageMonster(attacker.getObjectId(), theDmg));
@@ -7243,8 +7335,8 @@ default ->  {
                     long bouncedamage = (long) (damage * bouncedam_ / 100);
                     long bouncer = (long) (damage * damr / 100);
                     damage -= bouncer;
-                    if (attacke instanceof MapleMonster mapleMonster) {
-                        final MapleMonster attacker = mapleMonster;
+                    if (attacke instanceof MapleMonster) {
+                        final MapleMonster attacker = (MapleMonster) attacke;
                         bouncedamage = Math.min(bouncedamage, attacker.getMobMaxHp() / 10);
                         attacker.damage(this, bouncedamage, true);
                         getMap().broadcastMessage(this, MobPacket.damageMonster(attacker.getObjectId(), bouncedamage), getTruePosition());
@@ -7274,8 +7366,8 @@ default ->  {
                         for (var sum : ss) {
                             if (sum.getTruePosition().distanceSq(getTruePosition()) < 400000.0 && (sum.getSkill() == 4111007 || sum.getSkill() == 4211007)) {
                                 final List<Pair<Integer, Integer>> allDamage = new ArrayList<>();
-                                if (attacke instanceof MapleMonster mapleMonster) {
-                                    final MapleMonster attacker = mapleMonster;
+                                if (attacke instanceof MapleMonster) {
+                                    final MapleMonster attacker = (MapleMonster) attacke;
                                     final int theDmg = (int) (SkillFactory.getSkill(sum.getSkill()).getEffect(sum.getSkillLevel()).getX() * damage / 100.0);
                                     allDamage.add(new Pair<>(attacker.getObjectId(), theDmg));
                                     getMap().broadcastMessage(SummonPacket.summonAttack(sum.getOwnerId(), sum.getObjectId(), (byte) 0x84, allDamage, getLevel(), true));
@@ -7368,7 +7460,7 @@ default ->  {
             //swipe
             //drain
             //killer wing
-                    }
+        }
     }
 
     public void handleForceGain(int oid, int skillid) {
@@ -7405,7 +7497,7 @@ default ->  {
             case 511, 512 -> {
                 handleEnergyCharge(5110001, mobCount * attackCount);
             }
-            case 1510, 1511, 1512 ->  {
+            case 1510, 1511, 1512 -> {
                 handleEnergyCharge(15100004, mobCount * attackCount);
             }
             case 111, 112, 1111, 1112 -> {
@@ -7455,20 +7547,24 @@ default ->  {
     public final PlayerRandomStream CRand() {
         return CRand;
     }
-    
+
     /*Start of Custom Feature*/
     public int getReborns() {
         return reborns;
     }
-    
+
+    public int getNXCredit() {
+        return NXCredit;
+    }
+
     public int getAPS() {
         return apstorage;
     }
-    
+
     public void gainAPS(int aps) {
         apstorage += aps;
     }
-    
+
     public void doReborn() {
         Map<MapleStat, Integer> stat = new EnumMap<>(MapleStat.class);
         this.reborns += 1;
@@ -7477,22 +7573,22 @@ default ->  {
         setRemainingAp((short) 0);
 
         final int oriStats = stats.getStr() + stats.getDex() + stats.getLuk() + stats.getInt();
-        
+
         final int str = Randomizer.rand(25, stats.getStr());
         final int dex = Randomizer.rand(25, stats.getDex());
         final int int_ = Randomizer.rand(25, stats.getInt());
         final int luk = Randomizer.rand(25, stats.getLuk());
-        
+
         final int afterStats = str + dex + int_ + luk;
-        
+
         final int MAS = (oriStats - afterStats) + getRemainingAp();
         client.getPlayer().gainAPS(MAS);
-        
+
         stats.recalcLocalStats(this);
-        stats.setStr((short)str, client.getPlayer());
-        stats.setDex((short)dex, client.getPlayer());
-        stats.setInt((short)int_, client.getPlayer());
-        stats.setLuk((short)luk, client.getPlayer());
+        stats.setStr((short) str, client.getPlayer());
+        stats.setDex((short) dex, client.getPlayer());
+        stats.setInt((short) int_, client.getPlayer());
+        stats.setLuk((short) luk, client.getPlayer());
         stat.put(MapleStat.STR, str);
         stat.put(MapleStat.DEX, dex);
         stat.put(MapleStat.INT, int_);
