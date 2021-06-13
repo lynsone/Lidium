@@ -84,7 +84,7 @@ public class Start {
         System.out.println("Loader 9...");
         MapleInventoryIdentifier.getInstance();
         //System.out.println("Loader 10...");
-        //CashItemFactory.getInstance().initialize();  
+        CashItemFactory.getInstance().initialize();  
         MapleServerHandler.initiate();
         System.out.println("[Loading Login]");
         LoginServer.run_startup_configurations();
