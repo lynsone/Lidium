@@ -5004,7 +5004,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
 
         switch (type) {
             case 1 -> {
-               if (nxCredit + quantity < 0) {
+                if (nxCredit + quantity < 0) {
                     if (show) {
                         dropMessage(-1, "You have gained the max maple points. No cash will be awarded.");
                     }
@@ -5024,7 +5024,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
 
                 strType = "Maple Points";
             }
-            case 3 -> { if (nxPrepaid + quantity < 0) {
+            case 3 -> {
+                if (nxPrepaid + quantity < 0) {
                     if (show) {
                         dropMessage(-1, "You have gained the max cash. No cash will be awarded.");
                     }
@@ -5035,7 +5036,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 }
                 nxPrepaid += quantity;
                 strType = "NX Prepaid";
-                
+
             }
             default -> {
             }
@@ -5899,7 +5900,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
 
     public void spawnPet(byte slot, boolean lead, boolean broadcast) {
         final Item item = getInventory(MapleInventoryType.CASH).getItem(slot);
-        if (item == null || item.getItemId() > 5000200 || item.getItemId() < 5000000) {
+        if (item == null || !GameConstants.isPet(item.getItemId())) {
             return;
         }
         switch (item.getItemId()) {
