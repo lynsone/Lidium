@@ -219,9 +219,9 @@ public class MTSCSPacket {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.CS_UPDATE.getValue());
-        mplew.writeInt(11110); // NX Credit
-        mplew.writeInt(chr.getCSPoints(2)); // MPoint
-        mplew.writeInt(chr.getCSPoints(1)); // NX Prepaid
+        mplew.writeInt(chr.getCSPoints(MapleCharacter.CashShopType.NX_CREDIT)); // NX Credit
+        mplew.writeInt(chr.getCSPoints(MapleCharacter.CashShopType.MAPLE_POINTS)); // MPoint
+        mplew.writeInt(chr.getCSPoints(MapleCharacter.CashShopType.NX_PREPAID)); // NX Prepaid
 
         return mplew.getPacket();
     }
@@ -970,11 +970,11 @@ public class MTSCSPacket {
         return mplew.getPacket();
     }
 
-    public static final byte[] showMTSCash(final MapleCharacter p) {
+    public static final byte[] showMTSCash(final MapleCharacter chr) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendPacketOpcode.GET_MTS_TOKENS.getValue());
-        mplew.writeInt(p.getCSPoints(1));
-        mplew.writeInt(p.getCSPoints(2));
+        mplew.writeInt(chr.getCSPoints(MapleCharacter.CashShopType.NX_PREPAID));
+        mplew.writeInt(chr.getCSPoints(MapleCharacter.CashShopType.MAPLE_POINTS));
         return mplew.getPacket();
     }
 

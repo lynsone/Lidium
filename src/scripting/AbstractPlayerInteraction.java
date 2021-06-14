@@ -1169,4 +1169,17 @@ public abstract class AbstractPlayerInteraction {
         c.getSession().write(UIPacket.getDirectionInfo(data, 2000, 0, -100, 0));
         c.getSession().write(UIPacket.getDirectionInfo(1, 2000));
     }
+
+    public int getCSPoints(final int typeValue) {
+        return switch (typeValue) {
+            case 1 ->
+                c.getPlayer().getCSPoints(MapleCharacter.CashShopType.NX_PREPAID);
+            case 2 ->
+                c.getPlayer().getCSPoints(MapleCharacter.CashShopType.MAPLE_POINTS);
+            case 3 ->
+                c.getPlayer().getCSPoints(MapleCharacter.CashShopType.NX_CREDIT);
+            default ->
+                0;
+        };
+    }
 }

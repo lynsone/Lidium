@@ -167,7 +167,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
     private short level, mulung_energy, combo, force, availableCP, fatigue, totalCP, hpApUsed, job, remainingAp, scrolledPosition;
 
     private int accountid, id, meso, exp, hair, face, demonMarking, mapid, fame, pvpExp, pvpPoints, totalWins, totalLosses,
-            guildid = 0, fallcounter, maplepoints, NxPrepaid, NXCredit, chair, itemEffect, points, vpoints,
+            guildid = 0, fallcounter, maplepoints, nxPrepaid, nxCredit, chair, itemEffect, points, vpoints,
             rank = 1, rankMove = 0, jobRank = 1, jobRankMove = 0, marriageId, marriageItemId, dotHP,
             currentrep, totalrep, coconutteam, followid, battleshipHP, gachexp, challenge, guildContribution = 0;
 
@@ -385,9 +385,9 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     ret.client.setAccountName(rs.getString("name"));
-                    ret.NxPrepaid = rs.getInt("NxPrepaid");
+                    ret.nxPrepaid = rs.getInt("NxPrepaid");
                     ret.maplepoints = rs.getInt("mPoints");
-                    ret.NXCredit = rs.getInt("NxCredit");
+                    ret.nxCredit = rs.getInt("NxCredit");
 
                     ret.points = rs.getInt("points");
                     ret.vpoints = rs.getInt("vpoints");
@@ -549,9 +549,9 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         ret.storage = (MapleStorage) ct.storage;
         ret.cs = (CashShop) ct.cs;
         client.setAccountName(ct.accountname);
-        ret.NxPrepaid = ct.NxPrepaid;
-        ret.maplepoints = ct.MaplePoints;
-        ret.NXCredit = ct.NxCredit;
+        ret.nxPrepaid = ct.nxPrepaid;
+        ret.maplepoints = ct.maplePoints;
+        ret.nxCredit = ct.nxCredit;
         ret.numClones = ct.clonez;
         ret.imps = ct.imps;
         ret.anticheat = (CheatTracker) ct.anticheat;
@@ -765,8 +765,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 rs = ps.executeQuery();
                 if (rs.next()) {
                     ret.getClient().setAccountName(rs.getString("name"));
-                    ret.NxPrepaid = rs.getInt("NxPrepaid");
-                    ret.NXCredit = rs.getInt("NxCredit");
+                    ret.nxPrepaid = rs.getInt("NxPrepaid");
+                    ret.nxCredit = rs.getInt("NxCredit");
                     ret.maplepoints = rs.getInt("mPoints");
                     ret.points = rs.getInt("points");
                     ret.vpoints = rs.getInt("vpoints");
@@ -775,7 +775,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                         final Calendar cal = Calendar.getInstance();
                         cal.setTimeInMillis(rs.getTimestamp("lastlogon").getTime());
                         if (cal.get(Calendar.DAY_OF_WEEK) + 1 == Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
-                            ret.NxPrepaid += 500;
+                            ret.nxPrepaid += 500;
                         }
                     }
                     if (rs.getInt("banned") > 0) {
@@ -1582,8 +1582,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             }
 
             ps = con.prepareStatement("UPDATE accounts SET `NxPrepaid` = ?,`NxCredit` = ?, `mPoints` = ?, `points` = ?, `vpoints` = ? WHERE id = ?");
-            ps.setInt(1, NxPrepaid);
-            ps.setInt(2, NXCredit);
+            ps.setInt(1, nxPrepaid);
+            ps.setInt(2, nxCredit);
             ps.setInt(3, maplepoints);
             ps.setInt(4, points);
             ps.setInt(5, vpoints);
@@ -5004,13 +5004,13 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
 
         switch (type) {
             case 1 -> {
-               if (NXCredit + quantity < 0) {
+               if (nxCredit + quantity < 0) {
                     if (show) {
                         dropMessage(-1, "You have gained the max maple points. No cash will be awarded.");
                     }
                     return;
                 }
-                NXCredit += quantity;
+                nxCredit += quantity;
                 strType = "NX Credit";
             }
             case 2 -> {
@@ -5024,7 +5024,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
 
                 strType = "Maple Points";
             }
-            case 3 -> { if (NxPrepaid + quantity < 0) {
+            case 3 -> { if (nxPrepaid + quantity < 0) {
                     if (show) {
                         dropMessage(-1, "You have gained the max cash. No cash will be awarded.");
                     }
@@ -5033,7 +5033,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 if (quantity > 0 && GameConstants.GMS) {
                     quantity = (quantity / 2); //stuff is cheaper lol
                 }
-                NxPrepaid += quantity;
+                nxPrepaid += quantity;
                 strType = "NX Prepaid";
                 
             }
@@ -5061,11 +5061,11 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
 
         return switch (type) {
             case NX_PREPAID -> //1 = NX PREPAID.
-                NxPrepaid;
+                nxPrepaid;
             case MAPLE_POINTS -> //2 = Maple Points
                 maplepoints;
             case NX_CREDIT -> //3 =  NX CREDIT
-                NXCredit;
+                nxCredit;
             default ->
                 0;
         };
@@ -6059,8 +6059,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         ret.storage = storage;
         ret.cs = this.cs;
         ret.client.setAccountName(client.getAccountName());
-        ret.NxPrepaid = NxPrepaid;
-        ret.NXCredit = NXCredit;
+        ret.nxPrepaid = nxPrepaid;
+        ret.nxCredit = nxCredit;
         ret.maplepoints = maplepoints;
         ret.clone = true;
         ret.client.setChannel(this.client.getChannel());
@@ -7554,7 +7554,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
     }
 
     public int getNXCredit() {
-        return NXCredit;
+        return nxCredit;
     }
 
     public int getAPS() {

@@ -1,12 +1,12 @@
 package handling.cashshop.handler;
 
+import client.MapleCharacter;
 import client.inventory.Equip;
 import constants.GameConstants;
 import client.inventory.Item;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import constants.ServerConstants;
-import java.util.Calendar;
 import server.MTSCart;
 import server.MTSStorage;
 import server.MTSStorage.MTSItemInfo;
@@ -93,10 +93,10 @@ public class MTSOperation {
             c.getSession().write(MTSCSPacket.getMTSConfirmSell());
         } else if (op == 5) { //change page/tab
             cart.changeInfo(slea.readInt(), slea.readInt(), slea.readInt());
-	} else if (op == 6) { //search
-	    cart.changeInfo(slea.readInt(), slea.readInt(), 0);
-	    slea.readInt(); //always 0?
-	    cart.changeCurrentView(MTSStorage.getInstance().getSearch(slea.readInt() > 0, slea.readMapleAsciiString(), cart.getType(), cart.getTab()));
+        } else if (op == 6) { //search
+            cart.changeInfo(slea.readInt(), slea.readInt(), 0);
+            slea.readInt(); //always 0?
+            cart.changeCurrentView(MTSStorage.getInstance().getSearch(slea.readInt() > 0, slea.readMapleAsciiString(), cart.getType(), cart.getTab()));
         } else if (op == 7) { //cancel sale
             if (!MTSStorage.getInstance().removeFromBuyNow(slea.readInt(), c.getPlayer().getId(), true)) {
                 c.getSession().write(MTSCSPacket.getMTSFailCancel());
@@ -152,7 +152,7 @@ public class MTSOperation {
         } else if (op == 16 || op == 17) { //buyNow, buy from cart
             final MTSItemInfo mts = MTSStorage.getInstance().getSingleItem(slea.readInt());
             if (mts != null && mts.getCharacterId() != c.getPlayer().getId()) {
-                if (c.getPlayer().getCSPoints(1) > mts.getRealPrice()) {
+                if (c.getPlayer().getCSPoints(MapleCharacter.CashShopType.NX_PREPAID) > mts.getRealPrice()) {
                     if (MTSStorage.getInstance().removeFromBuyNow(mts.getId(), c.getPlayer().getId(), false)) {
                         c.getPlayer().modifyCSPoints(1, -mts.getRealPrice(), false);
                         MTSStorage.getInstance().getCart(mts.getCharacterId()).increaseOwedNX(mts.getPrice());
@@ -175,7 +175,7 @@ public class MTSOperation {
     }
 
     public static void MTSUpdate(final MTSCart cart, final MapleClient c) {
-		final int a = MTSStorage.getInstance().getCart(c.getPlayer().getId()).getSetOwedNX();
+        final int a = MTSStorage.getInstance().getCart(c.getPlayer().getId()).getSetOwedNX();
         c.getPlayer().modifyCSPoints(1, GameConstants.GMS ? (a * 2) : a, false);
         c.getSession().write(MTSCSPacket.getMTSWantedListingOver(0, 0));
         doMTSPackets(cart, c);

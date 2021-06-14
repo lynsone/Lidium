@@ -46,11 +46,11 @@ public class CashShopOperation {
             final String s = c.getSessionIPAddress();
             LoginServer.addIPAuth(s.substring(s.indexOf('/') + 1, s.length()));
             chr.saveToDB(false, true);
-            
-			/* c.setPlayer(null);
+
+            /* c.setPlayer(null);
             c.setReceiving(false);
             c.getSession().close();
-			*/
+             */
         }
     }
 
@@ -178,7 +178,7 @@ public class CashShopOperation {
             final int toCharge = GameConstants.GMS ? slea.readInt() : 1;
             final CashItemInfo item = CashItemFactory.getInstance().getItem(slea.readInt());
 
-            if (item != null && chr.getCSPoints(toCharge) >= item.getPrice()) {
+            if (item != null && chr.getCSPoints(getCashShopType(toCharge)) >= item.getPrice()) {
                 if (!item.genderEquals(c.getPlayer().getGender())) {
                     c.getSession().write(MTSCSPacket.sendCSFail(0xA6));
                     doCSPackets(c);
@@ -215,7 +215,7 @@ public class CashShopOperation {
             }
             String partnerName = slea.readMapleAsciiString();
             String msg = slea.readMapleAsciiString();
-            if (item == null || c.getPlayer().getCSPoints(1) < item.getPrice() || msg.length() > 73 || msg.length() < 1) { //dont want packet editors gifting random stuff =P
+            if (item == null || c.getPlayer().getCSPoints(MapleCharacter.CashShopType.NX_PREPAID) < item.getPrice() || msg.length() > 73 || msg.length() < 1) { //dont want packet editors gifting random stuff =P
                 c.getSession().write(MTSCSPacket.sendCSFail(0));
                 doCSPackets(c);
                 return;
@@ -261,7 +261,7 @@ public class CashShopOperation {
             final boolean coupon = slea.readByte() > 0;
             if (coupon) {
                 final MapleInventoryType type = getInventoryType(slea.readInt());
-                if (chr.getCSPoints(toCharge) >= (GameConstants.GMS ? 6000 : 12000) && chr.getInventory(type).getSlotLimit() < 89) {
+                if (chr.getCSPoints(getCashShopType(toCharge)) >= (GameConstants.GMS ? 6000 : 12000) && chr.getInventory(type).getSlotLimit() < 89) {
                     chr.modifyCSPoints(toCharge, (GameConstants.GMS ? -6000 : -12000), false);
                     chr.getInventory(type).addSlot((byte) 8);
                     chr.dropMessage(1, "Slots has been increased to " + chr.getInventory(type).getSlotLimit());
@@ -270,7 +270,7 @@ public class CashShopOperation {
                 }
             } else {
                 final MapleInventoryType type = MapleInventoryType.getByType(slea.readByte());
-                if (chr.getCSPoints(toCharge) >= (GameConstants.GMS ? 4000 : 8000) && chr.getInventory(type).getSlotLimit() < 93) {
+                if (chr.getCSPoints(getCashShopType(toCharge)) >= (GameConstants.GMS ? 4000 : 8000) && chr.getInventory(type).getSlotLimit() < 93) {
                     chr.modifyCSPoints(toCharge, (GameConstants.GMS ? -4000 : -8000), false);
                     chr.getInventory(type).addSlot((byte) 4);
                     chr.dropMessage(1, "Slots has been increased to " + chr.getInventory(type).getSlotLimit());
@@ -283,7 +283,7 @@ public class CashShopOperation {
             slea.skip(1);
             final int toCharge = GameConstants.GMS ? slea.readInt() : 1;
             final int coupon = slea.readByte() > 0 ? 2 : 1;
-            if (chr.getCSPoints(toCharge) >= (GameConstants.GMS ? 4000 : 8000) * coupon && chr.getStorage().getSlots() < (49 - (4 * coupon))) {
+            if (chr.getCSPoints(getCashShopType(toCharge)) >= (GameConstants.GMS ? 4000 : 8000) * coupon && chr.getStorage().getSlots() < (49 - (4 * coupon))) {
                 chr.modifyCSPoints(toCharge, (GameConstants.GMS ? -4000 : -8000) * coupon, false);
                 chr.getStorage().increaseSlots((byte) (4 * coupon));
                 chr.getStorage().saveToDB();
@@ -296,7 +296,7 @@ public class CashShopOperation {
             final int toCharge = GameConstants.GMS ? slea.readInt() : 1;
             CashItemInfo item = CashItemFactory.getInstance().getItem(slea.readInt());
             int slots = c.getCharacterSlots();
-            if (item == null || c.getPlayer().getCSPoints(toCharge) < item.getPrice() || slots > 15 || item.getId() != 5430000) {
+            if (item == null || c.getPlayer().getCSPoints(getCashShopType(toCharge)) < item.getPrice() || slots > 15 || item.getId() != 5430000) {
                 c.getSession().write(MTSCSPacket.sendCSFail(0));
                 doCSPackets(c);
                 return;
@@ -350,7 +350,7 @@ public class CashShopOperation {
             final CashItemInfo item = CashItemFactory.getInstance().getItem(slea.readInt());
             final String partnerName = slea.readMapleAsciiString();
             final String msg = slea.readMapleAsciiString();
-            if (item == null || !GameConstants.isEffectRing(item.getId()) || c.getPlayer().getCSPoints(toCharge) < item.getPrice() || msg.length() > 73 || msg.length() < 1) {
+            if (item == null || !GameConstants.isEffectRing(item.getId()) || c.getPlayer().getCSPoints(getCashShopType(toCharge)) < item.getPrice() || msg.length() > 73 || msg.length() < 1) {
                 c.getSession().write(MTSCSPacket.sendCSFail(0));
                 doCSPackets(c);
                 return;
@@ -403,7 +403,7 @@ public class CashShopOperation {
             if (item != null) {
                 ccc = CashItemFactory.getInstance().getPackageItems(item.getId());
             }
-            if (item == null || ccc == null || c.getPlayer().getCSPoints(toCharge) < item.getPrice()) {
+            if (item == null || ccc == null || c.getPlayer().getCSPoints(getCashShopType(toCharge)) < item.getPrice()) {
                 c.getSession().write(MTSCSPacket.sendCSFail(0));
                 doCSPackets(c);
                 return;
@@ -507,5 +507,15 @@ public class CashShopOperation {
         c.getSession().write(MTSCSPacket.showNXMapleTokens(c.getPlayer()));
         c.getSession().write(MTSCSPacket.enableCSUse());
         c.getPlayer().getCashInventory().checkExpire(c);
+    }
+
+    private static MapleCharacter.CashShopType getCashShopType(int typeValue) {
+        if (typeValue == 1) {
+            return MapleCharacter.CashShopType.NX_PREPAID;
+        } else if (typeValue == 2) {
+            return MapleCharacter.CashShopType.MAPLE_POINTS;
+        } else {
+            return MapleCharacter.CashShopType.NX_CREDIT;
+        }
     }
 }

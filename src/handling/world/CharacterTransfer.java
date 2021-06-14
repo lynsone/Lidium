@@ -50,8 +50,8 @@ import java.util.Map.Entry;
 public class CharacterTransfer implements Externalizable {
 
     public int characterid, accountid, exp, fame, pvpExp, pvpPoints,
-            meso, hair, face, demonMarking, mapid, guildid, 
-            partyid, messengerid, ACash, MaplePoints,
+            meso, hair, face, demonMarking, mapid, guildid,
+            partyid, messengerid, nxPrepaid, nxCredit, maplePoints,
             mount_itemid, mount_exp, points, vpoints, marriageId, maxhp, maxmp, hp, mp,
             familyid, seniorid, junior1, junior2, currentrep, totalrep, battleshipHP, gachexp, guildContribution, totalWins, totalLosses;
     public byte channel, gender, gmLevel, guildrank, alliancerank, clonez,
@@ -76,8 +76,9 @@ public class CharacterTransfer implements Externalizable {
     public Map<Integer, String> InfoQuest;
     public final Map<Integer, SkillEntry> Skills = new LinkedHashMap<Integer, SkillEntry>(); // Skillid instead of Skill.java, as it's huge. Cant be transporting Skill.java and MapleStatEffect.java
     /*Start of Custom Feature*/
-    /*All custom shit declare here*/
+ /*All custom shit declare here*/
     public int reborns, apstorage;
+
     /*End of Custom Feature*/
     public CharacterTransfer() {
         boxed = new ArrayList();
@@ -97,8 +98,9 @@ public class CharacterTransfer implements Externalizable {
         this.accountid = chr.getAccountID();
         this.accountname = chr.getClient().getAccountName();
         this.channel = (byte) chr.getClient().getChannel();
-        this.ACash = chr.getCSPoints(1);
-        this.MaplePoints = chr.getCSPoints(2);
+        this.nxPrepaid = chr.getCSPoints(MapleCharacter.CashShopType.NX_PREPAID);
+        this.nxCredit = chr.getCSPoints(MapleCharacter.CashShopType.NX_CREDIT);
+        this.maplePoints = chr.getCSPoints(MapleCharacter.CashShopType.MAPLE_POINTS);
         this.vpoints = chr.getVPoints();
         this.name = chr.getName();
         this.fame = chr.getFame();
@@ -117,8 +119,8 @@ public class CharacterTransfer implements Externalizable {
         this.remainingAp = chr.getRemainingAp();
         this.remainingSp = chr.getRemainingSps();
         this.meso = chr.getMeso();
-	this.pvpExp = chr.getTotalBattleExp();
-	this.pvpPoints = chr.getBattlePoints();
+        this.pvpExp = chr.getTotalBattleExp();
+        this.pvpPoints = chr.getBattlePoints();
         /*Start of Custom Feature*/
         this.reborns = chr.getReborns();
         this.apstorage = chr.getAPS();
@@ -242,8 +244,9 @@ public class CharacterTransfer implements Externalizable {
         this.accountid = in.readInt();
         this.accountname = in.readUTF();
         this.channel = in.readByte();
-        this.ACash = in.readInt();
-        this.MaplePoints = in.readInt();
+        this.nxCredit = in.readInt();
+        this.nxPrepaid = in.readInt();
+        this.maplePoints = in.readInt();
         this.name = in.readUTF();
         this.fame = in.readInt();
         this.gender = in.readByte();
@@ -323,13 +326,13 @@ public class CharacterTransfer implements Externalizable {
         this.totalLosses = in.readInt();
         this.anticheat = in.readObject();
         this.tempIP = in.readUTF();
-	this.pvpExp = in.readInt();
-	this.pvpPoints = in.readInt();
+        this.pvpExp = in.readInt();
+        this.pvpPoints = in.readInt();
         /*Start of Custom Feature*/
         this.reborns = in.readInt();
         this.apstorage = in.readInt();
         /*End of Custom Feature*/
-        
+
         final int mbooksize = in.readShort();
         for (int i = 0; i < mbooksize; i++) {
             this.mbook.put(in.readInt(), in.readInt());
@@ -461,8 +464,9 @@ public class CharacterTransfer implements Externalizable {
         out.writeInt(this.accountid);
         out.writeUTF(this.accountname);
         out.writeByte(this.channel);
-        out.writeInt(this.ACash);
-        out.writeInt(this.MaplePoints);
+        out.writeInt(this.nxCredit);
+        out.writeInt(this.nxPrepaid);
+        out.writeInt(this.maplePoints);
         out.writeUTF(this.name);
         out.writeInt(this.fame);
         out.writeByte(this.gender);
@@ -540,8 +544,8 @@ public class CharacterTransfer implements Externalizable {
         out.writeInt(this.totalLosses);
         out.writeObject(this.anticheat);
         out.writeUTF(this.tempIP);
-	out.writeInt(this.pvpExp);
-	out.writeInt(this.pvpPoints);
+        out.writeInt(this.pvpExp);
+        out.writeInt(this.pvpPoints);
         /*Start of Custom Feature*/
         out.writeInt(this.reborns);
         out.writeInt(this.apstorage);
