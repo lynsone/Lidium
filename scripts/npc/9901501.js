@@ -26,7 +26,7 @@ function action(mode, type, selection) {
 	}
 	status++;
 	if (status == 0) {
-		cm.sendSimple("Hi. I like #rCash#k. You have #r#e" + cm.getPlayer().getCSPoints(1) + "#n#k #rCash#k. I could sure use some...\r\n\r\n#b#L0#Give me #rCash#b and I'll give you an item.#l#k");
+		cm.sendSimple("Hi. I like #rCash#k. You have #r#e" + cm.getCSPoints(1) + "#n#k #rCash#k. I could sure use some...\r\n\r\n#b#L0#Give me #rCash#b and I'll give you an item.#l#k");
 	} else if (status == 1) {
 		var selStr = "Maybe you could trade me some #rCash#k? I have lots of great items for you...#b\r\n\r\n";
 		for (var i = 0; i < items.length; i++) {

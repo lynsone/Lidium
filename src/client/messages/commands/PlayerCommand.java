@@ -511,7 +511,7 @@ public class PlayerCommand {
     public static class Check extends CommandExecute {
 
         public int execute(MapleClient c, String[] splitted) {
-            c.getPlayer().dropMessage(6, "You currently have " + c.getPlayer().getCSPoints(1) + " Cash.");
+            c.getPlayer().dropMessage(6, "You currently have " + c.getPlayer().getCSPoints(MapleCharacter.CashShopType.NX_PREPAID) + " Cash.");
             c.getPlayer().dropMessage(6, "You currently have " + c.getPlayer().getPoints() + " donation points.");
             c.getPlayer().dropMessage(6, "You currently have " + c.getPlayer().getVPoints() + " voting points.");
             c.getPlayer().dropMessage(6, "You currently have " + c.getPlayer().getIntNoRecord(GameConstants.BOSS_PQ) + " Boss Party Quest points.");

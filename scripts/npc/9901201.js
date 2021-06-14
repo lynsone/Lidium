@@ -100,7 +100,7 @@ function action(mode, type, selection) {
 					}
 					break;
 				case 1:
-					if (cm.getPlayer().getCSPoints(1) > (2147473647)) {
+					if (cm.getCSPoints(1) > (2147473647)) {
 						cm.sendOk("You have too much Cash.");
 					} else {
 						cm.getPlayer().modifyCSPoints(1, 10000, false);

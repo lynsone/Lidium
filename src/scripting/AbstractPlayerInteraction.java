@@ -1024,7 +1024,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public void gainPet(int id, String name, int level, int closeness, int fullness, long period, short flags) {
-        if (id > 5000200 || id < 5000000) {
+        if (!GameConstants.isPet(id)) {
             id = 5000000;
         }
         if (level > 30) {
@@ -1168,5 +1168,18 @@ public abstract class AbstractPlayerInteraction {
     public void sendDirectionInfo(String data) {
         c.getSession().write(UIPacket.getDirectionInfo(data, 2000, 0, -100, 0));
         c.getSession().write(UIPacket.getDirectionInfo(1, 2000));
+    }
+
+    public int getCSPoints(final int typeValue) {
+        return switch (typeValue) {
+            case 1 ->
+                c.getPlayer().getCSPoints(MapleCharacter.CashShopType.NX_PREPAID);
+            case 2 ->
+                c.getPlayer().getCSPoints(MapleCharacter.CashShopType.MAPLE_POINTS);
+            case 3 ->
+                c.getPlayer().getCSPoints(MapleCharacter.CashShopType.NX_CREDIT);
+            default ->
+                0;
+        };
     }
 }

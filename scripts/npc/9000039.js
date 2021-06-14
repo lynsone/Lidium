@@ -237,7 +237,7 @@ function action(mode, type, selection) {
 		} else if (sel == 4) {
 			if (cm.getPlayer().getPoints() < acashp) {
 				cm.sendOk("You don't have enough points. You have " + cm.getPlayer().getPoints() + " while I need " + acashp + ".");
-			} else if (cm.getPlayer().getCSPoints(1) > (java.lang.Integer.MAX_VALUE - acash)) {
+			} else if (cm.getCSPoints(1) > (java.lang.Integer.MAX_VALUE - acash)) {
 				cm.sendOk("You have too much Cash.");
 			} else {
 				cm.getPlayer().setPoints(cm.getPlayer().getPoints() - acashp);
