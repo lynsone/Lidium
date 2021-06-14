@@ -771,13 +771,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                     ret.points = rs.getInt("points");
                     ret.vpoints = rs.getInt("vpoints");
 
-                    if (rs.getTimestamp("lastlogon") != null) {
-                        final Calendar cal = Calendar.getInstance();
-                        cal.setTimeInMillis(rs.getTimestamp("lastlogon").getTime());
-                        if (cal.get(Calendar.DAY_OF_WEEK) + 1 == Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
-                            ret.nxPrepaid += 500;
-                        }
-                    }
                     if (rs.getInt("banned") > 0) {
                         rs.close();
                         ps.close();
