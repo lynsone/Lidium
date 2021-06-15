@@ -220,7 +220,7 @@ public class PlayerHandler {
                     chr.dropMessage(1, "This map is not available to enter for the list.");
                 }
             }
-        } else if (vip == 3) { // Hyper Rocks
+        } else if (vip == 5) { // Hyper Rocks
             if (addrem == 0) {
                 chr.deleteFromHyperRocks(slea.readInt());
             } else if (addrem == 1) {
