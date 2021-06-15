@@ -844,7 +844,6 @@ public class InventoryHandler {
         long expiration_days = 0;
         int mountid = 0;
 
-
         if (toUse != null && toUse.getQuantity() >= 1 && toUse.getItemId() == itemId && !chr.hasBlockedInventory() && !chr.inPVP()) {
             switch (toUse.getItemId()) {
                 case 2430007: { // Blank Compass
@@ -2715,7 +2714,7 @@ public class InventoryHandler {
                 break;
             }
             case 5064000: {
-				System.out.println("slea..." + slea.toString());
+                System.out.println("slea..." + slea.toString());
                 final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
                 final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
                 // another int here, lock = 5A E5 F2 0A, 7 day = D2 30 F3 0A
@@ -3487,6 +3486,8 @@ public class InventoryHandler {
 
         if (used) {
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (short) 1, false, true);
+        } else {
+            c.getPlayer().dropMessage(1, "This item cannot be used for your pets.");
         }
         c.getSession().write(CWvsContext.enableActions());
         if (cc) {
@@ -3952,6 +3953,7 @@ public class InventoryHandler {
     public static final boolean UseTeleRock(LittleEndianAccessor slea, MapleClient c, int itemId) {
         boolean used = false;
         if (slea.readByte() == 0) { // Rocktype
+            slea.readByte(); //useless byte
             final MapleMap target = c.getChannelServer().getMapFactory().getMap(slea.readInt());
             if (target != null && ((itemId == 5041000 && c.getPlayer().isRockMap(target.getId())) || ((itemId == 5040000 || itemId == 5040001) && c.getPlayer().isRegRockMap(target.getId())) || ((itemId == 5040004 || itemId == 5041001) && (c.getPlayer().isHyperRockMap(target.getId()) || GameConstants.isHyperTeleMap(target.getId()))))) {
                 if (!FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) && !FieldLimitType.VipRock.check(target.getFieldLimit()) && !c.getPlayer().isInBlockedMap()) { //Makes sure this map doesn't have a forced return map
