@@ -25,14 +25,12 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
-import constants.ServerConstants;
-import constants.GameConstants;
 import server.ServerProperties;
 
 /**
  * All OdinMS servers maintain a Database Connection. This class therefore "singletonices" the connection per process.
- * 
- * 
+ *
+ *
  * @author Frz
  */
 public class DatabaseConnection {
@@ -89,9 +87,9 @@ public class DatabaseConnection {
 
     public static final void closeAll() throws SQLException {
         for (final Connection con : ThreadLocalConnection.allConnections) {
-	    if (con != null) {
-            	con.close();
-	    }
+            if (con != null) {
+                con.close();
+            }
         }
     }
 
@@ -102,14 +100,16 @@ public class DatabaseConnection {
         @Override
         protected final Connection initialValue() {
             try {
-                Class.forName("com.mysql.cj.jdbc.Driver"); // touch the mysql driver
+                Class.forName(ServerProperties.getProperty("database.driver", "com.mysql.cj.jdbc.Driver")); // touch the mysql driver
             } catch (final ClassNotFoundException e) {
                 System.err.println("ERROR" + e);
             }
             try {
                 final Connection con = DriverManager.getConnection(
-					"jdbc:mysql://localhost:3306/v111?autoReconnect=true", 
-					"root", "root");
+                        ServerProperties.getProperty("database.url", "jdbc:mysql://localhost:3306/v111?autoReconnect=true"),
+                        ServerProperties.getProperty("database.user", "root"),
+                        ServerProperties.getProperty("database.password", "root")
+                );
                 allConnections.add(con);
                 return con;
             } catch (SQLException e) {
