@@ -3486,7 +3486,6 @@ public class GameConstants {
             case 2221001:
             case 2321001:
             case 22121000: //breath
-            case 22151001:
                 return true;
         }
         return false;
