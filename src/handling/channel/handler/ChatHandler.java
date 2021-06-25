@@ -36,7 +36,7 @@ import tools.packet.CWvsContext;
 public class ChatHandler {
 
     public static final void GeneralChat(final String text, final byte unk, final MapleClient c, final MapleCharacter chr) {
-        if (text.length() > 0 && chr != null && chr.getMap() != null && !CommandProcessor.processCommand(c, text, chr.getBattle() == null ? CommandType.NORMAL : CommandType.POKEMON)) {
+        if (text.length() > 0 && chr != null && chr.getMap() != null && !CommandProcessor.processCommand(c, text, CommandType.NORMAL)) {
             if (!chr.isIntern() && text.length() >= 80) {
                 return;
             }
