@@ -36,9 +36,6 @@ public class RankingWorker {
 
     private final static Map<Integer, List<RankingInformation>> rankings = new HashMap<Integer, List<RankingInformation>>();
     private final static Map<String, Integer> jobCommands = new HashMap<String, Integer>();
-    private final static List<PokemonInformation> pokemon = new ArrayList<PokemonInformation>();
-    private final static List<PokedexInformation> pokemon_seen = new ArrayList<PokedexInformation>();
-    private final static List<PokebattleInformation> pokemon_ratio = new ArrayList<PokebattleInformation>();
 
     public final static Integer getJobCommand(final String job) {
         return jobCommands.get(job);
@@ -52,18 +49,6 @@ public class RankingWorker {
         return rankings.get(job);
     }
 
-    public final static List<PokemonInformation> getPokemonInfo() {
-        return pokemon;
-    }
-
-    public final static List<PokedexInformation> getPokemonCaught() {
-        return pokemon_seen;
-    }
-
-    public final static List<PokebattleInformation> getPokemonRatio() {
-        return pokemon_ratio;
-    }
-
     public final static void run() {
         System.out.println("Loading Rankings::");
         long startTime = System.currentTimeMillis();
@@ -71,12 +56,10 @@ public class RankingWorker {
         try {
             Connection con = DatabaseConnection.getConnection();
             updateRanking(con);
-            updatePokemon(con);
-            updatePokemonRatio(con);
-            updatePokemonCaught(con);
+
         } catch (Exception ex) {
             ex.printStackTrace();
-	    FileoutputUtil.outputFileError(FileoutputUtil.ScriptEx_Log, ex);
+            FileoutputUtil.outputFileError(FileoutputUtil.ScriptEx_Log, ex);
             System.err.println("Could not update rankings");
         }
         System.out.println("Done loading Rankings in " + ((System.currentTimeMillis() - startTime) / 1000) + " seconds :::"); //keep
@@ -117,57 +100,6 @@ public class RankingWorker {
         rs.close();
         charSelect.close();
         ps.close();
-    }
-
-    private static void updatePokemon(Connection con) throws Exception {
-        StringBuilder sb = new StringBuilder("SELECT count(distinct m.id) AS mc, c.name, c.totalWins, c.totalLosses ");
-        sb.append(" FROM characters AS c LEFT JOIN accounts AS a ON c.accountid = a.id");
-        sb.append(" RIGHT JOIN monsterbook AS m ON m.charid = a.id WHERE c.gm = 0 AND a.banned = 0");
-        sb.append(" ORDER BY c.totalWins DESC, c.totalLosses DESC, mc DESC LIMIT 50");
-
-        PreparedStatement charSelect = con.prepareStatement(sb.toString());
-        ResultSet rs = charSelect.executeQuery();
-        int rank = 0; //for "all"
-        while (rs.next()) {
-            rank++;
-            pokemon.add(new PokemonInformation(rs.getString("name"), rs.getInt("totalWins"), rs.getInt("totalLosses"), rs.getInt("mc"), rank));
-        }
-        rs.close();
-        charSelect.close();
-    }
-
-    private static void updatePokemonRatio(Connection con) throws Exception {
-        StringBuilder sb = new StringBuilder("SELECT (c.totalWins / c.totalLosses) AS mc, c.name, c.totalWins, c.totalLosses ");
-        sb.append(" FROM characters AS c LEFT JOIN accounts AS a ON c.accountid = a.id");
-        sb.append(" WHERE c.gm = 0 AND a.banned = 0 AND c.totalWins > 10 AND c.totalLosses > 0");
-        sb.append(" ORDER BY mc DESC, c.totalWins DESC, c.totalLosses ASC LIMIT 50");
-
-        PreparedStatement charSelect = con.prepareStatement(sb.toString());
-        ResultSet rs = charSelect.executeQuery();
-        int rank = 0; //for "all"
-        while (rs.next()) {
-            rank++;
-            pokemon_ratio.add(new PokebattleInformation(rs.getString("name"), rs.getInt("totalWins"), rs.getInt("totalLosses"), rs.getDouble("mc"), rank));
-        }
-        rs.close();
-        charSelect.close();
-    }
-
-    private static void updatePokemonCaught(Connection con) throws Exception {
-        StringBuilder sb = new StringBuilder("SELECT count(distinct m.id) AS mc, c.name ");
-        sb.append(" FROM characters AS c LEFT JOIN accounts AS a ON c.accountid = a.id");
-        sb.append(" RIGHT JOIN monsterbook AS m ON m.charid = a.id WHERE c.gm = 0 AND a.banned = 0");
-        sb.append(" ORDER BY mc DESC LIMIT 50");
-
-        PreparedStatement charSelect = con.prepareStatement(sb.toString());
-        ResultSet rs = charSelect.executeQuery();
-        int rank = 0; //for "all"
-        while (rs.next()) {
-            rank++;
-            pokemon_seen.add(new PokedexInformation(rs.getString("name"), rs.getInt("mc"), rank));
-        }
-        rs.close();
-        charSelect.close();
     }
 
     public final static void loadJobCommands() {
@@ -212,76 +144,9 @@ public class RankingWorker {
             builder.append(" | ");
             builder.append(exp);
             builder.append(" EXP, ");
-	    builder.append(fame);
-	    builder.append(" Fame");
+            builder.append(fame);
+            builder.append(" Fame");
             this.toString = builder.toString(); //Rank 1 : KiDALex - Level 200 Blade Master | 0 EXP, 30000 Fame
-        }
-
-        @Override
-        public String toString() {
-            return toString;
-        }
-    }
-
-    public static class PokemonInformation {
-
-        public String toString;
-
-        public PokemonInformation(String name, int totalWins, int totalLosses, int caught, int rank) {
-            final StringBuilder builder = new StringBuilder("Rank ");
-            builder.append(rank);
-            builder.append(" : #e");
-            builder.append(name);
-            builder.append("#n - #r");
-            builder.append(totalWins);
-            builder.append(" Wins, #b");
-            builder.append(totalLosses);
-            builder.append(" Losses, #k");
-            builder.append(caught);
-            builder.append(" Caught\r\n");
-            this.toString = builder.toString(); //Rank 1 : Phoenix - 200 Wins, 0 Losses, 650 Caught
-        }
-
-        @Override
-        public String toString() {
-            return toString;
-        }
-    }
-
-    public static class PokedexInformation {
-
-        public String toString;
-
-        public PokedexInformation(String name, int caught, int rank) {
-            final StringBuilder builder = new StringBuilder("Rank ");
-            builder.append(rank);
-            builder.append(" : #e");
-            builder.append(name);
-            builder.append("#n - #r");
-            builder.append(caught);
-            builder.append(" Caught\r\n");
-            this.toString = builder.toString(); //Rank 1 : Phoenix - 650 Caught
-        }
-
-        @Override
-        public String toString() {
-            return toString;
-        }
-    }
-
-    public static class PokebattleInformation {
-
-        public String toString;
-
-        public PokebattleInformation(String name, int totalWins, int totalLosses, double caught, int rank) {
-            final StringBuilder builder = new StringBuilder("Rank ");
-            builder.append(rank);
-            builder.append(" : #e");
-            builder.append(name);
-            builder.append("#n - #r");
-            builder.append(caught);
-            builder.append(" Ratio\r\n");
-            this.toString = builder.toString(); //Rank 1 : Phoenix - 200 Wins, 0 Losses, 200 Ratio
         }
 
         @Override
