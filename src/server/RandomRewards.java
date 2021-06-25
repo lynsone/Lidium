@@ -1,9 +1,5 @@
 package server;
 
-import constants.BattleConstants;
-import constants.BattleConstants.PokemonItem;
-import constants.BattleConstants.PItem;
-import constants.BattleConstants.HoldItem;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,8 +9,8 @@ import constants.GameConstants;
 public class RandomRewards {
 
     private static List<Integer> compiledGold = null, compiledSilver = null, compiledFishing = null, compiledPeanut = null,
-	compiledEvent = null, compiledEventC = null, compiledEventB = null, compiledEventA = null, compiledPokemon = null,
-	compiledDrops = null, compiledDropsB = null, compiledDropsA = null, tenPercent = null;
+            compiledEvent = null, compiledEventC = null, compiledEventB = null, compiledEventA = null,
+            compiledDrops = null, compiledDropsB = null, compiledDropsA = null, tenPercent = null;
 
     static {
         // Gold Box
@@ -73,34 +69,29 @@ public class RandomRewards {
 
         returnArray = new ArrayList<Integer>();
 
-        processPokemon(returnArray, BattleConstants.PokemonItem.values());
-        processPokemon(returnArray, BattleConstants.HoldItem.values());
+        returnArray = new ArrayList<Integer>();
 
-        compiledPokemon = returnArray;
+        processRewardsSimple(returnArray, GameConstants.normalDrops);
+
+        compiledDrops = returnArray;
 
         returnArray = new ArrayList<Integer>();
 
-	processRewardsSimple(returnArray, GameConstants.normalDrops);
-	
-	compiledDrops = returnArray;
+        processRewardsSimple(returnArray, GameConstants.rareDrops);
+
+        compiledDropsB = returnArray;
 
         returnArray = new ArrayList<Integer>();
 
-	processRewardsSimple(returnArray, GameConstants.rareDrops);
-	
-	compiledDropsB = returnArray;
+        processRewardsSimple(returnArray, GameConstants.superDrops);
 
-        returnArray = new ArrayList<Integer>();
-
-	processRewardsSimple(returnArray, GameConstants.superDrops);
-	
-	compiledDropsA = returnArray;
+        compiledDropsA = returnArray;
 
         returnArray = new ArrayList<Integer>();
 
         processRewardsSimple(returnArray, GameConstants.tenPercent);
 
-	tenPercent = returnArray;
+        tenPercent = returnArray;
     }
 
     private static void processRewards(final List<Integer> returnArray, final int[] list) {
@@ -124,16 +115,6 @@ public class RandomRewards {
         Collections.shuffle(returnArray);
     }
 
-    private static void processPokemon(final List<Integer> returnArray, final PItem[] list) {
-        for (int i = 0; i < list.length; i++) {
-            PItem lastitem = list[i];
-            for (int j = 0; j < lastitem.getItemChance(); j++) {
-                returnArray.add(lastitem.getId());
-            }
-        }
-        Collections.shuffle(returnArray);
-    }
-
     public static int getGoldBoxReward() {
         return compiledGold.get(Randomizer.nextInt(compiledGold.size()));
     }
@@ -148,10 +129,6 @@ public class RandomRewards {
 
     public static int getPeanutReward() {
         return compiledPeanut.get(Randomizer.nextInt(compiledPeanut.size()));
-    }
-
-    public static int getPokemonReward() {
-        return compiledPokemon.get(Randomizer.nextInt(compiledPokemon.size()));
     }
 
     public static int getEventReward() {
@@ -179,7 +156,7 @@ public class RandomRewards {
     }
 
     public static List<Integer> getTenPercent() {
-	return tenPercent;
+        return tenPercent;
     }
 
     static void load() {
