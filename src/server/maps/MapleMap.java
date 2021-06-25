@@ -137,6 +137,7 @@ public final class MapleMap {
     private MapleNodes nodes;
     private MapleSquadType squad;
     private final Map<String, Integer> environment = new LinkedHashMap<String, Integer>();
+    private boolean docked;
 
     public MapleMap(final int mapid, final int channel, final int returnMapId, final float monsterRate) {
         this.soaring = false;
@@ -159,6 +160,22 @@ public final class MapleMap {
         }
         mapobjects = Collections.unmodifiableMap(objsMap);
         mapobjectlocks = Collections.unmodifiableMap(objlockmap);
+    }
+
+    public void setDocked(boolean docked) {
+        this.docked = docked;
+    }
+
+    public boolean getDocked() {
+        return docked;
+    }
+
+    public MapleMap() {
+        this.mapobjects = null;
+        this.mapobjectlocks = null;
+        this.monsterRate = 0;
+        this.channel = 0;
+        this.mapid = 0;
     }
 
     public final void setSpawns(final boolean fm) {
@@ -484,9 +501,9 @@ public final class MapleMap {
                 if (mesoDropped && droptype != 3 && de.itemId == 0) { //not more than 1 sack of meso
                     continue;
                 }
-				if (de.questid > 0 && chr.getQuestStatus(de.questid) != 1) { 
-					continue; 
-				} 
+                if (de.questid > 0 && chr.getQuestStatus(de.questid) != 1) {
+                    continue;
+                }
                 if (de.itemId / 10000 == 238 && !mob.getStats().isBoss() && chr.getMonsterBook().getLevelByCard(ii.getCardMobId(de.itemId)) >= 2) {
                     continue;
                 }
@@ -522,10 +539,10 @@ public final class MapleMap {
         // Global Drops
         for (final MonsterGlobalDropEntry de : globalEntry) {
             if (Randomizer.nextInt(999999) < de.chance && (de.continent < 0 || (de.continent < 10 && mapid / 100000000 == de.continent) || (de.continent < 100 && mapid / 10000000 == de.continent) || (de.continent < 1000 && mapid / 1000000 == de.continent))) {
-                if (de.questid > 0 && chr.getQuestStatus(de.questid) != 1) { 
-					continue; 
-				} 
-				if (de.itemId == 0) {
+                if (de.questid > 0 && chr.getQuestStatus(de.questid) != 1) {
+                    continue;
+                }
+                if (de.itemId == 0) {
                     chr.modifyCSPoints(1, (int) ((Randomizer.nextInt(cashz) + cashz + cashModifier) * (chr.getStat().cashBuff / 100.0) * chr.getCashMod()), true);
                 } else if (!gDropsDisabled) {
                     if (droptype == 3) {
@@ -798,7 +815,8 @@ public final class MapleMap {
             }
         } else if (mobid / 100000 == 98 && chr.getMapId() / 10000000 == 95 && getAllMonstersThreadsafe().isEmpty()) {
             switch ((chr.getMapId() % 1000) / 100) {
-                case 0, 1, 2, 3, 4 -> chr.getClient().getSession().write(CField.MapEff("monsterPark/clear"));
+                case 0, 1, 2, 3, 4 ->
+                    chr.getClient().getSession().write(CField.MapEff("monsterPark/clear"));
                 case 5 -> {
                     if (chr.getMapId() / 1000000 == 952) {
                         chr.getClient().getSession().write(CField.MapEff("monsterPark/clearF"));
@@ -806,7 +824,8 @@ public final class MapleMap {
                         chr.getClient().getSession().write(CField.MapEff("monsterPark/clear"));
                     }
                 }
-                case 6 -> chr.getClient().getSession().write(CField.MapEff("monsterPark/clearF"));
+                case 6 ->
+                    chr.getClient().getSession().write(CField.MapEff("monsterPark/clearF"));
             }
         }
         if (type != null) {
@@ -1136,7 +1155,8 @@ public final class MapleMap {
     }
 
     /**
-     * Automagically finds a new controller for the given monster from the chars on the map...
+     * Automagically finds a new controller for the given monster from the chars
+     * on the map...
      *
      * @param monster
      */
@@ -1273,7 +1293,8 @@ public final class MapleMap {
     }
 
     /**
-     * returns a monster with the given oid, if no such monster exists returns null
+     * returns a monster with the given oid, if no such monster exists returns
+     * null
      *
      * @param oid
      * @return
@@ -1379,12 +1400,6 @@ public final class MapleMap {
     public final void spawnMonster_sSack(final MapleMonster mob, final Point pos, final int spawnType) {
         mob.setPosition(calcPointBelow(new Point(pos.x, pos.y - 1)));
         spawnMonster(mob, spawnType);
-    }
-
-    public final void spawnMonster_Pokemon(final MapleMonster mob, final Point pos, final int spawnType) {
-        final Point spos = calcPointBelow(new Point(pos.x, pos.y - 1));
-        mob.setPosition(spos);
-        spawnMonster(mob, spawnType, true);
     }
 
     public final void spawnMonsterOnGroundBelow(final MapleMonster mob, final Point pos) {
@@ -1585,12 +1600,14 @@ public final class MapleMap {
                     });
                 }, 2000, 2500);
             }
-            case 4 -> poisonSchedule = tMan.register(() -> {
-                getMapObjectsInRect(mist.getBox(), Collections.singletonList(MapleMapObjectType.PLAYER)).stream().filter(mo -> (mist.makeChanceResult())).map(mo -> ((MapleCharacter) mo)).forEachOrdered(chr -> {
-                    chr.addMP((int) (mist.getSource().getX() * (chr.getStat().getMaxMp() / 100.0)));
-                });
-        }, 2000, 2500);
-            default -> poisonSchedule = null;
+            case 4 ->
+                poisonSchedule = tMan.register(() -> {
+                    getMapObjectsInRect(mist.getBox(), Collections.singletonList(MapleMapObjectType.PLAYER)).stream().filter(mo -> (mist.makeChanceResult())).map(mo -> ((MapleCharacter) mo)).forEachOrdered(chr -> {
+                        chr.addMP((int) (mist.getSource().getX() * (chr.getStat().getMaxMp() / 100.0)));
+                    });
+                }, 2000, 2500);
+            default ->
+                poisonSchedule = null;
         }
         mist.setPoisonSchedule(poisonSchedule);
         mist.setSchedule(tMan.schedule(() -> {
@@ -1910,8 +1927,10 @@ public final class MapleMap {
                 chr.getClient().getSession().write(CField.showEquipEffect(chr.getTeam()));
             }
             switch (mapid) {
-                case 809000101, 809000201 -> chr.getClient().getSession().write(CField.showEquipEffect());
-                case 689000000, 689000010 -> chr.getClient().getSession().write(CField.getCaptureFlags(this));
+                case 809000101, 809000201 ->
+                    chr.getClient().getSession().write(CField.showEquipEffect());
+                case 689000000, 689000010 ->
+                    chr.getClient().getSession().write(CField.getCaptureFlags(this));
             }
         }
         chr.getPets().stream().filter(pet -> (pet.getSummoned())).forEachOrdered(pet -> {
@@ -1991,8 +2010,10 @@ public final class MapleMap {
             if (getNumMonsters() > 0 && (mapid == 280030001 || mapid == 240060201 || mapid == 280030000 || mapid == 240060200 || mapid == 220080001 || mapid == 541020800 || mapid == 541010100)) {
                 String music = "Bgm09/TimeAttack";
                 switch (mapid) {
-                    case 240060200, 240060201 -> music = "Bgm14/HonTale";
-                    case 280030000, 280030001 -> music = "Bgm06/FinalFight";
+                    case 240060200, 240060201 ->
+                        music = "Bgm14/HonTale";
+                    case 280030000, 280030001 ->
+                        music = "Bgm06/FinalFight";
                 }
                 chr.getClient().getSession().write(CField.musicChange(music));
                 //maybe timer too for zak/ht
@@ -2093,7 +2114,8 @@ public final class MapleMap {
                     broadcastMessage(CField.showChaosZakumShrine(spawned, 5));
                 case 3 -> //ht/chaosht
                     broadcastMessage(CField.showChaosHorntailShrine(spawned, 5));
-                default ->      broadcastMessage(CField.showHorntailShrine(spawned, 5));
+                default ->
+                    broadcastMessage(CField.showHorntailShrine(spawned, 5));
             }
             if (spawned) { //both of these together dont go well
                 broadcastMessage(CField.getClock(300)); //5 min
@@ -2171,25 +2193,42 @@ public final class MapleMap {
     public final MapleSquad getSquadByMap() {
         MapleSquadType zz = null;
         switch (mapid) {
-            case 105100400, 105100300 -> zz = MapleSquadType.bossbalrog;
-            case 280030000 -> zz = MapleSquadType.zak;
-            case 280030001 -> zz = MapleSquadType.chaoszak;
-            case 240060200 -> zz = MapleSquadType.horntail;
-            case 240060201 -> zz = MapleSquadType.chaosht;
-            case 270050100 -> zz = MapleSquadType.pinkbean;
-            case 802000111 -> zz = MapleSquadType.nmm_squad;
-            case 802000211 -> zz = MapleSquadType.vergamot;
-            case 802000311 -> zz = MapleSquadType.tokyo_2095;
-            case 802000411 -> zz = MapleSquadType.dunas;
-            case 802000611 -> zz = MapleSquadType.nibergen_squad;
-            case 802000711 -> zz = MapleSquadType.dunas2;
-            case 802000801, 802000802, 802000803 -> zz = MapleSquadType.core_blaze;
-            case 802000821, 802000823 -> zz = MapleSquadType.aufheben;
-            case 211070100, 211070101, 211070110 -> zz = MapleSquadType.vonleon;
-            case 551030200 -> zz = MapleSquadType.scartar;
-            case 271040100 -> zz = MapleSquadType.cygnus;
-default ->  {
-    return null;
+            case 105100400, 105100300 ->
+                zz = MapleSquadType.bossbalrog;
+            case 280030000 ->
+                zz = MapleSquadType.zak;
+            case 280030001 ->
+                zz = MapleSquadType.chaoszak;
+            case 240060200 ->
+                zz = MapleSquadType.horntail;
+            case 240060201 ->
+                zz = MapleSquadType.chaosht;
+            case 270050100 ->
+                zz = MapleSquadType.pinkbean;
+            case 802000111 ->
+                zz = MapleSquadType.nmm_squad;
+            case 802000211 ->
+                zz = MapleSquadType.vergamot;
+            case 802000311 ->
+                zz = MapleSquadType.tokyo_2095;
+            case 802000411 ->
+                zz = MapleSquadType.dunas;
+            case 802000611 ->
+                zz = MapleSquadType.nibergen_squad;
+            case 802000711 ->
+                zz = MapleSquadType.dunas2;
+            case 802000801, 802000802, 802000803 ->
+                zz = MapleSquadType.core_blaze;
+            case 802000821, 802000823 ->
+                zz = MapleSquadType.aufheben;
+            case 211070100, 211070101, 211070110 ->
+                zz = MapleSquadType.vonleon;
+            case 551030200 ->
+                zz = MapleSquadType.scartar;
+            case 271040100 ->
+                zz = MapleSquadType.cygnus;
+            default -> {
+                return null;
             }
         }
         return ChannelServer.getInstance(channel).getMapleSquad(zz);
@@ -2205,26 +2244,44 @@ default ->  {
     public final EventManager getEMByMap() {
         String em = null;
         switch (mapid) {
-            case 105100400 -> em = "BossBalrog_EASY";
-            case 105100300 -> em = "BossBalrog_NORMAL";
-            case 280030000 -> em = "ZakumBattle";
-            case 240060200 -> em = "HorntailBattle";
-            case 280030001 -> em = "ChaosZakum";
-            case 240060201 -> em = "ChaosHorntail";
-            case 270050100 -> em = "PinkBeanBattle";
-            case 802000111 -> em = "NamelessMagicMonster";
-            case 802000211 -> em = "Vergamot";
-            case 802000311 -> em = "2095_tokyo";
-            case 802000411 -> em = "Dunas";
-            case 802000611 -> em = "Nibergen";
-            case 802000711 -> em = "Dunas2";
-            case 802000801, 802000802, 802000803 -> em = "CoreBlaze";
-            case 802000821, 802000823 -> em = "Aufhaven";
-            case 211070100, 211070101, 211070110 -> em = "VonLeonBattle";
-            case 551030200 -> em = "ScarTarBattle";
-            case 271040100 -> em = "CygnusBattle";
-default ->  {
-    return null;
+            case 105100400 ->
+                em = "BossBalrog_EASY";
+            case 105100300 ->
+                em = "BossBalrog_NORMAL";
+            case 280030000 ->
+                em = "ZakumBattle";
+            case 240060200 ->
+                em = "HorntailBattle";
+            case 280030001 ->
+                em = "ChaosZakum";
+            case 240060201 ->
+                em = "ChaosHorntail";
+            case 270050100 ->
+                em = "PinkBeanBattle";
+            case 802000111 ->
+                em = "NamelessMagicMonster";
+            case 802000211 ->
+                em = "Vergamot";
+            case 802000311 ->
+                em = "2095_tokyo";
+            case 802000411 ->
+                em = "Dunas";
+            case 802000611 ->
+                em = "Nibergen";
+            case 802000711 ->
+                em = "Dunas2";
+            case 802000801, 802000802, 802000803 ->
+                em = "CoreBlaze";
+            case 802000821, 802000823 ->
+                em = "Aufhaven";
+            case 211070100, 211070101, 211070110 ->
+                em = "VonLeonBattle";
+            case 551030200 ->
+                em = "ScarTarBattle";
+            case 271040100 ->
+                em = "CygnusBattle";
+            default -> {
+                return null;
             }
         }
         return ChannelServer.getInstance(channel).getEventSM().getEventManager(em);
@@ -2579,7 +2636,6 @@ default ->  {
 
     public final List<MapleCharacter> getCharactersThreadsafe() {
         final List<MapleCharacter> chars = new ArrayList<>();
-
 
         charactersLock.readLock().lock();
         try {
