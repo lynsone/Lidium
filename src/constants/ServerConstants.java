@@ -22,6 +22,7 @@ package constants;
 
 public class ServerConstants {
 //159.89.87.254 
+
     public static boolean TESPIA = false; // true = uses GMS test server, for MSEA it does nothing though
     public static final byte[] Gateway_IP = new byte[]{(byte) 127, (byte) 0, (byte) 0, (byte) 1};
     //public static final byte[] Gateway_IP = new byte[]{(byte) 5, (byte) 180, (byte) 9, (byte) 16};
@@ -85,8 +86,8 @@ public class ServerConstants {
     public static enum CommandType {
 
         NORMAL(0),
-        TRADE(1),
-        POKEMON(2);
+        TRADE(1);
+
         private final int level;
 
         CommandType(int level) {
