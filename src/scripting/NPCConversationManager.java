@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package scripting;
 
-import client.Battler;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Connection;
@@ -43,9 +42,7 @@ import client.inventory.MapleInventoryType;
 import client.SkillFactory;
 import client.SkillEntry;
 import client.MapleStat;
-import constants.BattleConstants;
-import constants.BattleConstants.MobExp;
-import constants.BattleConstants.PokedexEntry;
+
 import server.MapleCarnivalParty;
 import server.Randomizer;
 import server.MapleInventoryManipulator;
@@ -75,15 +72,9 @@ import java.util.Collections;
 import java.util.EnumMap;
 import javax.script.Invocable;
 import server.MapleStatEffect;
-import server.PokemonBattle;
-import server.RankingWorker;
-import server.RankingWorker.PokebattleInformation;
-import server.RankingWorker.PokedexInformation;
-import server.RankingWorker.PokemonInformation;
 import server.SpeedRunner;
 import server.StructItemOption;
 import server.Timer.CloneTimer;
-import server.life.MapleLifeFactory;
 import server.life.MapleMonsterInformationProvider;
 import server.life.MonsterDropEntry;
 import server.maps.Event_PyramidSubway;
@@ -1588,67 +1579,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         return "No drops was returned.";
     }
 
-    public List<PokedexEntry> getAllPokedex() {
-        return BattleConstants.getAllPokedex();
-    }
-
     public String getLeftPadded(final String in, final char padchar, final int length) {
         return StringUtil.getLeftPaddedStr(in, padchar, length);
-    }
-
-    public void preparePokemonBattle(List<Integer> npcTeam, int restrictedLevel) {
-        final int theId = MapleLifeFactory.getRandomNPC();
-        final PokemonBattle wild = new PokemonBattle(getPlayer(), npcTeam, theId, restrictedLevel);
-        getPlayer().changeMap(wild.getMap(), wild.getMap().getPortal(0));
-        getPlayer().setBattle(wild);
-        wild.initiate(getPlayer(), MapleLifeFactory.getNPC(theId));
-    }
-
-    public List<Integer> makeTeam(int lowRange, int highRange, int neededLevel, int restrictedLevel) { //easy = 10 lvls below you to your lvl, normal = 5 lvls below you to 5 lvls above, hard = your lvl to 10 lvls above, hell = bosses that are lower than you
-        // easy/norm/hard = min lvl 10, hell = min lvl 100
-        final List<Integer> ret = new ArrayList<Integer>();
-        int averageLevel = 0, numBattlers = 0;
-        for (Battler b : getPlayer().getBattlers()) {
-            if (b != null) {
-                if (b.getLevel() > averageLevel) {
-                    averageLevel = b.getLevel();
-                }
-                numBattlers++;
-            }
-        }
-        final boolean hell = lowRange == highRange;
-        if (numBattlers < 3 || averageLevel < neededLevel) {
-            return null;
-        }
-        if (averageLevel > restrictedLevel) {
-            averageLevel = restrictedLevel; //cap it
-        }
-        final List<PokedexEntry> pokeEntries = new ArrayList<PokedexEntry>(getAllPokedex());
-        Collections.shuffle(pokeEntries);
-        while (ret.size() < numBattlers) {
-            for (PokedexEntry d : pokeEntries) {
-                if ((d.dummyBattler.getStats().isBoss() && hell) || (!d.dummyBattler.getStats().isBoss() && !hell)) {
-                    if (!hell) {
-                        if (d.dummyBattler.getLevel() <= (averageLevel + highRange) && d.dummyBattler.getLevel() >= (averageLevel + lowRange) && Randomizer.nextInt(numBattlers) == 0) {
-                            ret.add(d.id);
-                            if (ret.size() >= numBattlers) {
-                                break;
-                            }
-                        }
-                    } else if (d.dummyBattler.getFamily().type != MobExp.EASY && d.dummyBattler.getLevel() >= neededLevel && d.dummyBattler.getLevel() <= averageLevel && Randomizer.nextInt(numBattlers) == 0) {
-                        ret.add(d.id);
-                        if (ret.size() >= numBattlers) {
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        return ret;
-    }
-
-    public BattleConstants.HoldItem[] getAllHoldItems() {
-        return BattleConstants.HoldItem.values();
     }
 
     public void handleDivorce() {
@@ -1710,30 +1642,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         getClient().getSession().write(CWvsContext.ultimateExplorer());
     }
 
-    public String getPokemonRanking() {
-        StringBuilder sb = new StringBuilder();
-        for (PokemonInformation pi : RankingWorker.getPokemonInfo()) {
-            sb.append(pi.toString());
-        }
-        return sb.toString();
-    }
-
-    public String getPokemonRanking_Caught() {
-        StringBuilder sb = new StringBuilder();
-        for (PokedexInformation pi : RankingWorker.getPokemonCaught()) {
-            sb.append(pi.toString());
-        }
-        return sb.toString();
-    }
-
-    public String getPokemonRanking_Ratio() {
-        StringBuilder sb = new StringBuilder();
-        for (PokebattleInformation pi : RankingWorker.getPokemonRatio()) {
-            sb.append(pi.toString());
-        }
-        return sb.toString();
-    }
-
     public void sendPendant(boolean b) {
         c.getSession().write(CWvsContext.pendantSlot(b));
     }
@@ -1769,7 +1677,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return false;
         }
     }
-    
+
     /*Start of Custom Features*/
     public void gainAPS(int gain) {
         getPlayer().gainAPS(gain);
