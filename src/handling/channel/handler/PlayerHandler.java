@@ -22,7 +22,6 @@ package handling.channel.handler;
 
 import java.awt.Point;
 import java.util.List;
-
 import client.inventory.Item;
 import client.Skill;
 import client.SkillFactory;
@@ -36,20 +35,14 @@ import client.PlayerStats;
 import client.anticheat.CheatingOffense;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
-import constants.BattleConstants;
-import constants.BattleConstants.PokemonAbility;
-import constants.BattleConstants.PokemonMap;
 import handling.channel.ChannelServer;
 import java.lang.ref.WeakReference;
 import server.events.MapleEvent;
 import server.events.MapleEventType;
-import java.util.Collections;
-import java.util.LinkedList;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
 import server.MaplePortal;
-import server.PokemonBattle;
 import server.Randomizer;
 import server.Timer.CloneTimer;
 import server.events.MapleSnowball.MapleSnowballs;
@@ -1336,29 +1329,7 @@ public class PlayerHandler {
             } else if (!samepos && c.getPlayer().getBuffSource(MapleBuffStat.YELLOW_AURA) == 32120001) { //yellow aura
                 c.getPlayer().getStatForBuff(MapleBuffStat.YELLOW_AURA).applyMonsterBuff(c.getPlayer());
             }
-            final PokemonMap mapp = BattleConstants.getMap(c.getPlayer().getMapId());
-            if (!samepos && c.getPlayer().getBattler(0) != null && mapp != null && !c.getPlayer().isHidden() && !c.getPlayer().hasBlockedInventory() && Randomizer.nextInt(c.getPlayer().getBattler(0).getAbility() == PokemonAbility.Stench ? 20 : (c.getPlayer().getBattler(0).getAbility() == PokemonAbility.Illuminate ? 5 : 10)) == 0) { //1/20 chance of encounter
-                LinkedList<Pair<Integer, Integer>> set = BattleConstants.getMobs(mapp);
-                if (set == null) { // not loaded
-                    return;
-                }
-                Collections.shuffle(set);
-                int resulting = 0;
-                for (Pair<Integer, Integer> i : set) {
-                    if (Randomizer.nextInt(i.right) == 0) { //higher evolutions have lower chance
-                        resulting = i.left;
-                        break;
-                    }
-                }
-                if (resulting > 0) {
-                    final PokemonBattle wild = new PokemonBattle(c.getPlayer(), resulting, mapp);
-                    c.getPlayer().changeMap(wild.getMap(), wild.getMap().getPortal(mapp.portalId));
-                    if (c.getPlayer() != null) { //... ugh hate dcs
-                        c.getPlayer().setBattle(wild);
-                        wild.initiate(c.getPlayer(), mapp);
-                    }
-                }
-            }
+
         }
     }
 
