@@ -106,9 +106,7 @@ public class CommandProcessor {
             case TRADE:
                 c.getPlayer().dropMessage(-2, "Error : " + msg);
                 break;
-            case POKEMON:
-                c.getPlayer().dropMessage(-3, "(..." + msg + "..)");
-                break;
+
         }
 
     }
