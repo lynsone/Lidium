@@ -71,10 +71,7 @@ import tools.packet.CField;
 public class MapleClient implements Serializable {
 
     private static final long serialVersionUID = 9179541993413738569L;
-    public static final byte LOGIN_NOTLOGGEDIN = 0,
-            LOGIN_SERVER_TRANSITION = 1,
-            LOGIN_LOGGEDIN = 2,
-            CHANGE_CHANNEL = 3;
+    public static final byte LOGIN_NOTLOGGEDIN = 0, LOGIN_SERVER_TRANSITION = 1, LOGIN_LOGGEDIN = 2, CHANGE_CHANNEL = 3;
     public static final int DEFAULT_CHARSLOT = 6;
     public static final String CLIENT_KEY = "CLIENT";
     private final transient MapleAESOFB send;
@@ -215,19 +212,18 @@ public class MapleClient implements Serializable {
         return loggedIn && accId >= 0;
     }
 
-    private Calendar getTempBanCalendar(ResultSet rs) throws SQLException {
+    private Calendar getTempBanCalendar(Timestamp ts) {
         Calendar lTempban = Calendar.getInstance();
-        if (rs.getTimestamp("tempban") == null) { // basically if timestamp in db is 0000-00-00
+        if (ts == null) {
             lTempban.setTimeInMillis(0);
-            return lTempban;
+        } else {
+            lTempban.setTimeInMillis(ts.getTime());
         }
         Calendar today = Calendar.getInstance();
-        lTempban.setTimeInMillis(rs.getTimestamp("tempban").getTime());
         if (today.getTimeInMillis() < lTempban.getTimeInMillis()) {
             return lTempban;
         }
 
-        lTempban.setTimeInMillis(0);
         return lTempban;
     }
 
@@ -423,7 +419,10 @@ public class MapleClient implements Serializable {
                         salt2 = rs.getString("salt2");
                         gm = rs.getInt("gm") > 0;
                         greason = rs.getByte("greason");
-                        tempban = getTempBanCalendar(rs);
+                        //tempban = getTempBanCalendar(rs);
+                        Timestamp ts = rs.getTimestamp("tempban");
+                        tempban = getTempBanCalendar(ts);
+
                         gender = rs.getByte("gender");
 
                         final boolean admin = rs.getInt("gm") > 1;
@@ -639,7 +638,7 @@ public class MapleClient implements Serializable {
                     session.close();
                     throw new DatabaseException("Account doesn't exist or is banned");
                 }
-                birthday = rs.getInt("bday");
+                //birthday = rs.getInt("bday");
                 state = rs.getByte("loggedin");
                 if (state == MapleClient.LOGIN_SERVER_TRANSITION || state == MapleClient.CHANGE_CHANNEL) {
                     if (rs.getTimestamp("lastlogin").getTime() + 20000 < System.currentTimeMillis()) { // connecting to chanserver timeout
@@ -959,7 +958,6 @@ public class MapleClient implements Serializable {
             }
 
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM characters WHERE id = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "UPDATE pokemon SET active = 0 WHERE characterid = ?", cid);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM hiredmerch WHERE characterid = ?", cid);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM mts_cart WHERE characterid = ?", cid);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM mts_items WHERE characterid = ?", cid);
