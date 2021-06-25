@@ -115,7 +115,7 @@ public class GameConstants {
         9102328, 9102329, 9102330, 9102331, 9102332, 9102333}; //miracle cube and stuff
     public static final int JAIL = 180000002, MAX_BUFFSTAT = 8;
     public static final int[] blockedSkills = {4341003};
-    public static final String[] RESERVED = {"Rental", "Donor","MapleNews"};
+    public static final String[] RESERVED = {"Rental", "Donor", "MapleNews"};
     public static final String[] stats = {"tuc", "reqLevel", "reqJob", "reqSTR", "reqDEX", "reqINT", "reqLUK", "reqPOP", "cash", "cursed", "success", "setItemID", "equipTradeBlock", "durability", "randOption", "randStat", "masterLevel", "reqSkillLevel", "elemDefault", "incRMAS", "incRMAF", "incRMAI", "incRMAL", "canLevel", "skill", "charmEXP"};
     public static final int[] hyperTele = {310000000, 220000000, 100000000, 250000000, 240000000, 104000000, 103000000, 102000000, 101000000, 120000000, 260000000, 200000000, 230000000};
 
@@ -294,10 +294,10 @@ public class GameConstants {
             case 31001007:
             case 31001008:
                 return 31000004;
-			case 30010183:
-			case 30010184:
-			case 30010186:
-				return 30010110;
+            case 30010183:
+            case 30010184:
+            case 30010186:
+                return 30010110;
         }
         return id;
     }
@@ -452,8 +452,8 @@ public class GameConstants {
                 return MapleWeaponType.KATARA;
             case 35:
                 return MapleWeaponType.MAGIC_ARROW; // can be magic arrow or cards
-			case 36:
-				return MapleWeaponType.CANE;
+            case 36:
+                return MapleWeaponType.CANE;
             case 37:
                 return MapleWeaponType.WAND;
             case 38:
@@ -483,7 +483,7 @@ public class GameConstants {
             case 53:
                 return MapleWeaponType.CANNON;
         }
-		//System.out.println("Found new Weapon: " + cat + ", ItemId: " + itemId);
+        //System.out.println("Found new Weapon: " + cat + ", ItemId: " + itemId);
         return MapleWeaponType.NOT_A_WEAPON;
     }
 
@@ -2522,8 +2522,8 @@ public class GameConstants {
             case 35001002:
             case 35120000:
                 return 1932016;
-			//case 30011109:
-			//	return 1932085;
+            //case 30011109:
+            //	return 1932085;
         }
         if (!isBeginnerJob(sourceid / 10000)) {
             if (sourceid / 10000 == 8000 && sourceid != 80001000) { //todoo clean up
@@ -2825,8 +2825,8 @@ public class GameConstants {
         //first line is always the best
         //but, sometimes it is possible to get second/third line as well
         //may seem like big chance, but it's not as it grabs random potential ID anyway
-		if (newstate == 20) {
-			return (i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 40000 : potentialID >= 30000 && potentialID < 60004); // xml say so
+        if (newstate == 20) {
+            return (i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 40000 : potentialID >= 30000 && potentialID < 60004); // xml say so
         } else if (newstate == 19) {
             return (i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 30000 : potentialID >= 20000 && potentialID < 30000);
         } else if (newstate == 18) {
@@ -2862,21 +2862,21 @@ public class GameConstants {
                 return true;
         }
     }
-	
-	public static int getNebuliteGrade(final int id) {
-		if (id / 10000 != 306) {
-			return -1;
-		}
-		if (id >= 3060000 && id < 3061000) {
-			return 0;
-		} else if (id >= 3061000 && id < 3062000) {
-			return 1;
-		} else if (id >= 3062000 && id < 3063000) {
-			return 2;
-		} else if (id >= 3063000 && id < 3064000) {
-			return 3;
-		}
-		return 4;
+
+    public static int getNebuliteGrade(final int id) {
+        if (id / 10000 != 306) {
+            return -1;
+        }
+        if (id >= 3060000 && id < 3061000) {
+            return 0;
+        } else if (id >= 3061000 && id < 3062000) {
+            return 1;
+        } else if (id >= 3062000 && id < 3063000) {
+            return 2;
+        } else if (id >= 3063000 && id < 3064000) {
+            return 3;
+        }
+        return 4;
     }
 
     public static final boolean isMountItemAvailable(final int mountid, final int jobid) {
@@ -3481,11 +3481,13 @@ public class GameConstants {
     }
 
     public static boolean isMagicChargeSkill(final int skillid) {
+
         switch (skillid) {
             case 2121001: // Big Bang
             case 2221001:
             case 2321001:
-            case 22121000: //breath
+                //case 22121000: //breath
+                //case 22151001:
                 return true;
         }
         return false;
@@ -3522,8 +3524,8 @@ public class GameConstants {
 
     public static int getMPByJob(int job) {
         switch (job) {
-			case 3100: 
-				return 30;
+            case 3100:
+                return 30;
             case 3110:
                 return 50;
             case 3111:
@@ -3531,7 +3533,7 @@ public class GameConstants {
             case 3112:
                 return 120;
         }
-		return 30; // beginner or 3100
+        return 30; // beginner or 3100
     }
     //public static final int[] publicNpcIds = {0};
     //public static final String[] publicNpcs = {"#cNPC#"};
@@ -3548,7 +3550,7 @@ public class GameConstants {
     public static final int ULT_EXPLORER = 111111;
     //codex = -55 slot
     //crafting/gathering are designated as skills(short exp then byte 0 then byte level), same with recipes(integer.max_value skill level)
-    public static final int POKEMON_WINS = 122400;
+
     public static final int ENERGY_DRINK = 122500;
     public static final int HARVEST_TIME = 122501;
     public static final int PENDANT_SLOT = 122700;
