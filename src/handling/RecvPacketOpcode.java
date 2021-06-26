@@ -262,6 +262,7 @@ public enum RecvPacketOpcode implements WritableIntValueHolder {
     PVP_ATTACK,
     PVP_SUMMON,
     PUBLIC_NPC,
+    LINKED_SKILL_SELECT,
     MTS_TAB;
     private short code = -2;
 
