@@ -1248,6 +1248,9 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
             case PAM_SONG:
                 InventoryHandler.PamSong(slea, c);
                 break;
+            case LINKED_SKILL_SELECT:
+                PlayersHandler.ApplyLinkedSkill(slea, c);
+                break;
             case REPORT:
                 PlayersHandler.Report(slea, c);
                 break;

@@ -3563,4 +3563,31 @@ public class GameConstants {
     public static final int PARTY_INVITE = 122901;
     public static final int QUICK_SLOT = 123000;
     public static final int ITEM_TITLE = 124000;
+    
+    public static boolean isValidLinkSkillForJob(int skillID, short jobID) {
+        switch (jobID) {
+            case 2312: //Mercedes
+            case 2311:
+                return skillID == 20021110;
+            case 3112: //Demon Slayer
+            case 3111:
+                return skillID == 30010112;
+            case 532: //Cannoneer
+            case 531:
+                return skillID == 110;
+        }
+        return false;
+    }
+    
+    public static int getRelatedLinkSkill(final int skillID) {
+        switch (skillID) {
+            case 20021110: //merc
+                return 80001040;
+            case 110: //cannon
+                return 80000000;
+            case 30010112://ds
+                return 80000001;         
+        }
+        return 0;
+    }
 }

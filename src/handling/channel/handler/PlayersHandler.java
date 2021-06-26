@@ -37,8 +37,13 @@ import client.inventory.Equip;
 import client.inventory.MapleRing;
 import client.status.MonsterStatus;
 import constants.GameConstants;
+import database.DatabaseConnection;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -1120,5 +1125,52 @@ public class PlayersHandler {
             }
         }
         return false;
+    }
+    
+    public static void ApplyLinkedSkill(LittleEndianAccessor slea, MapleClient c) throws SQLException {
+         final int skillID = slea.readInt();
+         final int characterID = slea.readInt();
+         
+         if(!GameConstants.isValidLinkSkillForJob(skillID, c.getPlayer().getJob())){
+             c.getPlayer().dropMessage(5, "You cannot transfer this link skill yet.");
+             c.getSession().write(CWvsContext.enableActions());
+             return;
+         }
+         
+         final int addSkillID = GameConstants.getRelatedLinkSkill(skillID);
+         if(addSkillID == 0){
+             c.getSession().write(CWvsContext.enableActions());
+             return;
+         }
+         
+         final int accountID = c.getAccID();
+         Connection con = DatabaseConnection.getConnection();
+         PreparedStatement ps = con.prepareStatement("SELECT id FROM characters WHERE id != ? AND accountid = ?");
+         ps.setInt(1, c.getPlayer().getId());
+         ps.setInt(2, accountID);
+         ResultSet rs = ps.executeQuery();
+         
+         List<Integer> receivingCharacters = new ArrayList<>();
+         while(rs.next()){
+             receivingCharacters.add(rs.getInt("id"));
+         }
+         ps.close();
+         
+         for(Integer receivingChar : receivingCharacters){
+             PreparedStatement deleteSkillQuery = con.prepareStatement("DELETE FROM skills WHERE characterid = ? AND skillid = ?");
+             deleteSkillQuery.setInt(1, receivingChar);
+             deleteSkillQuery.setInt(2, addSkillID);
+             deleteSkillQuery.executeUpdate();
+             deleteSkillQuery.close();
+             PreparedStatement addLinkSkills = 
+             con.prepareStatement("INSERT INTO skills (id, characterid, skillid, skilllevel, masterlevel, expiration, victimid) VALUES (NULL, ?, ?, ?, ?, DEFAULT, DEFAULT)");
+             addLinkSkills.setInt(1, receivingChar);
+             addLinkSkills.setInt(2, addSkillID);
+             addLinkSkills.setInt(3, 1);
+             addLinkSkills.setInt(4, 1);
+             addLinkSkills.executeUpdate();
+             addLinkSkills.close();
+         }
+         c.getPlayer().dropMessage(1, "The link skill has been given to all characters in the account.");
     }
 }
