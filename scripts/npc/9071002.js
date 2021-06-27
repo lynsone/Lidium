@@ -34,10 +34,10 @@ function action(mode, type, selection){
             if(cm.canHold(4001514, selection)) {
                 cm.gainItem(4001513, -(10 * selection));
                 cm.gainItem(4001514, selection);
-                cm.sendOk("You have recieved #b" + selection + "#k Zebra Stripe Ticket(s)");
+                cm.sendOk("You have recieved #b" + selection + "#k Zebra Stripe Ticket(s).");
                 cm.dispose();
             }else{
-                cm.sendOk("Please make sure you have enoughe room to hold #b" + selection + " Zebra Striple Ticket(s)");
+                cm.sendOk("Please make sure you have enoughe room to hold #b" + selection + " Zebra Stripe Ticket(s).");
                 cm.dispose();
             }            
         }else{
@@ -49,10 +49,10 @@ function action(mode, type, selection){
             if(cm.canHold(4001516, selection)) {
                 cm.gainItem(4001515, -(10 * selection));
                 cm.gainItem(4001516, selection);
-                cm.sendOk("You have recieved #b" + selection + "#k Leopard Stripe Ticket(s)");
+                cm.sendOk("You have recieved #b" + selection + "#k Leopard Stripe Ticket(s).");
                 cm.dispose();
             }else{
-                cm.sendOk("Please make sure you have enoughe room to hold #b" + selection + " Leopard Striple Ticket(s)");
+                cm.sendOk("Please make sure you have enoughe room to hold #b" + selection + " Leopard Stripe Ticket(s).");
                 cm.dispose();
             }            
         }else{
@@ -64,10 +64,10 @@ function action(mode, type, selection){
             if(cm.canHold(4001522, selection)) {
                 cm.gainItem(4001521, -(10 * selection));
                 cm.gainItem(4001522, selection);
-                cm.sendOk("You have recieved #b" + selection + "#k Tiger Stripe Ticket(s)");
+                cm.sendOk("You have recieved #b" + selection + "#k Tiger Stripe Ticket(s).");
                 cm.dispose();
             }else{
-                cm.sendOk("Please make sure you have enoughe room to hold #b" + selection + " Tiger Striple Ticket(s)");
+                cm.sendOk("Please make sure you have enoughe room to hold #b" + selection + " Tiger Stripe Ticket(s).");
                 cm.dispose();
             }            
         }else{
