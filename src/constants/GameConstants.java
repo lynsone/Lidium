@@ -3590,4 +3590,13 @@ public class GameConstants {
         }
         return 0;
     }
+    
+    public static int[] Blocked_NPC = new int[]{ //list of npc's you dont want to spawn anywhere.
+        //Example 
+        9070006, //Cursed Knight in henesys to test this altough it shud work add w/e ids later to block them from spawning
+    };
+
+    public static int[] getBlockedNpc(){
+        return Blocked_NPC;
+    }
 }
