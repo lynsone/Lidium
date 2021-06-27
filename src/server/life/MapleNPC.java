@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package server.life;
 
 import client.MapleClient;
+import constants.GameConstants;
 import server.MapleShopFactory;
 import server.maps.MapleMapObjectType;
 import tools.packet.CField.NPCPacket;
@@ -45,6 +46,11 @@ public class MapleNPC extends AbstractLoadedMapleLife {
 
     @Override
     public void sendSpawnData(final MapleClient client) {
+        for (int NpcID: GameConstants.getBlockedNpc()){
+            if(NpcID == getId()){
+                return;
+            }
+        }
         if (getId() >= 9901000) {
             return;
         } else {
