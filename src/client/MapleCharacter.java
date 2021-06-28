@@ -539,9 +539,9 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         ret.storage = (MapleStorage) ct.storage;
         ret.cs = (CashShop) ct.cs;
         client.setAccountName(ct.accountname);
-        ret.NxPrepaid = ct.NxPrepaid;
-        ret.maplepoints = ct.MaplePoints;
-        ret.NXCredit = ct.NxCredit;
+        ret.NxPrepaid = ct.nxPrepaid;
+        ret.maplepoints = ct.maplePoints;
+        ret.NXCredit = ct.nxCredit;
         ret.numClones = ct.clonez;
         ret.imps = ct.imps;
         ret.anticheat = (CheatTracker) ct.anticheat;

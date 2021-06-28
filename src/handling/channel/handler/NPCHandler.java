@@ -115,7 +115,7 @@ public class NPCHandler {
     }
 
     public static final void NPCTalk(final LittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        if (chr == null || chr.getMap() == null || chr.getBattle() != null) {
+        if (chr == null || chr.getMap() == null) {
             return;
         }
         final MapleNPC npc = chr.getMap().getNPCByOid(slea.readInt());
