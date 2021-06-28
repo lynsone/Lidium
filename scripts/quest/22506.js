@@ -16,7 +16,7 @@ function start(mode, type, selection) {
 	status--;
     }
     if (status == 0) {
-	qm.sendNext("#b(You ask the Milk Cow to give you some milk.);
+	qm.sendNext("#b(You ask the Milk Cow to give you some milk.");
     } else if (status == 1) {
 	qm.askAcceptDecline("Moo...");
     } else if (status == 2) {

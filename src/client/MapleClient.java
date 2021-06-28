@@ -471,8 +471,19 @@ public class MapleClient implements Serializable {
                                     loggedIn = false;
                                     loginok = 4;
                                 }
-                                if (updatePasswordHash) {
-                                    //put something here i guess
+                                if(updatePasswordHash){                                 
+                                    if(updatePasswordHash){
+                                        PreparedStatement pss = con.prepareStatement("UPDATE `accounts` SET `password` = ?, `salt` = ? WHERE id = ?");
+                                        try {
+                                            final String newSalt = LoginCrypto.makeSalt();
+                                            pss.setString(1, LoginCrypto.makeSaltedSha512Hash(pwd, newSalt));
+                                            pss.setString(2, newSalt);
+                                            pss.setInt(3, accId);
+                                            pss.executeUpdate();
+                                        } finally {
+                                            pss.close();                                         
+                                        }
+                                    }        
                                 }
                             }
                         }
