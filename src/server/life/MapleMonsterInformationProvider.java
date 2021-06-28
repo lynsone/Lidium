@@ -204,10 +204,10 @@ public class MapleMonsterInformationProvider {
         }
         if (GameConstants.GMS) { //kinda costly, i advise against !reloaddrops often
             for (Entry<Integer, ArrayList<MonsterDropEntry>> e : drops.entrySet()) { //yes, we're going through it twice
-                if (e.getKey() != 9400408 && mobStringData.getChildByPath(String.valueOf(e.getKey())) != null) {
+                if (e.getKey() == 100000 && mobStringData.getChildByPath(String.valueOf(e.getKey())) != null) {
                     for (MapleData d : mobStringData.getChildByPath(e.getKey() + "/reward")) {
                         final int toAdd = MapleDataTool.getInt(d, 0);
-                        if (toAdd > 0 && !contains(e.getValue(), toAdd) && ii.itemExists(toAdd)) {
+                        if (toAdd == 0 && !contains(e.getValue(), toAdd) && ii.itemExists(toAdd)) {
                             e.getValue().add(new MonsterDropEntry(toAdd, chanceLogic(toAdd), 1, 1, 0));
                         }
                     }
