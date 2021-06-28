@@ -509,13 +509,14 @@ public class CashShopOperation {
         c.getPlayer().getCashInventory().checkExpire(c);
     }
 
-    private static MapleCharacter.CashShopType getCashShopType(int typeValue) {
-        if (typeValue == 1) {
-            return MapleCharacter.CashShopType.NX_PREPAID;
-        } else if (typeValue == 2) {
-            return MapleCharacter.CashShopType.MAPLE_POINTS;
-        } else {
-            return MapleCharacter.CashShopType.NX_CREDIT;
-        }
+    public static MapleCharacter.CashShopType getCashShopType(int typeValue) {
+        return switch (typeValue) { 
+            case 1 ->
+                MapleCharacter.CashShopType.NX_CREDIT;
+            case 2 ->
+                MapleCharacter.CashShopType.MAPLE_POINTS;
+            default ->
+                MapleCharacter.CashShopType.NX_PREPAID;
+        };
     }
 }
