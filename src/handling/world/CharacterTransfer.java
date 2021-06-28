@@ -70,7 +70,6 @@ public class CharacterTransfer implements Externalizable {
     public List<Integer> finishedAchievements = null, famedcharacters = null, battledaccs = null, extendedSlots = null;
     public List<Item> rebuy = null;
     public final Map<MapleTraitType, Integer> traits = new EnumMap<MapleTraitType, Integer>(MapleTraitType.class);
-    public final List boxed;
     public final Map<CharacterNameAndId, Boolean> buddies = new LinkedHashMap<CharacterNameAndId, Boolean>();
     public final Map<Integer, Object> Quest = new LinkedHashMap<Integer, Object>(); // Questid instead of MapleQuest, as it's huge. Cant be transporting MapleQuest.java
     public Map<Integer, String> InfoQuest;
@@ -81,7 +80,6 @@ public class CharacterTransfer implements Externalizable {
 
     /*End of Custom Feature*/
     public CharacterTransfer() {
-        boxed = new ArrayList();
         finishedAchievements = new ArrayList<Integer>();
         famedcharacters = new ArrayList<Integer>();
         battledaccs = new ArrayList<Integer>();
@@ -156,7 +154,6 @@ public class CharacterTransfer implements Externalizable {
         this.junior2 = chr.getJunior2();
         this.battleshipHP = chr.currentBattleshipHP();
         this.gachexp = chr.getGachExp();
-        this.boxed = chr.getBoxed();
         this.familiars = chr.getFamiliars();
         chr.getCheatTracker().dispose();
         this.anticheat = chr.getCheatTracker();
@@ -234,7 +231,6 @@ public class CharacterTransfer implements Externalizable {
         this.mount_Fatigue = mount.getFatigue();
         this.mount_level = mount.getLevel();
         this.mount_exp = mount.getExp();
-        this.battlers = chr.getBattlers();
         TranferTime = System.currentTimeMillis();
     }
 
@@ -427,11 +423,6 @@ public class CharacterTransfer implements Externalizable {
         this.petStore = new byte[in.readByte()];
         for (int i = 0; i < this.petStore.length; i++) {
             this.petStore[i] = in.readByte();
-        }
-
-        final int boxedsize = in.readShort();
-        for (int i = 0; i < boxedsize; i++) {
-            this.boxed.add(in.readObject());
         }
 
         final int rebsize = in.readShort();
@@ -660,11 +651,6 @@ public class CharacterTransfer implements Externalizable {
         out.writeByte(petStore.length);
         for (int i = 0; i < petStore.length; i++) {
             out.writeByte(petStore[i]);
-        }
-
-        out.writeShort(boxed.size());
-        for (int i = 0; i < boxed.size(); i++) {
-            out.writeObject(boxed.get(i));
         }
 
         out.writeShort(rebuy.size());

@@ -96,24 +96,6 @@ public enum MonsterStatus implements Serializable, Buffstat {
         return i;
     }
 
-    public static final MonsterStatus getBySkill_Pokemon(final int skill) {
-        switch (skill) {
-            case 120:
-                return SEAL;
-            case 121:
-                return DARKNESS;
-            case 123:
-                return STUN;
-            case 125:
-                return POISON;
-            case 126:
-                return SPEED;
-            case 137:
-                return FREEZE;
-        }
-        return null;
-    }
-
     public static final MapleDisease getLinkedDisease(final MonsterStatus skill) {
         switch (skill) {
             case STUN:
