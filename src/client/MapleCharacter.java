@@ -67,6 +67,7 @@ import constants.ServerConstants;
 import constants.ServerConstants.PlayerGMRank;
 import database.DatabaseConnection;
 import database.DatabaseException;
+import handling.cashshop.handler.CashShopOperation;
 import handling.channel.ChannelServer;
 import handling.login.LoginServer;
 import handling.world.CharacterTransfer;
@@ -96,7 +97,6 @@ import scripting.NPCScriptManager;
 import server.MapleAchievements;
 import server.MaplePortal;
 import server.MapleShop;
-import server.life.MapleLifeFactory;
 import server.MapleStatEffect;
 import server.MapleStorage;
 import server.MapleTrade;
@@ -127,7 +127,6 @@ import server.MapleInventoryManipulator;
 import server.MapleStatEffect.CancelEffectAction;
 import server.Timer.BuffTimer;
 import server.Timer.MapTimer;
-import server.life.MapleMonsterStats;
 import server.life.MobSkill;
 import server.life.MobSkillFactory;
 import server.life.PlayerNPC;
@@ -4920,9 +4919,10 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
 
     public void modifyCSPoints(int type, int quantity, boolean show) {
         String strType = "";
+        CashShopType cashShopType = CashShopOperation.getCashShopType(type);
 
-        switch (type) {
-            case 1 -> {
+        switch (cashShopType) {
+            case NX_CREDIT:
                 if (NXCredit + quantity < 0) {
                     if (show) {
                         dropMessage(-1, "You have gained the max maple points. No cash will be awarded.");
@@ -4931,19 +4931,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 }
                 NXCredit += quantity;
                 strType = "NX Credit";
-            }
-            case 2 -> {
-                if (maplepoints + quantity < 0) {
-                    if (show) {
-                        dropMessage(-1, "You have gained the max maple points. No cash will be awarded.");
-                    }
-                    return;
-                }
-                maplepoints += quantity;
-
-                strType = "Maple Points";
-            }
-            case 3 -> {
+                break;
+            case NX_PREPAID:
                 if (NxPrepaid + quantity < 0) {
                     if (show) {
                         dropMessage(-1, "You have gained the max cash. No cash will be awarded.");
@@ -4956,10 +4945,21 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 NxPrepaid += quantity;
                 strType = "NX Prepaid";
 
-            }
-            default -> {
-            }
+                break;
+            case MAPLE_POINTS:
+                if (maplepoints + quantity < 0) {
+                    if (show) {
+                        dropMessage(-1, "You have gained the max maple points. No cash will be awarded.");
+                    }
+                    return;
+                }
+                maplepoints += quantity;
+
+                strType = "Maple Points";
+                break;
+
         }
+
         if (show && quantity != 0) {
             dropMessage(-1, "You have " + (quantity > 0 ? "gained " : "lost ") + quantity + " " + strType);
             //client.getSession().write(EffectPacket.showForeignEffect(20));
@@ -4973,11 +4973,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
     }
 
     public int getCSPoints(CashShopType type) {
-        /*
-            mplew.writeInt(11110); // NX Credit
-            mplew.writeInt(chr.getCSPoints(2)); // MPoint
-            mplew.writeInt(chr.getCSPoints(1)); // NX Prepaid
-         */
 
         return switch (type) {
             case NX_PREPAID -> //1 = NX PREPAID.
