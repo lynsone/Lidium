@@ -78,7 +78,8 @@ public class MapleClient implements Serializable {
     private final transient MapleAESOFB receive;
     private final transient IoSession session;
     private MapleCharacter player;
-    private int channel = 1, accId = -1, world, birthday;
+    private int channel = 1, accId = -1, world;
+    private long birthday;
     private int charslots = DEFAULT_CHARSLOT;
     private boolean loggedIn = false, serverTransition = false;
     private transient Calendar tempban = null;
@@ -649,7 +650,7 @@ public class MapleClient implements Serializable {
                     session.close();
                     throw new DatabaseException("Account doesn't exist or is banned");
                 }
-                //birthday = rs.getInt("bday");
+                birthday = rs.getLong("bday");
                 state = rs.getByte("loggedin");
                 if (state == MapleClient.LOGIN_SERVER_TRANSITION || state == MapleClient.CHANGE_CHANNEL) {
                     if (rs.getTimestamp("lastlogin").getTime() + 20000 < System.currentTimeMillis()) { // connecting to chanserver timeout
@@ -667,7 +668,7 @@ public class MapleClient implements Serializable {
         }
     }
 
-    public final boolean checkBirthDate(final int date) {
+    public final boolean checkBirthDate(final long date) {
         return birthday == date;
     }
 
