@@ -1,7 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package client.messages.commands;
 
 import client.MapleCharacter;
@@ -72,10 +70,8 @@ import tools.StringUtil;
 import tools.packet.CField.NPCPacket;
 import tools.packet.MobPacket;
 
-/**
- *
- * @author Emilyx3
- */
+
+
 public class SuperGMCommand {
 
     public static PlayerGMRank getPlayerLevelRequired() {
@@ -1492,3 +1488,4 @@ public class SuperGMCommand {
         }
     }
 }
+*/

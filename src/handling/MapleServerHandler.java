@@ -60,6 +60,7 @@ import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.IoSession;
 import scripting.NPCScriptManager;
 import server.MTSStorage;
+import server.logging.PacketLogging;
 import tools.FileoutputUtil;
 import tools.HexTool;
 import tools.packet.CField;
@@ -466,10 +467,13 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
             return;
         }
         final short header_num = slea.readShort();
-
-        //final StringBuilder sb = new StringBuilder("Received data :\n");
-        //sb.append(HexTool.toString((byte[]) message)).append("\n").append(HexTool.toStringFromAscii((byte[]) message));
-        //System.out.println(sb.toString());
+        
+        if (PacketLogging.Log_Packet_Receives) {
+            final StringBuilder sb = new StringBuilder("Client to Server: \n");
+            sb.append(HexTool.toString((byte[]) message));
+            sb.append(HexTool.toString((byte[]) message)).append("\n").append(HexTool.toStringFromAscii((byte[]) message));
+            System.out.println(sb.toString());
+        }
         for (final RecvPacketOpcode recv : RecvPacketOpcode.values()) {
             if (recv.getValue() == header_num) {
                 if (recv.NeedsChecking()) {
@@ -523,9 +527,12 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 return;
             }
         }
-        //final StringBuilder sb = new StringBuilder("Received data : (Unhandled)\n");
-        //sb.append(HexTool.toString((byte[]) message)).append("\n").append(HexTool.toStringFromAscii((byte[]) message));
-        //System.out.println(sb.toString());
+        
+        if (PacketLogging.Log_Packet_Unhandled_Receives) {
+            final StringBuilder sb = new StringBuilder("Unhandled received data Packet: [ " + header_num + " ] \n");
+            sb.append(HexTool.toString((byte[]) message)).append("\n").append(HexTool.toStringFromAscii((byte[]) message));
+            System.out.println(sb.toString());
+        }
     }
 
     public static final void handlePacket(final RecvPacketOpcode header, final LittleEndianAccessor slea, final MapleClient c, final boolean cs) throws Exception {

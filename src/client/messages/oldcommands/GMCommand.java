@@ -1,7 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package client.messages.commands;
 
 import client.MapleCharacter;
@@ -36,10 +34,6 @@ import tools.StringUtil;
 import tools.packet.CWvsContext;
 import tools.packet.CWvsContext.InventoryPacket;
 
-/**
- *
- * @author Emilyx3
- */
 public class GMCommand {
 
     public static PlayerGMRank getPlayerLevelRequired() {
@@ -690,3 +684,4 @@ public class GMCommand {
         }
     }
 }
+*/

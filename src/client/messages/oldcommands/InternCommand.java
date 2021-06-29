@@ -1,4 +1,4 @@
-package client.messages.commands;
+/*package client.messages.commands;
 
 import client.MapleCharacter;
 import client.MapleCharacterUtil;
@@ -52,10 +52,6 @@ import tools.Pair;
 import tools.StringUtil;
 import tools.packet.CWvsContext;
 
-/**
- *
- * @author Emilyx3
- */
 public class InternCommand {
 
     public static PlayerGMRank getPlayerLevelRequired() {
@@ -1374,4 +1370,4 @@ public class InternCommand {
             return 1;
         }
     }
-}
+}*/

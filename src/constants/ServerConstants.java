@@ -55,47 +55,5 @@ public class ServerConstants {
     public static final int MTS_MESO = 10000; //mesos needed, GMS = 5000
     public static final String SQL_USER = "root", SQL_PASSWORD = "";
     //master login is only used in GMS: fake account for localhost only
-    //master and master2 is to bypass all accounts passwords only if you are under the IPs below
-
-    public static enum PlayerGMRank {
-
-        NORMAL('@', 0),
-        DONATOR('#', 1),
-        SUPERDONATOR('$', 2),
-        INTERN('%', 3),
-        GM('!', 4),
-        SUPERGM('!', 5),
-        ADMIN('!', 6);
-        private final char commandPrefix;
-        private final int level;
-
-        PlayerGMRank(char ch, int level) {
-            commandPrefix = ch;
-            this.level = level;
-        }
-
-        public char getCommandPrefix() {
-            return commandPrefix;
-        }
-
-        public int getLevel() {
-            return level;
-        }
-    }
-
-    public static enum CommandType {
-
-        NORMAL(0),
-        TRADE(1);
-
-        private final int level;
-
-        CommandType(int level) {
-            this.level = level;
-        }
-
-        public int getType() {
-            return level;
-        }
-    }
+    //master and master2 is to bypass all accounts passwords only if you are under the IPs below   
 }

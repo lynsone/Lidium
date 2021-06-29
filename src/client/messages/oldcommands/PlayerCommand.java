@@ -1,4 +1,4 @@
-package client.messages.commands;
+/*package client.messages.commands;
 
 import client.inventory.Item;
 import server.RankingWorker;
@@ -24,10 +24,7 @@ import tools.FileoutputUtil;
 import tools.StringUtil;
 import tools.packet.CWvsContext;
 
-/**
- *
- * @author Emilyx3
- */
+
 public class PlayerCommand {
 
     public static PlayerGMRank getPlayerLevelRequired() {
@@ -306,7 +303,7 @@ public class PlayerCommand {
     return 1;
     }
     }
-    }*/
+    }
     public static class FM extends CommandExecute {
 
         public int execute(MapleClient c, String[] splitted) {
@@ -320,7 +317,7 @@ public class PlayerCommand {
                 c.getPlayer().dropMessage(5, "You must be over level 10 to use this command.");
                 return 0;
             }
-            if (c.getPlayer().hasBlockedInventory() || c.getPlayer().getMap().getSquadByMap() != null || c.getPlayer().getEventInstance() != null || c.getPlayer().getMap().getEMByMap() != null || c.getPlayer().getMapId() >= 990000000/* || FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit())*/) {
+            if (c.getPlayer().hasBlockedInventory() || c.getPlayer().getMap().getSquadByMap() != null || c.getPlayer().getEventInstance() != null || c.getPlayer().getMap().getEMByMap() != null || c.getPlayer().getMapId() >= 990000000|| FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit())) {
                 c.getPlayer().dropMessage(5, "You may not use this command here.");
                 return 0;
             }
@@ -418,19 +415,6 @@ public class PlayerCommand {
         }
     }
 
-    public static class EnablePic extends CommandExecute{
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            boolean picEnable = c.isPicEnable();
-            picEnable=!picEnable;
-            c.setPicEnable(picEnable);
-            c.getPlayer().dropMessage(-1, "Your PIC has been " + (picEnable?"enabled.":"deactivated."));
-            return 0;
-        }
-        
-    }
-
     public static class Help extends CommandExecute {
 
         public int execute(MapleClient c, String[] splitted) {
@@ -438,16 +422,16 @@ public class PlayerCommand {
             c.getPlayer().dropMessage(5, "@mob < Information on the closest monster >");
             c.getPlayer().dropMessage(5, "@check < Displays various information >");
             c.getPlayer().dropMessage(5, "@fm < Warp to FM >");
-            /*c.getPlayer().dropMessage(5, "@changesecondpass - Change second password, @changesecondpass <current Password> <new password> <Confirm new password> ");*/
+            //c.getPlayer().dropMessage(5, "@changesecondpass - Change second password, @changesecondpass <current Password> <new password> <Confirm new password> ");
             c.getPlayer().dropMessage(5, "@npc < Universal Town Warp / Event NPC>");
             c.getPlayer().dropMessage(5, "@dcash < Universal Cash Item Dropper >");
-            /*if (!GameConstants.GMS) {
+            if (!GameConstants.GMS) {
            
             c.getPlayer().dropMessage(5, "@challenge < playername, or accept/decline or block/unblock >");
-            }*/
+            }
             c.getPlayer().dropMessage(5, "@tsmega < Toggle super megaphone on/off >");
             c.getPlayer().dropMessage(5, "@ea < If you are unable to attack or talk to NPC >");
-            /*c.getPlayer().dropMessage(5, "@clearslot < Cleanup that trash in your inventory >");*/
+            //c.getPlayer().dropMessage(5, "@clearslot < Cleanup that trash in your inventory >");
             c.getPlayer().dropMessage(5, "@ranking < Use @ranking for more details >");
             c.getPlayer().dropMessage(5, "@checkdrop < Use @checkdrop for more details >");
             return 1;
@@ -545,3 +529,4 @@ public class PlayerCommand {
     }
 
 }
+*/

@@ -1,4 +1,4 @@
-package client.messages.commands;
+/*package client.messages.commands;
 
 import java.util.concurrent.ScheduledFuture;
 import client.MapleCharacter;
@@ -21,10 +21,6 @@ import server.Timer.EventTimer;
 import tools.CPUSampler;
 import tools.packet.CWvsContext;
 
-/**
- *
- * @author Emilyx3
- */
 public class AdminCommand {
 
     public static PlayerGMRank getPlayerLevelRequired() {
@@ -231,3 +227,4 @@ public class AdminCommand {
         }
     }
 }
+*/
