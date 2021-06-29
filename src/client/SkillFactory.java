@@ -38,6 +38,7 @@ import provider.MapleDataProviderFactory;
 import provider.MapleDataDirectoryEntry;
 import provider.MapleDataTool;
 import server.Randomizer;
+import server.Start;
 import tools.StringUtil;
 import tools.Triple;
 
@@ -51,110 +52,115 @@ public class SkillFactory {
     private static final Map<Integer, SummonSkillEntry> SummonSkillInformation = new HashMap<Integer, SummonSkillEntry>();
 
     public static void load() {
-        final MapleData delayData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Character.wz")).getData("00002000.img");
-        final MapleData stringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")).getData("Skill.img");
-        final MapleDataProvider datasource = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Skill.wz"));
-        final MapleDataDirectoryEntry root = datasource.getRoot();
-        int del = 0; //buster is 67 but its the 57th one!
-        for (MapleData delay : delayData) {
-            if (!delay.getName().equals("info")) {
-                delays.put(delay.getName(), del);
-                del++;
+        Thread t = new Thread(() -> {
+            long start = System.currentTimeMillis();
+            final MapleData delayData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Character.wz")).getData("00002000.img");
+            final MapleData stringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")).getData("Skill.img");
+            final MapleDataProvider datasource = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Skill.wz"));
+            final MapleDataDirectoryEntry root = datasource.getRoot();
+            int del = 0; //buster is 67 but its the 57th one!
+            for (MapleData delay : delayData) {
+                if (!delay.getName().equals("info")) {
+                    delays.put(delay.getName(), del);
+                    del++;
+                }
             }
-        }
 
-        int skillid;
-        MapleData summon_data;
-        SummonSkillEntry sse;
+            int skillid;
+            MapleData summon_data;
+            SummonSkillEntry sse;
 
-        for (MapleDataFileEntry topDir : root.getFiles()) { // Loop thru jobs
-            if (topDir.getName().length() <= 8) {
-                for (MapleData data : datasource.getData(topDir.getName())) { // Loop thru each jobs
-                    if (data.getName().equals("skill")) {
-                        for (MapleData data2 : data) { // Loop thru each jobs
-                            if (data2 != null) {
-                                skillid = Integer.parseInt(data2.getName());
-                                Skill skil = Skill.loadFromData(skillid, data2, delayData);
-                                List<Integer> job = skillsByJob.get(skillid / 10000);
-                                if (job == null) {
-                                    job = new ArrayList<Integer>();
-                                    skillsByJob.put(skillid / 10000, job);
-                                }
-                                job.add(skillid);
-                                skil.setName(getName(skillid, stringData));
-                                skills.put(skillid, skil);
-
-                                summon_data = data2.getChildByPath("summon/attack1/info");
-                                if (summon_data != null) {
-                                    sse = new SummonSkillEntry();
-                                    sse.type = (byte) MapleDataTool.getInt("type", summon_data, 0);
-                                    sse.mobCount = (byte) (skillid == 33101008 ? 3 : MapleDataTool.getInt("mobCount", summon_data, 1));
-                                    sse.attackCount = (byte) MapleDataTool.getInt("attackCount", summon_data, 1);
-                                    if (summon_data.getChildByPath("range/lt") != null) {
-                                        final MapleData ltd = summon_data.getChildByPath("range/lt");
-                                        sse.lt = (Point) ltd.getData();
-                                        sse.rb = (Point) summon_data.getChildByPath("range/rb").getData();
-                                    } else {
-                                        sse.lt = new Point(-100, -100);
-                                        sse.rb = new Point(100, 100);
+            for (MapleDataFileEntry topDir : root.getFiles()) { // Loop thru jobs
+                if (topDir.getName().length() <= 8) {
+                    for (MapleData data : datasource.getData(topDir.getName())) { // Loop thru each jobs
+                        if (data.getName().equals("skill")) {
+                            for (MapleData data2 : data) { // Loop thru each jobs
+                                if (data2 != null) {
+                                    skillid = Integer.parseInt(data2.getName());
+                                    Skill skil = Skill.loadFromData(skillid, data2, delayData);
+                                    List<Integer> job = skillsByJob.get(skillid / 10000);
+                                    if (job == null) {
+                                        job = new ArrayList<Integer>();
+                                        skillsByJob.put(skillid / 10000, job);
                                     }
-                                    //sse.range = (short) MapleDataTool.getInt("range/r", summon_data, 0);
-                                    sse.delay = MapleDataTool.getInt("effectAfter", summon_data, 0) + MapleDataTool.getInt("attackAfter", summon_data, 0);
-                                    for (MapleData effect : summon_data) {
-                                        if (effect.getChildren().size() > 0) {
-                                            for (final MapleData effectEntry : effect) {
-                                                sse.delay += MapleDataTool.getIntConvert("delay", effectEntry, 0);
+                                    job.add(skillid);
+                                    skil.setName(getName(skillid, stringData));
+                                    skills.put(skillid, skil);
+
+                                    summon_data = data2.getChildByPath("summon/attack1/info");
+                                    if (summon_data != null) {
+                                        sse = new SummonSkillEntry();
+                                        sse.type = (byte) MapleDataTool.getInt("type", summon_data, 0);
+                                        sse.mobCount = (byte) (skillid == 33101008 ? 3 : MapleDataTool.getInt("mobCount", summon_data, 1));
+                                        sse.attackCount = (byte) MapleDataTool.getInt("attackCount", summon_data, 1);
+                                        if (summon_data.getChildByPath("range/lt") != null) {
+                                            final MapleData ltd = summon_data.getChildByPath("range/lt");
+                                            sse.lt = (Point) ltd.getData();
+                                            sse.rb = (Point) summon_data.getChildByPath("range/rb").getData();
+                                        } else {
+                                            sse.lt = new Point(-100, -100);
+                                            sse.rb = new Point(100, 100);
+                                        }
+                                        //sse.range = (short) MapleDataTool.getInt("range/r", summon_data, 0);
+                                        sse.delay = MapleDataTool.getInt("effectAfter", summon_data, 0) + MapleDataTool.getInt("attackAfter", summon_data, 0);
+                                        for (MapleData effect : summon_data) {
+                                            if (effect.getChildren().size() > 0) {
+                                                for (final MapleData effectEntry : effect) {
+                                                    sse.delay += MapleDataTool.getIntConvert("delay", effectEntry, 0);
+                                                }
                                             }
                                         }
+                                        for (MapleData effect : data2.getChildByPath("summon/attack1")) {
+                                            sse.delay += MapleDataTool.getIntConvert("delay", effect, 0);
+                                        }
+                                        SummonSkillInformation.put(skillid, sse);
                                     }
-                                    for (MapleData effect : data2.getChildByPath("summon/attack1")) {
-                                        sse.delay += MapleDataTool.getIntConvert("delay", effect, 0);
-                                    }
-                                    SummonSkillInformation.put(skillid, sse);
                                 }
                             }
                         }
                     }
-                }
-            } else if (topDir.getName().startsWith("Familiar")) {
-                for (MapleData data : datasource.getData(topDir.getName())) {
-                    skillid = Integer.parseInt(data.getName());
-                    FamiliarEntry skil = new FamiliarEntry();
-                    skil.prop = (byte) MapleDataTool.getInt("prop", data, 0);
-                    skil.time = (byte) MapleDataTool.getInt("time", data, 0);
-                    skil.attackCount = (byte) MapleDataTool.getInt("attackCount", data, 1);
-                    skil.targetCount = (byte) MapleDataTool.getInt("targetCount", data, 1);
-                    skil.speed = (byte) MapleDataTool.getInt("speed", data, 1);
-                    skil.knockback = MapleDataTool.getInt("knockback", data, 0) > 0 || MapleDataTool.getInt("attract", data, 0) > 0;
-                    if (data.getChildByPath("lt") != null) {
-                        skil.lt = (Point) data.getChildByPath("lt").getData();
-                        skil.rb = (Point) data.getChildByPath("rb").getData();
+                } else if (topDir.getName().startsWith("Familiar")) {
+                    for (MapleData data : datasource.getData(topDir.getName())) {
+                        skillid = Integer.parseInt(data.getName());
+                        FamiliarEntry skil = new FamiliarEntry();
+                        skil.prop = (byte) MapleDataTool.getInt("prop", data, 0);
+                        skil.time = (byte) MapleDataTool.getInt("time", data, 0);
+                        skil.attackCount = (byte) MapleDataTool.getInt("attackCount", data, 1);
+                        skil.targetCount = (byte) MapleDataTool.getInt("targetCount", data, 1);
+                        skil.speed = (byte) MapleDataTool.getInt("speed", data, 1);
+                        skil.knockback = MapleDataTool.getInt("knockback", data, 0) > 0 || MapleDataTool.getInt("attract", data, 0) > 0;
+                        if (data.getChildByPath("lt") != null) {
+                            skil.lt = (Point) data.getChildByPath("lt").getData();
+                            skil.rb = (Point) data.getChildByPath("rb").getData();
+                        }
+                        if (MapleDataTool.getInt("stun", data, 0) > 0) {
+                            skil.status.add(MonsterStatus.STUN);
+                        }
+                        //if (MapleDataTool.getInt("poison", data, 0) > 0) {
+                        //	status.add(MonsterStatus.POISON);
+                        //}
+                        if (MapleDataTool.getInt("slow", data, 0) > 0) {
+                            skil.status.add(MonsterStatus.SPEED);
+                        }
+                        familiars.put(skillid, skil);
                     }
-                    if (MapleDataTool.getInt("stun", data, 0) > 0) {
-                        skil.status.add(MonsterStatus.STUN);
+                } else if (topDir.getName().startsWith("Recipe")) {
+                    for (MapleData data : datasource.getData(topDir.getName())) {
+                        skillid = Integer.parseInt(data.getName());
+                        CraftingEntry skil = new CraftingEntry(skillid, (byte) MapleDataTool.getInt("incFatigability", data, 0), (byte) MapleDataTool.getInt("reqSkillLevel", data, 0), (byte) MapleDataTool.getInt("incSkillProficiency", data, 0), MapleDataTool.getInt("needOpenItem", data, 0) > 0, MapleDataTool.getInt("period", data, 0));
+                        for (MapleData d : data.getChildByPath("target")) {
+                            skil.targetItems.add(new Triple<Integer, Integer, Integer>(MapleDataTool.getInt("item", d, 0), MapleDataTool.getInt("count", d, 0), MapleDataTool.getInt("probWeight", d, 0)));
+                        }
+                        for (MapleData d : data.getChildByPath("recipe")) {
+                            skil.reqItems.put(MapleDataTool.getInt("item", d, 0), MapleDataTool.getInt("count", d, 0));
+                        }
+                        crafts.put(skillid, skil);
                     }
-                    //if (MapleDataTool.getInt("poison", data, 0) > 0) {
-                    //	status.add(MonsterStatus.POISON);
-                    //}
-                    if (MapleDataTool.getInt("slow", data, 0) > 0) {
-                        skil.status.add(MonsterStatus.SPEED);
-                    }
-                    familiars.put(skillid, skil);
-                }
-            } else if (topDir.getName().startsWith("Recipe")) {
-                for (MapleData data : datasource.getData(topDir.getName())) {
-                    skillid = Integer.parseInt(data.getName());
-                    CraftingEntry skil = new CraftingEntry(skillid, (byte) MapleDataTool.getInt("incFatigability", data, 0), (byte) MapleDataTool.getInt("reqSkillLevel", data, 0), (byte) MapleDataTool.getInt("incSkillProficiency", data, 0), MapleDataTool.getInt("needOpenItem", data, 0) > 0, MapleDataTool.getInt("period", data, 0));
-                    for (MapleData d : data.getChildByPath("target")) {
-                        skil.targetItems.add(new Triple<Integer, Integer, Integer>(MapleDataTool.getInt("item", d, 0), MapleDataTool.getInt("count", d, 0), MapleDataTool.getInt("probWeight", d, 0)));
-                    }
-                    for (MapleData d : data.getChildByPath("recipe")) {
-                        skil.reqItems.put(MapleDataTool.getInt("item", d, 0), MapleDataTool.getInt("count", d, 0));
-                    }
-                    crafts.put(skillid, skil);
                 }
             }
-        }
+            System.out.println("Skill Factory loaded in " + (System.currentTimeMillis() - start) + "ms.");
+        });
+        Start.threads.add(t);
     }
 
     public static List<Integer> getSkillsByJob(final int jobId) {
