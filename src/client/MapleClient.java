@@ -78,8 +78,7 @@ public class MapleClient implements Serializable {
     private final transient MapleAESOFB receive;
     private final transient IoSession session;
     private MapleCharacter player;
-    private int channel = 1, accId = -1, world;
-    private long birthday;
+    private int channel = 1, accId = -1, world, birthday;
     private int charslots = DEFAULT_CHARSLOT;
     private boolean loggedIn = false, serverTransition = false;
     private transient Calendar tempban = null;
@@ -98,6 +97,7 @@ public class MapleClient implements Serializable {
     private final transient Lock npc_mutex = new ReentrantLock();
     private long lastNpcClick = 0;
     private final static Lock login_mutex = new ReentrantLock(true);
+    private boolean isPicEnable=false;
 
     public MapleClient(MapleAESOFB send, MapleAESOFB receive, IoSession session) {
         this.send = send;
@@ -413,7 +413,7 @@ public class MapleClient implements Serializable {
                         final String passhash = rs.getString("password");
                         final String salt = rs.getString("salt");
                         final String oldSession = rs.getString("SessionIP");
-
+                        this.isPicEnable=rs.getBoolean("PicEnabled");
                         accountName = login;
                         accId = rs.getInt("id");
                         secondPassword = rs.getString("2ndpassword");
@@ -426,7 +426,7 @@ public class MapleClient implements Serializable {
 
                         gender = rs.getByte("gender");
 
-                        final boolean admin = rs.getInt("gm") > 1;
+                        //final boolean admin = rs.getInt("gm") > 1;
 
                         if (secondPassword != null && salt2 != null) {
                             secondPassword = LoginCrypto.rand_r(secondPassword);
@@ -650,7 +650,7 @@ public class MapleClient implements Serializable {
                     session.close();
                     throw new DatabaseException("Account doesn't exist or is banned");
                 }
-                birthday = rs.getLong("bday");
+                //birthday = rs.getInt("bday");
                 state = rs.getByte("loggedin");
                 if (state == MapleClient.LOGIN_SERVER_TRANSITION || state == MapleClient.CHANGE_CHANNEL) {
                     if (rs.getTimestamp("lastlogin").getTime() + 20000 < System.currentTimeMillis()) { // connecting to chanserver timeout
@@ -668,7 +668,7 @@ public class MapleClient implements Serializable {
         }
     }
 
-    public final boolean checkBirthDate(final long date) {
+    public final boolean checkBirthDate(final int date) {
         return birthday == date;
     }
 
@@ -1378,5 +1378,39 @@ public class MapleClient implements Serializable {
 
     public boolean isLocalhost() {
         return ServerConstants.Use_Localhost;
+    }
+    public boolean isPicEnable() {
+        return isPicEnable;
+    }
+
+    public boolean setPicEnable(boolean isPicEnable) {
+        this.isPicEnable = isPicEnable;
+        boolean updated = false;
+        Connection con = null;
+        PreparedStatement pst = null;
+        try {
+            con=DatabaseConnection.getConnection();
+            pst = con.prepareStatement("UPDATE accounts set PicEnabled=? WHERE id=?");
+            pst.setBoolean(1, isPicEnable);
+            pst.setInt(2, getAccID());
+            updated = pst.executeUpdate()>0;
+            pst.close();
+            con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            updated = false;
+        }finally{
+            try {
+                if(pst!= null && !pst.isClosed()){
+                    pst.close();
+                }
+                if(con!= null && !con.isClosed()){
+                    con.close();
+                }
+            } catch (Exception e) {
+                //Ignore this :P
+            }
+        }
+        return updated;
     }
 }
