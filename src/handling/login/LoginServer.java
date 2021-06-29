@@ -37,6 +37,7 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import server.ServerProperties;
+import server.Start;
 import tools.Pair;
 
 public class LoginServer {
@@ -82,29 +83,35 @@ public class LoginServer {
     }
 
     public static final void run_startup_configurations() {
-        userLimit = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.login.userlimit"));
-        serverName = ServerProperties.getProperty("net.sf.odinms.login.serverName");
-        eventMessage = ServerProperties.getProperty("net.sf.odinms.login.eventMessage");
-        flag = Byte.parseByte(ServerProperties.getProperty("net.sf.odinms.login.flag"));
-        adminOnly = Boolean.parseBoolean(ServerProperties.getProperty("net.sf.odinms.world.admin", "false"));
-        maxCharacters = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.login.maxCharacters"));
+        Thread t = new Thread(() -> {
+            userLimit = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.login.userlimit"));
+            serverName = ServerProperties.getProperty("net.sf.odinms.login.serverName");
+            eventMessage = ServerProperties.getProperty("net.sf.odinms.login.eventMessage");
+            flag = Byte.parseByte(ServerProperties.getProperty("net.sf.odinms.login.flag"));
+            adminOnly = Boolean.parseBoolean(ServerProperties.getProperty("net.sf.odinms.world.admin", "false"));
+            maxCharacters = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.login.maxCharacters"));
 
-        ByteBuffer.setUseDirectBuffers(false);
-        ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
+            ByteBuffer.setUseDirectBuffers(false);
+            ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
 
-        acceptor = new SocketAcceptor();
-        final SocketAcceptorConfig cfg = new SocketAcceptorConfig();
-        cfg.getSessionConfig().setTcpNoDelay(true);
-        cfg.setDisconnectOnUnbind(true);
-        cfg.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MapleCodecFactory()));
+            acceptor = new SocketAcceptor();
+            final SocketAcceptorConfig cfg = new SocketAcceptorConfig();
+            cfg.getSessionConfig().setTcpNoDelay(true);
+            cfg.setDisconnectOnUnbind(true);
+            cfg.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MapleCodecFactory()));
 
-        try {
-            InetSocketadd = new InetSocketAddress(PORT);
-            acceptor.bind(InetSocketadd, new MapleServerHandler(-1, false), cfg);
-            System.out.println("Listening on port " + PORT + ".");
-        } catch (IOException e) {
-            System.err.println("Binding to port " + PORT + " failed" + e);
-        }
+            try {
+                InetSocketadd = new InetSocketAddress(PORT);
+                acceptor.bind(InetSocketadd, new MapleServerHandler(-1, false), cfg);
+                System.out.println(System.lineSeparator());
+                System.out.print("[SERVER] Login Started -> Listening on port " + PORT + ".");
+                System.out.println(System.lineSeparator());
+            } catch (IOException e) {
+                System.err.println("Binding to port " + PORT + " failed" + e);
+            }
+
+        });
+        Start.threads.add(t);
     }
 
     public static final void shutdown() {
