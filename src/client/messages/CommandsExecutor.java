@@ -26,7 +26,7 @@ public class CommandsExecutor{
         GAMEMASTER('!', 2),
         HEAD_GAMEMASTER('!', 3),
         DEVELOPER('!', 4),       
-        ADMINISTRATOR('!', 4);
+        ADMINISTRATOR('!', 5);
         private char commandPrefix;
         private int level;
 
