@@ -1113,7 +1113,7 @@ public class World {
             }
             if (bDifferentGuild && ch > 0) {
                 mc.getMap().broadcastMessage(mc, CField.loadGuildName(mc), false);
-				mc.getMap().broadcastMessage(mc, CField.loadGuildIcon(mc), false);
+                mc.getMap().broadcastMessage(mc, CField.loadGuildIcon(mc), false);
             }
         }
     }
@@ -1676,10 +1676,10 @@ public class World {
         private final List<ChannelServer> cservs = new ArrayList<ChannelServer>(CHANNELS_PER_THREAD);
 
         public Respawn(Integer[] chs, int c) {
-            StringBuilder s = new StringBuilder("[Respawn Worker] Registered for channels ");
+            StringBuilder s = new StringBuilder();
             for (int i = 1; i <= CHANNELS_PER_THREAD && chs.length >= (c + i); i++) {
                 cservs.add(ChannelServer.getInstance(c + i));
-                s.append(c + i).append(" ");
+                s.append("Respawn Started in Channel").append(c + i).append("\n");
             }
             System.out.println(s.toString());
         }
@@ -1765,9 +1765,9 @@ public class World {
             if (chr.canFish(now)) {
                 chr.doFish(now);
             }
-			if (chr.canDOT(now)) {
-				chr.doDOT();
-			}
+            if (chr.canDOT(now)) {
+                chr.doDOT();
+            }
         }
 
         if (chr.getDiseaseSize() > 0) {
