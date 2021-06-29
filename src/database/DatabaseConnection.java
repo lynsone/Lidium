@@ -82,7 +82,16 @@ public class DatabaseConnection {
     public static final int NO_GENERATED_KEYS = 2;
 
     public static final Connection getConnection() {
-        return con.get();
+        Connection get = con.get();
+        try {
+            if (get.isClosed()) {
+                con.remove();
+                return getConnection();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return get;
     }
 
     public static final void closeAll() throws SQLException {
