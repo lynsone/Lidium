@@ -7,6 +7,8 @@ It is highly recommended that you use Java 16 for this project.
 
 Live instance: http://newbms.org/
 
+v111.1 Client Mod Collection: https://github.com/atnight348/Lidium-Mod
+
 Lidium Development Server: https://discord.gg/deYbTkckBe
 
 Reddit: https://old.reddit.com/r/mapleservers2/
