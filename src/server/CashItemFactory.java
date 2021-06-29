@@ -30,14 +30,17 @@ public class CashItemFactory {
     private final Map<Integer, CashModInfo> itemMods = new HashMap<Integer, CashModInfo>();
     private final Map<Integer, List<Integer>> openBox = new HashMap<>();
     private final MapleDataProvider data = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Etc.wz"));
-    private static List<Integer> blacklist = new ArrayList<>(); 
+    private static List<Integer> blacklist = new ArrayList<>();
 
     public static final CashItemFactory getInstance() {
         return instance;
     }
 
     public void initialize() {
-        try {
+        Thread t = new Thread(() -> {
+
+            long start = System.currentTimeMillis();
+            try {
                 BufferedReader reader = new BufferedReader(new FileReader("CashShopBlackList.ini"));
                 String line = reader.readLine();
                 while (line != null) {
@@ -53,119 +56,122 @@ public class CashItemFactory {
             } catch (IOException | NumberFormatException ex) {
                 System.err.println("Error while loading cash black list.\r\n" + ex.getMessage());
             }
-        final List<MapleData> cccc = data.getData("Commodity.img").getChildren();
-        for (MapleData field : cccc) {
-            final int SN = MapleDataTool.getIntConvert("SN", field, 0);
-            int ID = MapleDataTool.getIntConvert("ItemId", field, 0);
-            final int Count = MapleDataTool.getIntConvert("Count", field, 1);
-            final int Price = MapleDataTool.getIntConvert("Price", field, 0);
-            final int Period = MapleDataTool.getIntConvert("Period", field, 0);
-            final int Gender = MapleDataTool.getIntConvert("Gender", field, 2);
-            final boolean OnSale = MapleDataTool.getIntConvert("OnSale", field, 0) > 0 && Price > 0;
-            
-            if (getBlacklist().contains(ID) || ((Period == 0 && OnSale))) { // Block black listed item from CS
+            final List<MapleData> cccc = data.getData("Commodity.img").getChildren();
+
+            cccc.forEach(field -> {
+                final int SN = MapleDataTool.getIntConvert("SN", field, 0);
+                int ID = MapleDataTool.getIntConvert("ItemId", field, 0);
+                final int Count = MapleDataTool.getIntConvert("Count", field, 1);
+                final int Price = MapleDataTool.getIntConvert("Price", field, 0);
+                final int Period = MapleDataTool.getIntConvert("Period", field, 0);
+                final int Gender = MapleDataTool.getIntConvert("Gender", field, 2);
+                final boolean OnSale = MapleDataTool.getIntConvert("OnSale", field, 0) > 0 && Price > 0;
+                if (getBlacklist().contains(ID) || ((Period == 0 && OnSale))) { // Block black listed item from CS
                     if (!itemMods.containsKey(SN)) {
                         itemMods.put(SN, new CashModInfo(SN, 0, -1, false, ID, 100, false, 0, Gender, 0, 0, 0, 0, 0, 40000));
                     }
                 }
-            
-            final CashItemInfo stats = new CashItemInfo(ID, Count, Price, SN, Period, Gender, OnSale);
-            if (SN > 0) {
-                itemStats.put(SN, stats);
+                final CashItemInfo stats = new CashItemInfo(ID, Count, Price, SN, Period, Gender, OnSale);
+                if (SN > 0) {
+                    itemStats.put(SN, stats);
+                }
+            });
+            final MapleData b = data.getData("CashPackage.img");
+            for (MapleData c : b.getChildren()) {
+                if (c.getChildByPath("SN") == null) {
+                    continue;
+                }
+                final int packageID = Integer.parseInt(c.getName());
+                final List<Integer> packageItems = new ArrayList<Integer>();
+                for (MapleData d : c.getChildByPath("SN").getChildren()) {
+                    try {
+                        packageItems.add(MapleDataTool.getIntConvert(d));
+                    } catch (Exception e) {
+                    }
+                }
+                for (int pi : packageItems) { // Block Cash Package if contain item in black list
+                    if (getBlacklist().contains((itemStats.containsKey(pi) ? itemStats.get(pi).getId() : 0))) {
+                        for (int _SN : getSN(packageID)) {
+                            if (!itemMods.containsKey(_SN)) {
+                                itemMods.put(_SN, new CashModInfo(_SN, 0, -1, false, 0, 100, false, 0, 2, 0, 0, 0, 0, 0, 40000));
+                            }
+                        }
+                    }
+                }
+                itemPackage.put(Integer.parseInt(c.getName()), packageItems);
             }
-        }
-        final MapleData b = data.getData("CashPackage.img");
-        for (MapleData c : b.getChildren()) {
-            if (c.getChildByPath("SN") == null) {
-                continue;
+
+            for (int i = 0; i < getBlacklist().size(); i++) {
+                if (getBlacklist().get(i) / 100000 == 9) {
+                    for (int _SN : getSN(getBlacklist().get(i))) {
+                        if (itemMods.containsKey(_SN)) {
+                            itemMods.put(_SN, new CashModInfo(_SN, 0, -1, false, 0, 100, false, 0, 2, 0, 0, 0, 0, 0, 40000));
+                        }
+                    }
+                }
             }
-        final int packageID = Integer.parseInt(c.getName());
-        final List<Integer> packageItems = new ArrayList<Integer>();
-        for (MapleData d : c.getChildByPath("SN").getChildren()) {
+
             try {
-                packageItems.add(MapleDataTool.getIntConvert(d)); 
-                } catch(Exception e) {                  
-                    }
-        }
-        for (int pi : packageItems) { // Block Cash Package if contain item in black list
-            if (getBlacklist().contains((itemStats.containsKey(pi) ? itemStats.get(pi).getId() : 0))) {
-                for (int _SN : getSN(packageID)) {
-                    if (!itemMods.containsKey(_SN)) {
-                        itemMods.put(_SN, new CashModInfo(_SN, 0, -1, false, 0, 100, false, 0, 2, 0, 0, 0, 0, 0, 40000));
-                    }
-                }
-            }
-        }
-            itemPackage.put(Integer.parseInt(c.getName()), packageItems);
-        }
-        
-        for (int i = 0; i < getBlacklist().size(); i++) { 
-            if (getBlacklist().get(i) / 100000 == 9) {
-                for (int _SN : getSN(getBlacklist().get(i))) {
-                    if (itemMods.containsKey(_SN)) {
-                        itemMods.put(_SN, new CashModInfo(_SN, 0, -1, false, 0, 100, false, 0, 2, 0, 0, 0, 0, 0, 40000));
+                Connection con = DatabaseConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement("SELECT * FROM cashshop_modified_items");
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    CashModInfo ret = new CashModInfo(rs.getInt("serial"), rs.getInt("discount_price"), rs.getInt("mark"), rs.getInt("showup") > 0, rs.getInt("itemid"), rs.getInt("priority"), rs.getInt("package") > 0, rs.getInt("period"), rs.getInt("gender"), rs.getInt("count"), rs.getInt("meso"), rs.getInt("unk_1"), rs.getInt("unk_2"), rs.getInt("unk_3"), rs.getInt("extra_flags"));
+                    itemMods.put(ret.sn, ret);
+                    if (ret.showUp) {
+                        final CashItemInfo cc = itemStats.get(Integer.valueOf(ret.sn));
+                        if (cc != null) {
+                            ret.toCItem(cc); //init
+                        }
                     }
                 }
+                rs.close();
+                ps.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }
 
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM cashshop_modified_items");
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                CashModInfo ret = new CashModInfo(rs.getInt("serial"), rs.getInt("discount_price"), rs.getInt("mark"), rs.getInt("showup") > 0, rs.getInt("itemid"), rs.getInt("priority"), rs.getInt("package") > 0, rs.getInt("period"), rs.getInt("gender"), rs.getInt("count"), rs.getInt("meso"), rs.getInt("unk_1"), rs.getInt("unk_2"), rs.getInt("unk_3"), rs.getInt("extra_flags"));
-                itemMods.put(ret.sn, ret);
-                if (ret.showUp) {
-                    final CashItemInfo cc = itemStats.get(Integer.valueOf(ret.sn));
-                    if (cc != null) {
-                        ret.toCItem(cc); //init
-                    }
-                }
-            }
-            rs.close();
-            ps.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            List<Integer> availableSN = new LinkedList<>();
+            availableSN.add(20001141);
+            availableSN.add(20001142);
+            availableSN.add(20001143);
+            availableSN.add(20001144);
+            availableSN.add(20001145);
+            availableSN.add(20001146);
+            availableSN.add(20001147);
+            openBox.put(5533003, availableSN); // Rainbow Visor Box
 
-        List<Integer> availableSN = new LinkedList<>();
-        availableSN.add(20001141);
-        availableSN.add(20001142);
-        availableSN.add(20001143);
-        availableSN.add(20001144);
-        availableSN.add(20001145);
-        availableSN.add(20001146);
-        availableSN.add(20001147);
-        openBox.put(5533003, availableSN); // Rainbow Visor Box
+            availableSN = new LinkedList<>();
+            availableSN.add(20000462);
+            availableSN.add(20000463);
+            availableSN.add(20000464);
+            availableSN.add(20000465);
+            availableSN.add(20000466);
+            availableSN.add(20000467);
+            availableSN.add(20000468);
+            availableSN.add(20000469);
+            openBox.put(5533000, availableSN); // Korean stuffs..
 
-        availableSN = new LinkedList<>();
-        availableSN.add(20000462);
-        availableSN.add(20000463);
-        availableSN.add(20000464);
-        availableSN.add(20000465);
-        availableSN.add(20000466);
-        availableSN.add(20000467);
-        availableSN.add(20000468);
-        availableSN.add(20000469);
-        openBox.put(5533000, availableSN); // Korean stuffs..
+            availableSN = new LinkedList<>();
+            availableSN.add(20800259);
+            availableSN.add(20800260);
+            availableSN.add(20800263);
+            availableSN.add(20800264);
+            availableSN.add(20800265);
+            availableSN.add(20800267);
+            openBox.put(5533001, availableSN); // Angelic Beam Weapon Box
 
-        availableSN = new LinkedList<>();
-        availableSN.add(20800259);
-        availableSN.add(20800260);
-        availableSN.add(20800263);
-        availableSN.add(20800264);
-        availableSN.add(20800265);
-        availableSN.add(20800267);
-        openBox.put(5533001, availableSN); // Angelic Beam Weapon Box
+            availableSN = new LinkedList<>();
+            availableSN.add(20800270);
+            availableSN.add(20800271);
+            availableSN.add(20800272);
+            availableSN.add(20800273);
+            availableSN.add(20800274);
+            openBox.put(5533002, availableSN); // Chief Knight Weapon Box
+            System.out.println("Cash Item Factory loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
-        availableSN = new LinkedList<>();
-        availableSN.add(20800270);
-        availableSN.add(20800271);
-        availableSN.add(20800272);
-        availableSN.add(20800273);
-        availableSN.add(20800274);
-        openBox.put(5533002, availableSN); // Chief Knight Weapon Box
+        });
+        Start.threads.add(t);
     }
 
     public final CashItemInfo getSimpleItem(int sn) {
@@ -204,7 +210,7 @@ public class CashItemFactory {
     public final int[] getBestItems() {
         return bestItems;
     }
-    
+
     public static List<Integer> getBlacklist() {
         return blacklist;
     }
@@ -212,7 +218,7 @@ public class CashItemFactory {
     public static void setBlacklist(List<Integer> aBlacklist) {
         blacklist = aBlacklist;
     }
-    
+
     private List<Integer> getSN(int ItemId) {
         final List<Integer> SN = new ArrayList<>();
         for (Entry<Integer, CashItemInfo> item : itemStats.entrySet()) {
