@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import database.DatabaseConnection;
+import server.Start;
 
 public class MapleGuildRanking {
 
@@ -39,9 +40,16 @@ public class MapleGuildRanking {
     }
 
     public void load() {
-        if (ranks.isEmpty()) {
-            reload();
-        }
+        Thread t = new Thread(() -> {
+            long start = System.currentTimeMillis();
+
+            if (ranks.isEmpty()) {
+                reload();
+            }
+            System.out.println("Guilds Ranking loaded in " + (System.currentTimeMillis() - start) + "ms.");
+
+        });
+        Start.threads.add(t);
     }
 
     public List<GuildRankingInfo> getRank() {
