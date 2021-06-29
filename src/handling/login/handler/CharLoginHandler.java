@@ -145,7 +145,8 @@ public class CharLoginHandler {
             c.setWorld(server);
             c.setChannel(channel);
             c.getSession().write(LoginPacket.getSecondAuthSuccess(c));
-            c.getSession().write(LoginPacket.getCharList(c.getSecondPassword(), chars, c.getCharacterSlots()));
+            
+            c.getSession().write(LoginPacket.getCharList((c.isPicEnable()?c.getSecondPassword():""), chars, c.getCharacterSlots()));
         } else {
             c.getSession().close();
         }
@@ -463,15 +464,14 @@ public class CharLoginHandler {
     }
 
     public static final void Character_WithoutSecondPassword(final LittleEndianAccessor slea, final MapleClient c, final boolean haspic, final boolean view) {
-        slea.readByte(); // 1?
-        slea.readByte(); // 1?
+        
         final int charId = slea.readInt();
         if (view) {
             c.setChannel(1);
             c.setWorld(slea.readInt());
         }
-        final String currentpw = c.getSecondPassword();
-        if (!c.isLoggedIn() || loginFailCount(c) || (currentpw != null && (!currentpw.equals("") || haspic)) || !c.login_Auth(charId) || ChannelServer.getInstance(c.getChannel()) == null || c.getWorld() != 0) { // TODOO: MULTI WORLDS
+        
+        if (!c.isLoggedIn() || loginFailCount(c) || !c.login_Auth(charId) || ChannelServer.getInstance(c.getChannel()) == null || c.getWorld() != 0) { // TODOO: MULTI WORLDS
             c.getSession().close();
             return;
         }
