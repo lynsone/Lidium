@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import database.DatabaseConnection;
 import java.util.Map.Entry;
 import server.Randomizer;
+import server.Start;
 import tools.Pair;
 
 public class MapleOxQuizFactory {
@@ -39,7 +40,7 @@ public class MapleOxQuizFactory {
     private static final MapleOxQuizFactory instance = new MapleOxQuizFactory();
 
     public MapleOxQuizFactory() {
-	initialize();
+        initialize();
     }
 
     public static MapleOxQuizFactory getInstance() {
@@ -47,29 +48,36 @@ public class MapleOxQuizFactory {
     }
 
     public Entry<Pair<Integer, Integer>, MapleOxQuizEntry> grabRandomQuestion() {
-	final int size = questionCache.size();
-	while(true) {
-	    for (Entry<Pair<Integer, Integer>, MapleOxQuizEntry> oxquiz : questionCache.entrySet()) {
-		if (Randomizer.nextInt(size) == 0) {
-		    return oxquiz;
-		}
-	    }
-	}
+        final int size = questionCache.size();
+        while (true) {
+            for (Entry<Pair<Integer, Integer>, MapleOxQuizEntry> oxquiz : questionCache.entrySet()) {
+                if (Randomizer.nextInt(size) == 0) {
+                    return oxquiz;
+                }
+            }
+        }
     }
 
     private void initialize() {
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM wz_oxdata");
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                questionCache.put(new Pair<Integer, Integer>(rs.getInt("questionset"), rs.getInt("questionid")), get(rs));
+        Thread t = new Thread(() -> {
+            long start = System.currentTimeMillis();
+            try {
+                Connection con = DatabaseConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement("SELECT * FROM wz_oxdata");
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    questionCache.put(new Pair<Integer, Integer>(rs.getInt("questionset"), rs.getInt("questionid")), get(rs));
+                }
+                rs.close();
+                ps.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            rs.close();
-            ps.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            System.out.println("Maple Ox Quiz Factory loaded in " + (System.currentTimeMillis() - start) + "ms.");
+
+        });
+        Start.threads.add(t);
+
     }
 
     private MapleOxQuizEntry get(ResultSet rs) throws SQLException {
