@@ -418,6 +418,19 @@ public class PlayerCommand {
         }
     }
 
+    public static class EnablePic extends CommandExecute{
+
+        @Override
+        public int execute(MapleClient c, String[] splitted) {
+            boolean picEnable = c.isPicEnable();
+            picEnable=!picEnable;
+            c.setPicEnable(picEnable);
+            c.getPlayer().dropMessage(-1, "Your PIC has been " + (picEnable?"enabled.":"deactivated."));
+            return 0;
+        }
+        
+    }
+
     public static class Help extends CommandExecute {
 
         public int execute(MapleClient c, String[] splitted) {
