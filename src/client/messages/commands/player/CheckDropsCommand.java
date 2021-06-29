@@ -4,7 +4,7 @@ import client.MapleClient;
 import client.messages.Command;
 import scripting.NPCScriptManager;
 
-public class DropTableNPCCommand extends Command{
+public class CheckDropsCommand extends Command{
 
     @Override
     public void execute(MapleClient c, String[] splitted) {

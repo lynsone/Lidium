@@ -197,12 +197,19 @@ public class CommandsExecutor{
     private void registerLv0Commands(){
         levelCommandsCursor = new Pair<>((List<String>) new ArrayList<String>(), (List<String>) new ArrayList<String>());
         addCommand("dispose", 0, DisposeCommand.class);
-        addCommand("DropTableNpcCommand", 0, DropTableNPCCommand.class);
+        addCommand("checkdrops", 0, CheckDropsCommand.class);
         addCommand("dex", 0, StatDexCommand.class);
         addCommand("int", 0, StatIntCommand.class);
         addCommand("luk", 0, StatLukCommand.class);
         addCommand("str", 0, StatStrCommand.class);
         addCommand("enablepic", 0, EnablePicCommand.class);
+        addCommand("mob", 0, MobCommand.class);
+        addCommand("clearslot", 0, ClearSlotCommand.class);
+        addCommand("check", 0, CheckCommand.class);
+        addCommand("help", 0, HelpCommand.class);
+        addCommand("ranking", 0, RankingCommand.class);
+        addCommand("togglesmega", 0, ToggleSmegaCommand.class);
+        addCommand("fm", 0, FMCommand.class);
         //addCommand("", 0, Command.class);
         commandsNameDesc.add(levelCommandsCursor);
     }
