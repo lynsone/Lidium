@@ -64,7 +64,6 @@ import client.inventory.MapleImp.ImpFlag;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import constants.ServerConstants;
-import constants.ServerConstants.PlayerGMRank;
 import database.DatabaseConnection;
 import database.DatabaseException;
 import handling.cashshop.handler.CashShopOperation;
@@ -235,6 +234,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
     /*Start of Custom Feature*/
  /*All custom shit declare here*/
     private int reborns, apstorage;
+    private String commandtext;
 
     /*End of Custom Feature*/
     private MapleCharacter(final boolean ChannelServer) {
@@ -3609,20 +3609,24 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         }
     }
 
-    public boolean isSuperGM() {
-        return gmLevel >= PlayerGMRank.SUPERGM.getLevel();
-    }
-
     public boolean isIntern() {
-        return gmLevel >= PlayerGMRank.INTERN.getLevel();
+        return gmLevel >= 1;
     }
-
-    public boolean isGM() {
-        return gmLevel >= PlayerGMRank.GM.getLevel();
+    
+    public boolean isGM(){
+        return gmLevel >= 2;
+    }
+    
+    public boolean isHeadGM() {
+        return gmLevel >= 3;
+    }
+    
+    public boolean isDeveloper() {
+        return gmLevel >= 4;
     }
 
     public boolean isAdmin() {
-        return gmLevel >= PlayerGMRank.ADMIN.getLevel();
+        return gmLevel >= 5;
     }
 
     public int getGMLevel() {
@@ -5467,9 +5471,9 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             case -2 ->
                 client.getSession().write(PlayerShopPacket.shopChat(message, 0)); //0 or what
             case -3 ->
-                client.getSession().write(CField.getChatText(getId(), message, isSuperGM(), 0)); //1 = hide
+                client.getSession().write(CField.getChatText(getId(), message, isHeadGM(), 0)); //1 = hide
             case -4 ->
-                client.getSession().write(CField.getChatText(getId(), message, isSuperGM(), 1)); //1 = hide
+                client.getSession().write(CField.getChatText(getId(), message, isHeadGM(), 1)); //1 = hide
             case -5 ->
                 client.getSession().write(CField.getGameMessage(message, false)); //pink
             case -6 ->
@@ -6267,11 +6271,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
     }
 
     public boolean isStaff() {
-        return this.gmLevel >= ServerConstants.PlayerGMRank.INTERN.getLevel();
-    }
-
-    public boolean isDonator() {
-        return this.gmLevel >= ServerConstants.PlayerGMRank.DONATOR.getLevel();
+        return this.gmLevel >= 1;
     }
 
     // TODO: gvup, vic, lose, draw, VR
@@ -7458,5 +7458,17 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         updateSingleStat(MapleStat.EXP, 0);
         client.getSession().write(CWvsContext.updatePlayerStats(stat, false, this));
     }
-    /*End of Custom Feature*/
+    
+    public void blueMessage(String m){
+        this.dropMessage(6, m);
+    }
+    
+    public void setLastCommandMessage(String text){
+        this.commandtext = text;
+    }
+        
+    public String getLastCommandMessage(){
+        return this.commandtext;
+    }
+    /*End of Custom Feature*/ 
 }

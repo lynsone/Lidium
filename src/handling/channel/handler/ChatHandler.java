@@ -23,8 +23,7 @@ package handling.channel.handler;
 import client.MapleClient;
 import client.MapleCharacter;
 import client.MapleCharacterUtil;
-import client.messages.CommandProcessor;
-import constants.ServerConstants.CommandType;
+import client.messages.CommandsExecutor;
 import handling.channel.ChannelServer;
 import handling.world.MapleMessenger;
 import handling.world.MapleMessengerCharacter;
@@ -35,31 +34,35 @@ import tools.packet.CWvsContext;
 
 public class ChatHandler {
 
-    public static final void GeneralChat(final String text, final byte unk, final MapleClient c, final MapleCharacter chr) {
-        if (text.length() > 0 && chr != null && chr.getMap() != null && !CommandProcessor.processCommand(c, text, CommandType.NORMAL)) {
-            if (!chr.isIntern() && text.length() >= 80) {
+    public static final void GeneralChat(final String text, final byte unk, final MapleClient c, final MapleCharacter chr){
+        if (text.length() > 0 && chr != null && chr.getMap() != null) {
+            if (CommandsExecutor.isCommand(c, text)){
+                CommandsExecutor.getInstance().handle(c, text);
                 return;
             }
-            if (chr.getCanTalk() || chr.isStaff()) {
+            if (!chr.isDeveloper() && text.length() >= 80){
+                return;
+            }
+            if (chr.getCanTalk() || chr.isStaff()){
                 //Note: This patch is needed to prevent chat packet from being broadcast to people who might be packet sniffing.
                 if (chr.isHidden()) {
-                    if (chr.isIntern() && !chr.isSuperGM() && unk == 0) {
+                    if (chr.isIntern() && !chr.isHeadGM() && unk == 0) {
                         chr.getMap().broadcastGMMessage(chr, CField.getChatText(chr.getId(), text, false, (byte) 1), true);
                         if (unk == 0) {
                             chr.getMap().broadcastGMMessage(chr, CWvsContext.serverNotice(2, chr.getName() + " : " + text), true);
                         }
                     } else {
-                        chr.getMap().broadcastGMMessage(chr, CField.getChatText(chr.getId(), text, c.getPlayer().isSuperGM(), unk), true);
+                        chr.getMap().broadcastGMMessage(chr, CField.getChatText(chr.getId(), text, c.getPlayer().isHeadGM(), unk), true);
                     }
                 } else {
                     chr.getCheatTracker().checkMsg();
-                    if (chr.isIntern() && !chr.isSuperGM() && unk == 0) {
+                    if (chr.isIntern() && !chr.isHeadGM() && unk == 0) {
                         chr.getMap().broadcastMessage(CField.getChatText(chr.getId(), text, false, (byte) 1), c.getPlayer().getTruePosition());
                         if (unk == 0) {
                             chr.getMap().broadcastMessage(CWvsContext.serverNotice(2, chr.getName() + " : " + text), c.getPlayer().getTruePosition());
                         }
                     } else {
-                        chr.getMap().broadcastMessage(CField.getChatText(chr.getId(), text, c.getPlayer().isSuperGM(), unk), c.getPlayer().getTruePosition());
+                        chr.getMap().broadcastMessage(CField.getChatText(chr.getId(), text, c.getPlayer().isHeadGM(), unk), c.getPlayer().getTruePosition());
                     }
                 }
                 if (text.equalsIgnoreCase(c.getChannelServer().getServerName() + " rocks")) {

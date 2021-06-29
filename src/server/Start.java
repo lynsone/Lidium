@@ -2,7 +2,6 @@ package server;
 
 import client.SkillFactory;
 import client.inventory.MapleInventoryIdentifier;
-import client.messages.CommandProcessor;
 import constants.ServerConstants;
 import handling.MapleServerHandler;
 import handling.channel.ChannelServer;
@@ -106,7 +105,6 @@ public class Start {
         MapleMonsterInformationProvider.getInstance().addExtra();
         LoginServer.setOn(); //now or later
         System.out.println("[Fully Initialized in " + ((System.currentTimeMillis() - startTime) / 1000) + " seconds]");
-        CommandProcessor.touchClass();
         RankingWorker.run();
     }
 
