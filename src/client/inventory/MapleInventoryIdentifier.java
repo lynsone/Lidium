@@ -93,7 +93,7 @@ public class MapleInventoryIdentifier implements Serializable {
             }
             rs.close();
             ps.close();
-
+	    con.close();
             for (int i = 0; i < ids.length; i++) {
                 if (ids[i] > ret) {
                     ret = ids[i];
