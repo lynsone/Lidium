@@ -50,19 +50,24 @@ public class RankingWorker {
     }
 
     public final static void run() {
-        System.out.println("Loading Rankings::");
-        long startTime = System.currentTimeMillis();
-        loadJobCommands();
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            updateRanking(con);
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            FileoutputUtil.outputFileError(FileoutputUtil.ScriptEx_Log, ex);
-            System.err.println("Could not update rankings");
-        }
-        System.out.println("Done loading Rankings in " + ((System.currentTimeMillis() - startTime) / 1000) + " seconds :::"); //keep
+        Thread t = new Thread(() -> {
+            long startTime = System.currentTimeMillis();
+            loadJobCommands();
+            try {
+                Connection con = DatabaseConnection.getConnection();
+                updateRanking(con);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                FileoutputUtil.outputFileError(FileoutputUtil.ScriptEx_Log, ex);
+                System.err.println("Could not update rankings");
+            }
+            System.out.println("Ranking Worker loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
+
+        });
+        Start.threads.add(t);
+
     }
 
     private static void updateRanking(Connection con) throws Exception {
