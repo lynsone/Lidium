@@ -48,6 +48,7 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import server.MapleStatEffect;
+import server.Start;
 import tools.packet.CField;
 import tools.data.MaplePacketLittleEndianWriter;
 import tools.packet.CWvsContext;
@@ -151,15 +152,15 @@ public class MapleGuild implements java.io.Serializable {
                         }
                     }
                 } else {
-		    if (gRank == 1) {
-			gRank = 2;
-			gFix = 2;
-		    }
-		    if (aRank < 3) {
-			aRank = 3;
-			aFix = 3;
-		    }
-		}
+                    if (gRank == 1) {
+                        gRank = 2;
+                        gFix = 2;
+                    }
+                    if (aRank < 3) {
+                        aRank = 3;
+                        aFix = 3;
+                    }
+                }
                 members.add(new MapleGuildCharacter(cid, rs.getShort("level"), rs.getString("name"), (byte) -1, rs.getInt("job"), gRank, rs.getInt("guildContribution"), aRank, guildid, false));
             } while (rs.next());
             rs.close();
@@ -207,15 +208,15 @@ public class MapleGuild implements java.io.Serializable {
             ps.setInt(1, guildid);
             rs = ps.executeQuery();
             while (rs.next()) {
-		int sid = rs.getInt("skillid");
-		if (sid < 91000000) { //hack
-		    rs.close();
-		    ps.close();
+                int sid = rs.getInt("skillid");
+                if (sid < 91000000) { //hack
+                    rs.close();
+                    ps.close();
                     System.err.println("Skill " + sid + " is in guild " + id + ".  Impossible... guild is disbanding.");
                     writeToDB(true);
                     proper = false;
                     return;
-		}
+                }
                 guildSkills.put(sid, new MapleGuildSkill(sid, rs.getInt("level"), rs.getLong("timestamp"), rs.getString("purchaser"), "")); //activators not saved
             }
             rs.close();
@@ -231,38 +232,43 @@ public class MapleGuild implements java.io.Serializable {
     public boolean isProper() {
         return proper;
     }
-	
 
     public static final void loadAll() {
-        Map<Integer, Map<Integer, MapleBBSReply>> replies = new LinkedHashMap<Integer, Map<Integer, MapleBBSReply>>();
-
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM bbs_replies");
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                final int tID = rs.getInt("threadid");
-                Map<Integer, MapleBBSReply> reply = replies.get(tID);
-                if (reply == null) {
-                    reply = new HashMap<Integer, MapleBBSReply>();
-                    replies.put(tID, reply);
+        Thread t = new Thread(() -> {
+            long start = System.currentTimeMillis();
+            Map<Integer, Map<Integer, MapleBBSReply>> replies = new LinkedHashMap<Integer, Map<Integer, MapleBBSReply>>();
+            try {
+                Connection con = DatabaseConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement("SELECT * FROM bbs_replies");
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    final int tID = rs.getInt("threadid");
+                    Map<Integer, MapleBBSReply> reply = replies.get(tID);
+                    if (reply == null) {
+                        reply = new HashMap<Integer, MapleBBSReply>();
+                        replies.put(tID, reply);
+                    }
+                    reply.put(reply.size(), new MapleBBSReply(reply.size(), rs.getInt("postercid"), rs.getString("content"), rs.getLong("timestamp")));
                 }
-                reply.put(reply.size(), new MapleBBSReply(reply.size(), rs.getInt("postercid"), rs.getString("content"), rs.getLong("timestamp")));
+                rs.close();
+                ps.close();
+                ps = con.prepareStatement("SELECT guildid FROM guilds");
+                rs = ps.executeQuery();
+                while (rs.next()) {
+                    World.Guild.addLoadedGuild(new MapleGuild(rs.getInt("guildid"), replies));
+                }
+                rs.close();
+                ps.close();
+            } catch (SQLException se) {
+                System.err.println("unable to read guild information from sql");
+                se.printStackTrace();
             }
-            rs.close();
-            ps.close();
-            ps = con.prepareStatement("SELECT guildid FROM guilds");
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                World.Guild.addLoadedGuild(new MapleGuild(rs.getInt("guildid"), replies));
-            }
-            rs.close();
-            ps.close();
-        } catch (SQLException se) {
-            System.err.println("unable to read guild information from sql");
-            se.printStackTrace();
-        }
+            System.out.println("Guilds loaded in " + (System.currentTimeMillis() - start) + "ms.");
+
+        });
+        Start.threads.add(t);
     }
+
     public static final void loadAll(Object toNotify) {
         Map<Integer, Map<Integer, MapleBBSReply>> replies = new LinkedHashMap<Integer, Map<Integer, MapleBBSReply>>();
 
@@ -281,18 +287,18 @@ public class MapleGuild implements java.io.Serializable {
             }
             rs.close();
             ps.close();
-	    boolean cont = false;
+            boolean cont = false;
             ps = con.prepareStatement("SELECT guildid FROM guilds");
             rs = ps.executeQuery();
             while (rs.next()) {
                 GuildLoad.QueueGuildForLoad(rs.getInt("guildid"), replies);
-		cont = true;
+                cont = true;
             }
             rs.close();
             ps.close();
-	    if (!cont) {
-		return;
-	    }
+            if (!cont) {
+                return;
+            }
         } catch (SQLException se) {
             System.err.println("unable to read guild information from sql");
             se.printStackTrace();
@@ -388,7 +394,7 @@ public class MapleGuild implements java.io.Serializable {
                     pse.close();
                     ps.close();
                 }
-		if (changed_skills) {
+                if (changed_skills) {
                     ps = con.prepareStatement("DELETE FROM guildskills WHERE guildid = ?");
                     ps.setInt(1, id);
                     ps.execute();
@@ -404,15 +410,14 @@ public class MapleGuild implements java.io.Serializable {
                         ps.execute();
                     }
                     ps.close();
-		}
-		changed_skills = false;
+                }
+                changed_skills = false;
                 changed = false;
             } else {
                 PreparedStatement ps = con.prepareStatement("DELETE FROM bbs_threads WHERE guildid = ?");
                 ps.setInt(1, id);
                 ps.execute();
                 ps.close();
-
 
                 ps = con.prepareStatement("DELETE FROM bbs_replies WHERE guildid = ?");
                 ps.setInt(1, id);
@@ -428,7 +433,6 @@ public class MapleGuild implements java.io.Serializable {
                 ps.setInt(1, id);
                 ps.executeUpdate();
                 ps.close();
-
 
                 if (allianceid > 0) {
                     final MapleGuildAlliance alliance = World.Alliance.getAlliance(allianceid);
@@ -739,7 +743,7 @@ public class MapleGuild implements java.io.Serializable {
 
                     bDirty = true;
 
-                    gainGP(mgc.getGuildContribution() > 0 ? -mgc.getGuildContribution() : -50); 
+                    gainGP(mgc.getGuildContribution() > 0 ? -mgc.getGuildContribution() : -50);
                     if (mgc.isOnline()) {
                         World.Guild.setGuildAndRank(cid, 0, 5, 0, 5);
                     } else {
@@ -818,12 +822,12 @@ public class MapleGuild implements java.io.Serializable {
     public final void changeGuildLeader(final int cid) {
         if (changeRank(cid, 1) && changeRank(leader, 2)) {
             if (allianceid > 0) {
-		int aRank = getMGC(leader).getAllianceRank();
-		if (aRank == 1) {
-		    World.Alliance.changeAllianceLeader(allianceid, cid, true);
-		} else {
+                int aRank = getMGC(leader).getAllianceRank();
+                if (aRank == 1) {
+                    World.Alliance.changeAllianceLeader(allianceid, cid, true);
+                } else {
                     changeARank(cid, aRank);
-		}
+                }
                 changeARank(leader, 3);
             }
             broadcast(GuildPacket.guildLeaderChanged(id, leader, cid, allianceid));
@@ -937,12 +941,12 @@ public class MapleGuild implements java.io.Serializable {
         if (capacity >= (trueMax ? 200 : 100) || ((capacity + 5) > (trueMax ? 200 : 100))) {
             return false;
         }
-	if (trueMax && gp < 25000) {
-	    return false;
-	}
-	if (trueMax && gp - 25000 < GameConstants.getGuildExpNeededForLevel(getLevel() - 1)) {
-	    return false;
-	}
+        if (trueMax && gp < 25000) {
+            return false;
+        }
+        if (trueMax && gp - 25000 < GameConstants.getGuildExpNeededForLevel(getLevel() - 1)) {
+            return false;
+        }
         capacity += 5;
         broadcast(GuildPacket.guildCapacityChange(this.id, this.capacity));
 
@@ -982,9 +986,9 @@ public class MapleGuild implements java.io.Serializable {
                 if (mg.isOnline()) {
                     World.Guild.setGuildAndRank(cid, this.id, mg.getGuildRank(), mg.getGuildContribution(), mg.getAllianceRank());
                 } else {
-                    setOfflineGuildStatus(this.id, (byte)mg.getGuildRank(), mg.getGuildContribution(), (byte) mg.getAllianceRank(), cid);
+                    setOfflineGuildStatus(this.id, (byte) mg.getGuildRank(), mg.getGuildContribution(), (byte) mg.getAllianceRank(), cid);
                 }
-		broadcast(GuildPacket.guildContribution(id, cid, mg.getGuildContribution()));
+                broadcast(GuildPacket.guildContribution(id, cid, mg.getGuildContribution()));
             }
         }
         gp += amount;
@@ -1035,12 +1039,12 @@ public class MapleGuild implements java.io.Serializable {
             ourSkill.purchaser = name;
             ourSkill.activator = name;
         }
-	if (skillid.getPeriod() <= 0) {
-	    ourSkill.timestamp = -1L;
-	} else {
+        if (skillid.getPeriod() <= 0) {
+            ourSkill.timestamp = -1L;
+        } else {
             ourSkill.timestamp = System.currentTimeMillis() + (skillid.getPeriod() * 60000L);
-	}
-	changed_skills = true;
+        }
+        changed_skills = true;
         gainGP(1000, true, cid);
         broadcast(GuildPacket.guildSkillPurchased(id, skill, ourSkill.level, ourSkill.timestamp, name, name));
         return true;
@@ -1150,7 +1154,7 @@ public class MapleGuild implements java.io.Serializable {
     }
 
     public boolean hasSkill(int id) {
-	return guildSkills.containsKey(id);
+        return guildSkills.containsKey(id);
     }
 
     public static void setOfflineGuildStatus(int guildid, byte guildrank, int contribution, byte alliancerank, int cid) {
