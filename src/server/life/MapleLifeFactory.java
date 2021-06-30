@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import provider.MapleData;
@@ -37,6 +38,7 @@ import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import provider.MapleDataType;
 import server.Randomizer;
+import server.Start;
 import tools.Pair;
 import tools.StringUtil;
 
@@ -75,41 +77,46 @@ public class MapleLifeFactory {
     }
 
     public static final void loadQuestCounts() {
-        if (questCount.size() > 0) {
-            return;
-        }
-        for (MapleDataDirectoryEntry mapz : data.getRoot().getSubdirectories()) {
-            if (mapz.getName().equals("QuestCountGroup")) {
-                for (MapleDataFileEntry entry : mapz.getFiles()) {
-                    final int id = Integer.parseInt(entry.getName().substring(0, entry.getName().length() - 4));
-                    MapleData dat = data.getData("QuestCountGroup/" + entry.getName());
-                    if (dat != null && dat.getChildByPath("info") != null) {
-                        List<Integer> z = new ArrayList<Integer>();
-                        for (MapleData da : dat.getChildByPath("info")) {
-                            z.add(MapleDataTool.getInt(da, 0));
+        Thread t = new Thread(() -> {
+            long start = System.currentTimeMillis();
+            if (questCount.size() > 0) {
+                return;
+            }
+            for (MapleDataDirectoryEntry mapz : data.getRoot().getSubdirectories()) {
+                if (mapz.getName().equals("QuestCountGroup")) {
+                    for (MapleDataFileEntry entry : mapz.getFiles()) {
+                        final int id = Integer.parseInt(entry.getName().substring(0, entry.getName().length() - 4));
+                        MapleData dat = data.getData("QuestCountGroup/" + entry.getName());
+                        if (dat != null && dat.getChildByPath("info") != null) {
+                            List<Integer> z = new ArrayList<Integer>();
+                            for (MapleData da : dat.getChildByPath("info")) {
+                                z.add(MapleDataTool.getInt(da, 0));
+                            }
+                            questCount.put(id, z);
+                        } else {
+                            System.out.println("null questcountgroup");
                         }
-                        questCount.put(id, z);
-                    } else {
-                        System.out.println("null questcountgroup");
                     }
                 }
             }
-        }
-        for (MapleData c : npcStringData) {
-            int nid = Integer.parseInt(c.getName());
-            String n = StringUtil.getLeftPaddedStr(nid + ".img", '0', 11);
-            try {
-                if (npcData.getData(n) != null) {//only thing we really have to do is check if it exists. if we wanted to, we could get the script as well :3
-                    String name = MapleDataTool.getString("name", c, "MISSINGNO");
-                    if (name.contains("Maple TV") || name.contains("Baby Moon Bunny")) {
-                        continue;
+            for (Iterator<MapleData> it = npcStringData.iterator(); it.hasNext();) {
+                MapleData c = it.next();
+                int nid = Integer.parseInt(c.getName());
+                String n = StringUtil.getLeftPaddedStr(nid + ".img", '0', 11);
+                try {
+                    if (npcData.getData(n) != null) {//only thing we really have to do is check if it exists. if we wanted to, we could get the script as well :3
+                        String name = MapleDataTool.getString("name", c, "MISSINGNO");
+                        if (name.contains("Maple TV") || name.contains("Baby Moon Bunny")) {
+                            continue;
+                        }
+                        npcNames.put(nid, name);
                     }
-                    npcNames.put(nid, name);
+                } catch (Exception e) { //swallow, don't add if
                 }
-            } catch (NullPointerException e) {
-            } catch (RuntimeException e) { //swallow, don't add if 
             }
-        }
+            System.out.println("Quest count loaded in " + (System.currentTimeMillis() - start) + "ms.");
+        });
+        Start.threads.add(t);
     }
 
     public static final List<Integer> getQuestCount(final int id) {
