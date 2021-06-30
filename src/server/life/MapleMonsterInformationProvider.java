@@ -39,6 +39,7 @@ import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import server.MapleItemInformationProvider;
+import server.Start;
 import server.StructFamiliar;
 
 public class MapleMonsterInformationProvider {
@@ -58,6 +59,8 @@ public class MapleMonsterInformationProvider {
     }
 
     public void load() {
+
+        long start = System.currentTimeMillis();
         PreparedStatement ps = null;
         ResultSet rs = null;
 
@@ -69,13 +72,13 @@ public class MapleMonsterInformationProvider {
             while (rs.next()) {
                 globaldrops.add(
                         new MonsterGlobalDropEntry(
-                        rs.getInt("itemid"),
-                        rs.getInt("chance"),
-                        rs.getInt("continent"),
-                        rs.getByte("dropType"),
-                        rs.getInt("minimum_quantity"),
-                        rs.getInt("maximum_quantity"),
-                        rs.getInt("questid")));
+                                rs.getInt("itemid"),
+                                rs.getInt("chance"),
+                                rs.getInt("continent"),
+                                rs.getByte("dropType"),
+                                rs.getInt("minimum_quantity"),
+                                rs.getInt("maximum_quantity"),
+                                rs.getInt("questid")));
             }
             rs.close();
             ps.close();
@@ -85,7 +88,7 @@ public class MapleMonsterInformationProvider {
             rs = ps.executeQuery();
             while (rs.next()) {
                 if (!mobIds.contains(rs.getInt("dropperid"))) {
-                    loadDrop(rs.getInt("dropperid"));
+                    loadDrop(rs.getInt("dropperid")); // this is in a thread.
                     mobIds.add(rs.getInt("dropperid"));
                 }
             }
@@ -102,6 +105,8 @@ public class MapleMonsterInformationProvider {
             } catch (SQLException ignore) {
             }
         }
+        System.out.println("MOBS loaded in " + (System.currentTimeMillis() - start) + "ms.");
+
     }
 
     public ArrayList<MonsterDropEntry> retrieveDrop(final int monsterId) {
@@ -109,6 +114,7 @@ public class MapleMonsterInformationProvider {
     }
 
     private void loadDrop(final int monsterId) {
+
         final ArrayList<MonsterDropEntry> ret = new ArrayList<MonsterDropEntry>();
 
         PreparedStatement ps = null;
@@ -159,61 +165,68 @@ public class MapleMonsterInformationProvider {
             }
         }
         drops.put(Integer.valueOf(monsterId), ret);
+
     }
 
     public void addExtra() {
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        for (Entry<Integer, ArrayList<MonsterDropEntry>> e : drops.entrySet()) {
-            for (int i = 0; i < e.getValue().size(); i++) {
-                if (e.getValue().get(i).itemId != 0 && !ii.itemExists(e.getValue().get(i).itemId)) {
-                    e.getValue().remove(i);
+        Thread t = new Thread(() -> {
+            long start = System.currentTimeMillis();
+            final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+            for (Entry<Integer, ArrayList<MonsterDropEntry>> e : drops.entrySet()) {
+                for (int i = 0; i < e.getValue().size(); i++) {
+                    if (e.getValue().get(i).itemId != 0 && !ii.itemExists(e.getValue().get(i).itemId)) {
+                        e.getValue().remove(i);
+                    }
                 }
-            }
-            final MapleMonsterStats mons = MapleLifeFactory.getMonsterStats(e.getKey());
-            Integer item = ii.getItemIdByMob(e.getKey());
-            if (item != null && item.intValue() > 0) {
-                e.getValue().add(new MonsterDropEntry(item.intValue(), mons.isBoss() ? 1000000 : 10000, 1, 1, 0));
-            }
-            StructFamiliar f = ii.getFamiliarByMob(e.getKey().intValue());
-            if (f != null) {
-                e.getValue().add(new MonsterDropEntry(f.itemid, mons.isBoss() ? 10000 : 100, 1, 1, 0));
-            }
-        }
-        for (Entry<Integer, Integer> i : ii.getMonsterBook().entrySet()) {
-            if (!drops.containsKey(i.getKey())) {
-                final MapleMonsterStats mons = MapleLifeFactory.getMonsterStats(i.getKey());
-                ArrayList<MonsterDropEntry> e = new ArrayList<MonsterDropEntry>();
-                e.add(new MonsterDropEntry(i.getValue().intValue(), mons.isBoss() ? 1000000 : 10000, 1, 1, 0));
-                StructFamiliar f = ii.getFamiliarByMob(i.getKey().intValue());
+                final MapleMonsterStats mons = MapleLifeFactory.getMonsterStats(e.getKey());
+                Integer item = ii.getItemIdByMob(e.getKey());
+                if (item != null && item.intValue() > 0) {
+                    e.getValue().add(new MonsterDropEntry(item.intValue(), mons.isBoss() ? 1000000 : 10000, 1, 1, 0));
+                }
+                StructFamiliar f = ii.getFamiliarByMob(e.getKey().intValue());
                 if (f != null) {
-                    e.add(new MonsterDropEntry(f.itemid, mons.isBoss() ? 10000 : 100, 1, 1, 0));
+                    e.getValue().add(new MonsterDropEntry(f.itemid, mons.isBoss() ? 10000 : 100, 1, 1, 0));
                 }
-                addMeso(mons, e);
+            }
+            for (Entry<Integer, Integer> i : ii.getMonsterBook().entrySet()) {
+                if (!drops.containsKey(i.getKey())) {
+                    final MapleMonsterStats mons = MapleLifeFactory.getMonsterStats(i.getKey());
+                    ArrayList<MonsterDropEntry> e = new ArrayList<MonsterDropEntry>();
+                    e.add(new MonsterDropEntry(i.getValue().intValue(), mons.isBoss() ? 1000000 : 10000, 1, 1, 0));
+                    StructFamiliar f = ii.getFamiliarByMob(i.getKey().intValue());
+                    if (f != null) {
+                        e.add(new MonsterDropEntry(f.itemid, mons.isBoss() ? 10000 : 100, 1, 1, 0));
+                    }
+                    addMeso(mons, e);
 
-                drops.put(i.getKey(), e);
+                    drops.put(i.getKey(), e);
+                }
             }
-        }
-        for (StructFamiliar f : ii.getFamiliars().values()) {
-            if (!drops.containsKey(f.mob)) {
-                MapleMonsterStats mons = MapleLifeFactory.getMonsterStats(f.mob);
-                ArrayList<MonsterDropEntry> e = new ArrayList<MonsterDropEntry>();
-                e.add(new MonsterDropEntry(f.itemid, mons.isBoss() ? 10000 : 100, 1, 1, 0));
-                addMeso(mons, e);
-                drops.put(f.mob, e);
+            for (StructFamiliar f : ii.getFamiliars().values()) {
+                if (!drops.containsKey(f.mob)) {
+                    MapleMonsterStats mons = MapleLifeFactory.getMonsterStats(f.mob);
+                    ArrayList<MonsterDropEntry> e = new ArrayList<MonsterDropEntry>();
+                    e.add(new MonsterDropEntry(f.itemid, mons.isBoss() ? 10000 : 100, 1, 1, 0));
+                    addMeso(mons, e);
+                    drops.put(f.mob, e);
+                }
             }
-        }
-        if (GameConstants.GMS) { //kinda costly, i advise against !reloaddrops often
-            for (Entry<Integer, ArrayList<MonsterDropEntry>> e : drops.entrySet()) { //yes, we're going through it twice
-                if (e.getKey() == 100000 && mobStringData.getChildByPath(String.valueOf(e.getKey())) != null) {
-                    for (MapleData d : mobStringData.getChildByPath(e.getKey() + "/reward")) {
-                        final int toAdd = MapleDataTool.getInt(d, 0);
-                        if (toAdd == 0 && !contains(e.getValue(), toAdd) && ii.itemExists(toAdd)) {
-                            e.getValue().add(new MonsterDropEntry(toAdd, chanceLogic(toAdd), 1, 1, 0));
+            if (GameConstants.GMS) { //kinda costly, i advise against !reloaddrops often
+                for (Entry<Integer, ArrayList<MonsterDropEntry>> e : drops.entrySet()) { //yes, we're going through it twice
+                    if (e.getKey() == 100000 && mobStringData.getChildByPath(String.valueOf(e.getKey())) != null) {
+                        for (MapleData d : mobStringData.getChildByPath(e.getKey() + "/reward")) {
+                            final int toAdd = MapleDataTool.getInt(d, 0);
+                            if (toAdd == 0 && !contains(e.getValue(), toAdd) && ii.itemExists(toAdd)) {
+                                e.getValue().add(new MonsterDropEntry(toAdd, chanceLogic(toAdd), 1, 1, 0));
+                            }
                         }
                     }
                 }
             }
-        }
+            System.out.println("Extra Mob Info loaded in " + (System.currentTimeMillis() - start) + "ms.");
+
+        });
+        Start.threads.add(t);
     }
 
     public void addMeso(MapleMonsterStats mons, ArrayList<MonsterDropEntry> ret) {
