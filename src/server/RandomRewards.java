@@ -13,85 +13,92 @@ public class RandomRewards {
             compiledDrops = null, compiledDropsB = null, compiledDropsA = null, tenPercent = null;
 
     static {
-        // Gold Box
-        List<Integer> returnArray = new ArrayList<Integer>();
+        Thread t = new Thread(() -> {
+            long start = System.currentTimeMillis();
 
-        processRewards(returnArray, GameConstants.goldrewards);
+            // Gold Box
+            List<Integer> returnArray = new ArrayList<Integer>();
 
-        compiledGold = returnArray;
+            processRewards(returnArray, GameConstants.goldrewards);
 
-        // Silver Box
-        returnArray = new ArrayList<Integer>();
+            compiledGold = returnArray;
 
-        processRewards(returnArray, GameConstants.silverrewards);
+            // Silver Box
+            returnArray = new ArrayList<Integer>();
 
-        compiledSilver = returnArray;
+            processRewards(returnArray, GameConstants.silverrewards);
 
-        // Fishing Rewards
-        returnArray = new ArrayList<Integer>();
+            compiledSilver = returnArray;
 
-        processRewards(returnArray, GameConstants.fishingReward);
+            // Fishing Rewards
+            returnArray = new ArrayList<Integer>();
 
-        compiledFishing = returnArray;
+            processRewards(returnArray, GameConstants.fishingReward);
 
-        // Event Rewards
-        returnArray = new ArrayList<Integer>();
+            compiledFishing = returnArray;
 
-        processRewards(returnArray, GameConstants.eventCommonReward);
+            // Event Rewards
+            returnArray = new ArrayList<Integer>();
 
-        compiledEventC = returnArray;
+            processRewards(returnArray, GameConstants.eventCommonReward);
 
-        returnArray = new ArrayList<Integer>();
+            compiledEventC = returnArray;
 
-        processRewards(returnArray, GameConstants.eventUncommonReward);
+            returnArray = new ArrayList<Integer>();
 
-        compiledEventB = returnArray;
+            processRewards(returnArray, GameConstants.eventUncommonReward);
 
-        returnArray = new ArrayList<Integer>();
+            compiledEventB = returnArray;
 
-        processRewards(returnArray, GameConstants.eventRareReward);
-        processRewardsSimple(returnArray, GameConstants.tenPercent);
-        processRewardsSimple(returnArray, GameConstants.tenPercent);//hack: chance = 2
+            returnArray = new ArrayList<Integer>();
 
-        compiledEventA = returnArray;
+            processRewards(returnArray, GameConstants.eventRareReward);
+            processRewardsSimple(returnArray, GameConstants.tenPercent);
+            processRewardsSimple(returnArray, GameConstants.tenPercent);//hack: chance = 2
 
-        returnArray = new ArrayList<Integer>();
+            compiledEventA = returnArray;
 
-        processRewards(returnArray, GameConstants.eventSuperReward);
+            returnArray = new ArrayList<Integer>();
 
-        compiledEvent = returnArray;
+            processRewards(returnArray, GameConstants.eventSuperReward);
 
-        returnArray = new ArrayList<Integer>();
+            compiledEvent = returnArray;
 
-        processRewards(returnArray, GameConstants.peanuts);
+            returnArray = new ArrayList<Integer>();
 
-        compiledPeanut = returnArray;
+            processRewards(returnArray, GameConstants.peanuts);
 
-        returnArray = new ArrayList<Integer>();
+            compiledPeanut = returnArray;
 
-        returnArray = new ArrayList<Integer>();
+            returnArray = new ArrayList<Integer>();
 
-        processRewardsSimple(returnArray, GameConstants.normalDrops);
+            returnArray = new ArrayList<Integer>();
 
-        compiledDrops = returnArray;
+            processRewardsSimple(returnArray, GameConstants.normalDrops);
 
-        returnArray = new ArrayList<Integer>();
+            compiledDrops = returnArray;
 
-        processRewardsSimple(returnArray, GameConstants.rareDrops);
+            returnArray = new ArrayList<Integer>();
 
-        compiledDropsB = returnArray;
+            processRewardsSimple(returnArray, GameConstants.rareDrops);
 
-        returnArray = new ArrayList<Integer>();
+            compiledDropsB = returnArray;
 
-        processRewardsSimple(returnArray, GameConstants.superDrops);
+            returnArray = new ArrayList<Integer>();
 
-        compiledDropsA = returnArray;
+            processRewardsSimple(returnArray, GameConstants.superDrops);
 
-        returnArray = new ArrayList<Integer>();
+            compiledDropsA = returnArray;
 
-        processRewardsSimple(returnArray, GameConstants.tenPercent);
+            returnArray = new ArrayList<Integer>();
 
-        tenPercent = returnArray;
+            processRewardsSimple(returnArray, GameConstants.tenPercent);
+
+            tenPercent = returnArray;
+            System.out.println("Random Rewards loaded in " + (System.currentTimeMillis() - start) + "ms.");
+
+        });
+        Start.threads.add(t);
     }
 
     private static void processRewards(final List<Integer> returnArray, final int[] list) {
