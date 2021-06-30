@@ -1048,6 +1048,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         c.getSession().write(CField.sendPVPMaps());
     }
 
+    public void openUI(int ui) {
+        c.getSession().write(UIPacket.openUI(ui));
+    }
+
     public void sendRepairWindow() {
         c.getSession().write(UIPacket.sendRepairWindow(id));
     }
