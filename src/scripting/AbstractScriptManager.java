@@ -23,12 +23,9 @@ package scripting;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import org.graalvm.polyglot.Context;
-
 import client.MapleClient;
 import java.io.FileNotFoundException;
 import javax.script.ScriptException;
