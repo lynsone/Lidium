@@ -56,6 +56,7 @@ import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Set;
 import server.ServerProperties;
+import server.Start;
 import server.events.*;
 import server.maps.AramiaFireWorks;
 import server.maps.MapleMapObject;
@@ -111,7 +112,7 @@ public class ChannelServer {
         try {
             expRate = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.exp"));
             mesoRate = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.meso"));
-			dropRate = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.dropRate"));
+            dropRate = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.dropRate"));
             serverMessage = ServerProperties.getProperty("net.sf.odinms.world.serverMessage");
             serverName = ServerProperties.getProperty("net.sf.odinms.login.serverName");
             flags = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.flags", "0"));
@@ -136,7 +137,7 @@ public class ChannelServer {
 
         try {
             acceptor.bind(new InetSocketAddress(port), new MapleServerHandler(channel, false), acceptor_config);
-            System.out.println("Channel " + channel + ": Listening on port " + port + "");
+            System.out.println("[SERVER] Channel " + channel + " Started -> Listening on port " + port + "");
             eventSM.init();
         } catch (IOException e) {
             System.out.println("Binding to port " + port + " failed (ch: " + getChannel() + ")" + e);
@@ -287,8 +288,16 @@ public class ChannelServer {
     }
 
     public static final void startChannel_Main() {
-        serverStartTime = System.currentTimeMillis();
-        newInstance(1).run_startup_configurations();
+        Thread t = new Thread(() -> {
+
+            serverStartTime = System.currentTimeMillis();
+
+            int amountOfChannels = 2; // should be constant
+            for (int i = 1; i <= amountOfChannels; i++) {
+                newInstance(i).run_startup_configurations();
+            }
+        });
+        Start.threads.add(t);
     }
 
     public Map<MapleSquadType, MapleSquad> getAllSquads() {
@@ -341,7 +350,7 @@ public class ChannelServer {
         for (int i = 910000001; i <= 910000022; i++) {
             for (MapleMapObject mmo : mapFactory.getMap(i).getAllHiredMerchantsThreadsafe()) {
                 ((HiredMerchant) mmo).closeShop(true, false);
-				//HiredMerchantSave.QueueShopForSave((HiredMerchant) mmo);
+                //HiredMerchantSave.QueueShopForSave((HiredMerchant) mmo);
                 ret++;
             }
         }
