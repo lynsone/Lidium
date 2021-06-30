@@ -39,6 +39,7 @@ import handling.channel.ChannelServer;
 import handling.world.MapleCharacterLook;
 import handling.world.World;
 import java.util.ArrayList;
+import server.Start;
 import server.maps.*;
 import tools.packet.CField.NPCPacket;
 import tools.packet.CWvsContext;
@@ -97,22 +98,29 @@ public class PlayerNPC extends MapleNPC implements MapleCharacterLook {
     }
 
     public static void loadAll() {
-	List<PlayerNPC> toAdd = new ArrayList<PlayerNPC>();
-        Connection con = DatabaseConnection.getConnection();
-        try {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM playernpcs");
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                toAdd.add(new PlayerNPC(rs));
+        Thread t = new Thread(() -> {
+            long start = System.currentTimeMillis();
+
+            List<PlayerNPC> toAdd = new ArrayList<PlayerNPC>();
+            Connection con = DatabaseConnection.getConnection();
+            try {
+                PreparedStatement ps = con.prepareStatement("SELECT * FROM playernpcs");
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    toAdd.add(new PlayerNPC(rs));
+                }
+                rs.close();
+                ps.close();
+            } catch (Exception se) {
+                se.printStackTrace();
             }
-            rs.close();
-            ps.close();
-        } catch (Exception se) {
-            se.printStackTrace();
-        }
-	for (PlayerNPC npc : toAdd) {
-	    npc.addToServer();
-	}
+            toAdd.parallelStream().forEach(npc -> {
+                npc.addToServer();
+            });
+            System.out.println("Player NPCs loaded in " + (System.currentTimeMillis() - start) + "ms.");
+
+        });
+        Start.threads.add(t);
     }
 
     public static void updateByCharId(MapleCharacter chr) {
@@ -158,7 +166,7 @@ public class PlayerNPC extends MapleNPC implements MapleCharacterLook {
 
     public void destroy() {
         destroy(false); //just sql
-        }
+    }
 
     public void destroy(boolean remove) {
         Connection con = DatabaseConnection.getConnection();
@@ -225,11 +233,11 @@ public class PlayerNPC extends MapleNPC implements MapleCharacterLook {
             se.printStackTrace();
         }
     }
-    
+
     public short getJob() {
         return 0; // we'll do this later,
     }
-    
+
     public int getDemonMarking() {
         return 0; // player npcs should have demon mark? ..idk, we'll see later
     }
