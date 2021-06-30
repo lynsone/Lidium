@@ -20,7 +20,7 @@ public class MapleCarnivalFactory {
 
     public MapleCarnivalFactory() {
         //whoosh
-	initialize();
+        initialize();
     }
 
     public static final MapleCarnivalFactory getInstance() {
@@ -28,15 +28,23 @@ public class MapleCarnivalFactory {
     }
 
     private void initialize() {
-        if (skills.size() != 0) {
-            return;
-        }
-        for (MapleData z : dataRoot.getData("MCSkill.img")) {
-            skills.put(Integer.parseInt(z.getName()), new MCSkill(MapleDataTool.getInt("spendCP", z, 0), MapleDataTool.getInt("mobSkillID", z, 0), MapleDataTool.getInt("level", z, 0), MapleDataTool.getInt("target", z, 1) > 1));
-        }
-        for (MapleData z : dataRoot.getData("MCGuardian.img")) {
-            guardians.put(Integer.parseInt(z.getName()), new MCSkill(MapleDataTool.getInt("spendCP", z, 0), MapleDataTool.getInt("mobSkillID", z, 0), MapleDataTool.getInt("level", z, 0), true));
-        }
+        Thread t = new Thread(() -> {
+            long start = System.currentTimeMillis();
+            if (!skills.isEmpty()) {
+                return;
+            }
+
+            for (MapleData z : dataRoot.getData("MCSkill.img")) {
+                skills.put(Integer.parseInt(z.getName()), new MCSkill(MapleDataTool.getInt("spendCP", z, 0), MapleDataTool.getInt("mobSkillID", z, 0), MapleDataTool.getInt("level", z, 0), MapleDataTool.getInt("target", z, 1) > 1));
+            }
+
+            for (MapleData z : dataRoot.getData("MCGuardian.img")) {
+                guardians.put(Integer.parseInt(z.getName()), new MCSkill(MapleDataTool.getInt("spendCP", z, 0), MapleDataTool.getInt("mobSkillID", z, 0), MapleDataTool.getInt("level", z, 0), true));
+            }
+
+            System.out.println("Maple Carnival loaded in " + (System.currentTimeMillis() - start) + "ms.");
+        });
+        Start.threads.add(t);
     }
 
     public MCSkill getSkill(final int id) {
