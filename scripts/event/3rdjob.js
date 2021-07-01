@@ -110,7 +110,7 @@ function allMonstersDead(eim) {
     eim.getChannelServer().broadcastPacket(CWvsContext.serverNotice(6, "[Third Job] " + winner.getName() + " just defeated the third job advancement clone!"));
     map.spawnItemDrop(winner, winner, price, winner.getPosition(), true, false);
     eim.schedule("clearPQ", 10000);
-    eim.startEventTimer(10000); //10 seconds
+    //eim.startEventTimer(10000); //10 seconds
 }
 
 function leftParty (eim, player) {
