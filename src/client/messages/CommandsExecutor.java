@@ -1,12 +1,5 @@
 package client.messages;
 
-import client.messages.commands.gm.DcCommand;
-import client.messages.commands.gm.SongCommand;
-import client.messages.commands.gm.KillCommand;
-import client.messages.commands.gm.HealCommand;
-import client.messages.commands.headgm.ClearReportsCommand;
-import client.messages.commands.intern.GoToCommand;
-import client.messages.commands.intern.WarpCommand;
 import client.MapleClient;
 import database.DatabaseConnection;
 import java.sql.PreparedStatement;
