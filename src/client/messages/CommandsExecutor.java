@@ -1,5 +1,12 @@
 package client.messages;
 
+import client.messages.commands.gm.DcCommand;
+import client.messages.commands.gm.SongCommand;
+import client.messages.commands.gm.KillCommand;
+import client.messages.commands.gm.HealCommand;
+import client.messages.commands.headgm.ClearReportsCommand;
+import client.messages.commands.intern.GoToCommand;
+import client.messages.commands.intern.WarpCommand;
 import client.MapleClient;
 import database.DatabaseConnection;
 import java.sql.PreparedStatement;
@@ -215,6 +222,16 @@ public class CommandsExecutor {
     private void registerLv1Commands() {
         levelCommandsCursor = new Pair<>((List<String>) new ArrayList<String>(), (List<String>) new ArrayList<String>());
         addCommand("job", 1, JobCommand.class);
+        addCommand("warp", 1, WarpCommand.class);
+        addCommand("goto", 1, GoToCommand.class);    
+        addCommand("heal", 1, HealCommand.class);       
+        addCommand("hide", 1, HideCommand.class);
+        addCommand("itemcheck", 1, ItemCheckCommand.class);       
+        addCommand("mapname", 1, MapNameCommand.class);
+        addCommand("onlinechannel", 1, OnlineChannelCommand.class);
+        addCommand("online", 1, OnlineCommand.class);
+        addCommand("reports", 1, ReportsCommand.class);
+        //addCommand("", 1, Command.class);
         //addCommand(new String[]{"song", "music"}, 1, .class);
         commandsNameDesc.add(levelCommandsCursor);
     }
@@ -222,6 +239,10 @@ public class CommandsExecutor {
     private void registerLv2Commands() {
         levelCommandsCursor = new Pair<>((List<String>) new ArrayList<String>(), (List<String>) new ArrayList<String>());
         addCommand("cleardrops", 2, ClearDropsCommand.class);
+        addCommand("healmap", 2, HealMapCommand.class);
+        addCommand("kill", 2, KillCommand.class);
+        addCommand("dc", 2, DcCommand.class);
+        addCommand("song", 1, SongCommand.class);
         //addCommand("", 2, Command.class);
         commandsNameDesc.add(levelCommandsCursor);
     }
@@ -229,8 +250,7 @@ public class CommandsExecutor {
     private void registerLv3Commands() {
         levelCommandsCursor = new Pair<>((List<String>) new ArrayList<String>(), (List<String>) new ArrayList<String>());
         addCommand("spawn", 3, SpawnCommand.class);
-        addCommand("warp", 3, WarpCommand.class);
-        addCommand("goto", 3, GoToCommand.class);
+        addCommand("clearreports", 3, ClearReportsCommand.class);
         //addCommand("", 3, Command.class);               
         commandsNameDesc.add(levelCommandsCursor);
     }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package client.messages.commands.headgm;
+package client.messages.commands.intern;
 
 import client.MapleClient;
 import client.messages.Command;
@@ -107,6 +107,5 @@ public class GoToCommand extends Command {
                 }
             }
         }
-        return;
     }
 }
