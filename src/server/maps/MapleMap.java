@@ -474,7 +474,8 @@ public final class MapleMap {
 
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         final byte droptype = (byte) (mob.getStats().isExplosiveReward() ? 3 : mob.getStats().isFfaLoot() ? 2 : chr.getParty() != null ? 1 : 0);
-        final int mobpos = mob.getTruePosition().x, cmServerrate = ChannelServer.getInstance(channel).getMesoRate(), chServerrate = ChannelServer.getInstance(channel).getDropRate(), caServerrate = ChannelServer.getInstance(channel).getCashRate();
+        final int mobpos = mob.getTruePosition().x;
+        final float cmServerrate = ChannelServer.getInstance(channel).getMesoRate(), chServerrate = ChannelServer.getInstance(channel).getDropRate(), caServerrate = ChannelServer.getInstance(channel).getCashRate();
         Item idrop;
         byte d = 1;
         Point pos = new Point(0, mob.getTruePosition().y);
@@ -497,7 +498,7 @@ public final class MapleMap {
             if (de.itemId == mob.getStolen()) {
                 continue;
             }
-            if (Randomizer.nextInt(999999) < (int) (de.chance * chServerrate * chr.getDropMod() * (chr.getStat().dropBuff / 100.0) * (showdown / 100.0))) {
+            if (Randomizer.nextInt(999999) < (int) Math.round(de.chance * chServerrate * chr.getDropMod() * (chr.getStat().dropBuff / 100.0) * (showdown / 100.0))) {
                 if (mesoDropped && droptype != 3 && de.itemId == 0) { //not more than 1 sack of meso
                     continue;
                 }
@@ -516,7 +517,7 @@ public final class MapleMap {
                     int mesos = Randomizer.nextInt(1 + Math.abs(de.Maximum - de.Minimum)) + de.Minimum;
 
                     if (mesos > 0) {
-                        spawnMobMesoDrop((int) (mesos * (chr.getStat().mesoBuff / 100.0) * chr.getDropMod() * cmServerrate), calcDropPos(pos, mob.getTruePosition()), mob, chr, false, droptype);
+                        spawnMobMesoDrop((int) Math.round(mesos * (chr.getStat().mesoBuff / 100.0) * chr.getDropMod() * cmServerrate), calcDropPos(pos, mob.getTruePosition()), mob, chr, false, droptype);
                         mesoDropped = true;
                     }
                 } else {
@@ -534,7 +535,7 @@ public final class MapleMap {
         }
         final List<MonsterGlobalDropEntry> globalEntry = new ArrayList<>(mi.getGlobalDrop());
         Collections.shuffle(globalEntry);
-        final int cashz = (int) ((mob.getStats().isBoss() && mob.getStats().getHPDisplayType() == 0 ? 20 : 1) * caServerrate);
+        final int cashz = (int) Math.round((mob.getStats().isBoss() && mob.getStats().getHPDisplayType() == 0 ? 20 : 1) * caServerrate);
         final int cashModifier = (int) ((mob.getStats().isBoss() ? (mob.getStats().isPartyBonus() ? (mob.getMobExp() / 1000) : 0) : (mob.getMobExp() / 1000 + mob.getMobMaxHp() / 20000))); //no rate
         // Global Drops
         for (final MonsterGlobalDropEntry de : globalEntry) {
@@ -2044,8 +2045,8 @@ public final class MapleMap {
             }
         }
         if ((mapid == 10000 && chr.getJob() == 0) || (mapid == 130030000 && chr.getJob() == 1000) || (mapid == 914000000 && chr.getJob() == 2000) || (mapid == 900010000 && chr.getJob() == 2001) || (mapid == 931000000 && chr.getJob() == 3000)) {
-            chr.dropMessage(5, "Your EXP Rate will be set to " + GameConstants.getExpRate_Below10(chr.getJob()) + "x until you reach level 10.");
-            chr.dropMessage(-1, "Your EXP Rate will be set to " + GameConstants.getExpRate_Below10(chr.getJob()) + "x until you reach level 10.");
+            chr.dropMessage(5, "Your EXP Rate will be set to " + GameConstants.getExpRateByLevel(chr.getLevel(), channel) + "x until you reach level 10.");
+            chr.dropMessage(-1, "Your EXP Rate will be set to " + GameConstants.getExpRateByLevel(chr.getLevel(), channel) + "x until you reach level 10.");
 
         }
         if (permanentWeather > 0) {

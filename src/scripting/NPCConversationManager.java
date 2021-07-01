@@ -1562,7 +1562,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 if (de.chance > 0 && (de.questid <= 0 || (de.questid > 0 && MapleQuest.getInstance(de.questid).getName().length() > 0))) {
                     itemId = de.itemId;
                     if (num == 0) {
-                        name.append("Drops for #o" + mobId + "#\r\n");
+                        name.append("Drops for #o").append(mobId).append("#\r\n");
                         name.append("--------------------------------------\r\n");
                     }
                     String namez = "#z" + itemId + "#";
@@ -1570,8 +1570,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                         itemId = 4031041; //display sack of cash
                         namez = (de.Minimum * getClient().getChannelServer().getMesoRate()) + " to " + (de.Maximum * getClient().getChannelServer().getMesoRate()) + " meso";
                     }
-                    ch = de.chance * getClient().getChannelServer().getDropRate();
-                    name.append((num + 1) + ") #v" + itemId + "#" + namez + " - " + (Integer.valueOf(ch >= 999999 ? 1000000 : ch).doubleValue() / 10000.0) + "% chance. " + (de.questid > 0 && MapleQuest.getInstance(de.questid).getName().length() > 0 ? ("Requires quest " + MapleQuest.getInstance(de.questid).getName() + " to be started.") : "") + "\r\n");
+                    ch = Math.round(de.chance * getClient().getChannelServer().getDropRate());
+                    name.append(num).append(1).append(") #v").append(itemId).append("#").append(namez).append(" - ").append(Integer.valueOf(ch >= 999999 ? 1000000 : ch).doubleValue() / 10000.0).append("% chance. ").append(de.questid > 0 && MapleQuest.getInstance(de.questid).getName().length() > 0 ? ("Requires quest " + MapleQuest.getInstance(de.questid).getName() + " to be started.") : "").append("\r\n");
                     num++;
                 }
             }

@@ -1118,7 +1118,7 @@ public class InventoryHandler {
                 case 2430131: //energy charge
                     if (GameConstants.isResist(c.getPlayer().getJob())) {
                         MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
-                        c.getPlayer().gainExp(20000 + (c.getPlayer().getLevel() * 50 * c.getChannelServer().getExpRate()), true, true, false);
+                        c.getPlayer().gainExp(Math.round(20000 + (c.getPlayer().getLevel() * 50 * c.getChannelServer().getExpRate())), true, true, false);
                     } else {
                         c.getPlayer().dropMessage(5, "You may not use this item.");
                     }
@@ -3305,7 +3305,7 @@ public class InventoryHandler {
                     if (pet.getCloseness() + (100 * c.getChannelServer().getTraitRate()) > 30000) {
                         pet.setCloseness(30000);
                     } else {
-                        pet.setCloseness(pet.getCloseness() + (100 * c.getChannelServer().getTraitRate()));
+                        pet.setCloseness(Math.round(pet.getCloseness() + (100 * c.getChannelServer().getTraitRate())));
                     }
                     if (pet.getCloseness() >= GameConstants.getClosenessNeededForLevel(pet.getLevel() + 1)) {
                         pet.setLevel(pet.getLevel() + 1);

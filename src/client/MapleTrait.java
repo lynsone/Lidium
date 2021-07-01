@@ -50,28 +50,28 @@ public class MapleTrait {
 
     public void setExp(int e) {
         this.totalExp = e;
-		this.localTotalExp = e;
+        this.localTotalExp = e;
         recalcLevel();
     }
 
     public void addExp(int e) {
         this.totalExp += e;
-		this.localTotalExp += e;
+        this.localTotalExp += e;
         if (e != 0) {
             recalcLevel();
         }
     }
 
     public void addExp(int e, MapleCharacter c) {
-        addTrueExp(e * c.getClient().getChannelServer().getTraitRate(), c);
+        addTrueExp(Math.round(e * c.getClient().getChannelServer().getTraitRate()), c);
     }
-	
+
     public void addTrueExp(int e, MapleCharacter c) {
         if (e != 0) {
-			this.totalExp += e;
-			this.localTotalExp += e;
-			c.updateSingleStat(type.stat, totalExp);
-			c.getClient().getSession().write(InfoPacket.showTraitGain(type, e));
+            this.totalExp += e;
+            this.localTotalExp += e;
+            c.updateSingleStat(type.stat, totalExp);
+            c.getClient().getSession().write(InfoPacket.showTraitGain(type, e));
             recalcLevel();
         }
     }
@@ -79,7 +79,7 @@ public class MapleTrait {
     public boolean recalcLevel() {
         if (totalExp < 0) {
             totalExp = 0;
-			localTotalExp = 0;
+            localTotalExp = 0;
             level = 0;
             exp = 0;
             return false;
@@ -95,7 +95,7 @@ public class MapleTrait {
         exp = 0;
         level = 100;
         totalExp = GameConstants.getTraitExpNeededForLevel(level);
-		localTotalExp = totalExp;
+        localTotalExp = totalExp;
         return level > oldLevel;
     }
 
@@ -110,18 +110,18 @@ public class MapleTrait {
     public int getTotalExp() {
         return totalExp;
     }
-	
-	public int getLocalTotalExp() {
-		return localTotalExp;
-	}
-	
-	public void addLocalExp(int e) {
-		this.localTotalExp += e;
-	}
-	
-	public void clearLocalExp() {
-		this.localTotalExp = totalExp;
-	}
+
+    public int getLocalTotalExp() {
+        return localTotalExp;
+    }
+
+    public void addLocalExp(int e) {
+        this.localTotalExp += e;
+    }
+
+    public void clearLocalExp() {
+        this.localTotalExp = totalExp;
+    }
 
     public MapleTraitType getType() {
         return type;

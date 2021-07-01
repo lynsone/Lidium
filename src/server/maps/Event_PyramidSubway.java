@@ -317,7 +317,7 @@ public class Event_PyramidSubway {
         }
         int exp = 0;
         if (rank < 4) {
-            exp = ((kill + (cool * 5)) + pt) * c.getClient().getChannelServer().getExpRate();
+            exp = Math.round(((kill + (cool * 5)) + pt) * c.getClient().getChannelServer().getExpRate());
             c.gainExp(exp, true, false, false);
         }
 	c.getTrait(MapleTraitType.will).addExp((type + 2) * 8, c);

@@ -66,7 +66,7 @@ import tools.packet.CWvsContext;
 public class ChannelServer {
 
     public static long serverStartTime;
-    private int expRate, mesoRate, dropRate = 1, cashRate = 1, traitRate = 1; // ???????
+    private float expRate, mesoRate, dropRate = 1, cashRate = 1, traitRate = 1; // ???????
     private short port = 8585;
     private static final short DEFAULT_PORT = 8585;
     private int channel, running_MerchantID = 0, flags = 0;
@@ -110,9 +110,9 @@ public class ChannelServer {
     public final void run_startup_configurations() {
         setChannel(channel); //instances.put
         try {
-            expRate = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.exp"));
-            mesoRate = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.meso"));
-            dropRate = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.dropRate"));
+            expRate = Float.parseFloat(ServerProperties.getProperty("net.sf.odinms.world.exp"));
+            mesoRate = Float.parseFloat(ServerProperties.getProperty("net.sf.odinms.world.meso"));
+            dropRate = Float.parseFloat(ServerProperties.getProperty("net.sf.odinms.world.dropRate"));
             serverMessage = ServerProperties.getProperty("net.sf.odinms.world.serverMessage");
             serverName = ServerProperties.getProperty("net.sf.odinms.login.serverName");
             flags = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.flags", "0"));
@@ -228,15 +228,15 @@ public class ChannelServer {
         getPlayerStorage().broadcastGMPacket(data);
     }
 
-    public final int getExpRate() {
+    public final float getExpRate() {
         return expRate;
     }
 
-    public final void setExpRate(final int expRate) {
+    public final void setExpRate(final float expRate) {
         this.expRate = expRate;
     }
 
-    public final int getCashRate() {
+    public final float getCashRate() {
         return cashRate;
     }
 
@@ -275,15 +275,15 @@ public class ChannelServer {
         eventSM.init();
     }
 
-    public final int getMesoRate() {
+    public final float getMesoRate() {
         return mesoRate;
     }
 
-    public final void setMesoRate(final int mesoRate) {
+    public final void setMesoRate(final float mesoRate) {
         this.mesoRate = mesoRate;
     }
 
-    public final int getDropRate() {
+    public final float getDropRate() {
         return dropRate;
     }
 
@@ -539,7 +539,7 @@ public class ChannelServer {
         return works;
     }
 
-    public int getTraitRate() {
+    public float getTraitRate() {
         return traitRate;
     }
 }
