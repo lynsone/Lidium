@@ -105,7 +105,7 @@ public class PetHandler {
         if (Randomizer.nextInt(99) <= petCommand.getProbability()) {
             success = true;
             if (pet.getCloseness() < 30000) {
-                int newCloseness = pet.getCloseness() + (petCommand.getIncrease() * c.getChannelServer().getTraitRate());
+                int newCloseness = Math.round(pet.getCloseness() + (petCommand.getIncrease() * c.getChannelServer().getTraitRate()));
                 if (newCloseness > 30000) {
                     newCloseness = 30000;
                 }

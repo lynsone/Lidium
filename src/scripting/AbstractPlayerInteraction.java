@@ -661,7 +661,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public void gainExpR(int gain) {
-        c.getPlayer().gainExp(gain * c.getChannelServer().getExpRate(), true, true, true);
+        c.getPlayer().gainExp(Math.round(gain * c.getChannelServer().getExpRate()), true, true, true);
     }
 
     public final void givePartyItems(final int id, final short quantity, final List<MapleCharacter> party) {
@@ -717,42 +717,42 @@ public abstract class AbstractPlayerInteraction {
     public final void givePartyExp_PQ(final int maxLevel, final double mod, final List<MapleCharacter> party) {
         party.forEach(chr -> {
             final int amount = (int) Math.round(GameConstants.getExpNeededForLevel(chr.getLevel() > maxLevel ? (maxLevel + ((maxLevel - chr.getLevel()) / 10)) : chr.getLevel()) / (Math.min(chr.getLevel(), maxLevel) / 5.0) / (mod * 2.0));
-            chr.gainExp(amount * c.getChannelServer().getExpRate(), true, true, true);
+            chr.gainExp(Math.round(amount * c.getChannelServer().getExpRate()), true, true, true);
         });
     }
 
     public final void gainExp_PQ(final int maxLevel, final double mod) {
         final int amount = (int) Math.round(GameConstants.getExpNeededForLevel(getPlayer().getLevel() > maxLevel ? (maxLevel + (getPlayer().getLevel() / 10)) : getPlayer().getLevel()) / (Math.min(getPlayer().getLevel(), maxLevel) / 10.0) / mod);
-        gainExp(amount * c.getChannelServer().getExpRate());
+        gainExp(Math.round(amount * c.getChannelServer().getExpRate()));
     }
 
     public final void givePartyExp_PQ(final int maxLevel, final double mod) {
         if (getPlayer().getParty() == null || getPlayer().getParty().getMembers().size() == 1) {
             final int amount = (int) Math.round(GameConstants.getExpNeededForLevel(getPlayer().getLevel() > maxLevel ? (maxLevel + (getPlayer().getLevel() / 10)) : getPlayer().getLevel()) / (Math.min(getPlayer().getLevel(), maxLevel) / 10.0) / mod);
-            gainExp(amount * c.getChannelServer().getExpRate());
+            gainExp(Math.round(amount * c.getChannelServer().getExpRate()));
             return;
         }
         final int cMap = getPlayer().getMapId();
         getPlayer().getParty().getMembers().stream().map(chr -> getChannelServer().getPlayerStorage().getCharacterById(chr.getId())).filter(curChar -> (curChar != null && (curChar.getMapId() == cMap || curChar.getEventInstance() == getPlayer().getEventInstance()))).forEachOrdered(curChar -> {
             final int amount = (int) Math.round(GameConstants.getExpNeededForLevel(curChar.getLevel() > maxLevel ? (maxLevel + (curChar.getLevel() / 10)) : curChar.getLevel()) / (Math.min(curChar.getLevel(), maxLevel) / 10.0) / mod);
-            curChar.gainExp(amount * c.getChannelServer().getExpRate(), true, true, true);
+            curChar.gainExp(Math.round(amount * c.getChannelServer().getExpRate()), true, true, true);
         });
     }
 
     public final void givePartyExp(final int amount, final List<MapleCharacter> party) {
         party.forEach(chr -> {
-            chr.gainExp(amount * c.getChannelServer().getExpRate(), true, true, true);
+            chr.gainExp(Math.round(amount * c.getChannelServer().getExpRate()), true, true, true);
         });
     }
 
     public final void givePartyExp(final int amount) {
         if (getPlayer().getParty() == null || getPlayer().getParty().getMembers().size() == 1) {
-            gainExp(amount * c.getChannelServer().getExpRate());
+            gainExp(Math.round(amount * c.getChannelServer().getExpRate()));
             return;
         }
         final int cMap = getPlayer().getMapId();
         getPlayer().getParty().getMembers().stream().map(chr -> getChannelServer().getPlayerStorage().getCharacterById(chr.getId())).filter(curChar -> (curChar != null && (curChar.getMapId() == cMap || curChar.getEventInstance() == getPlayer().getEventInstance()))).forEachOrdered(curChar -> {
-            curChar.gainExp(amount * c.getChannelServer().getExpRate(), true, true, true);
+            curChar.gainExp(Math.round(amount * c.getChannelServer().getExpRate()), true, true, true);
         });
     }
 
@@ -831,7 +831,7 @@ public abstract class AbstractPlayerInteraction {
     public final void gainCloseness(final int closeness, final int index) {
         final MaplePet pet = getPlayer().getPet(index);
         if (pet != null) {
-            pet.setCloseness(pet.getCloseness() + (closeness * getChannelServer().getTraitRate()));
+            pet.setCloseness(Math.round(pet.getCloseness() + (closeness * getChannelServer().getTraitRate())));
             getClient().getSession().write(PetPacket.updatePet(pet, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition()), true));
         }
     }

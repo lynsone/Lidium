@@ -377,7 +377,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             if (attacker.hasDisease(MapleDisease.CURSE)) {
                 exp /= 2;
             }
-            exp = (int) Math.min(Integer.MAX_VALUE, exp * attacker.getEXPMod() * attacker.getStat().expBuff / 100.0 * (attacker.getLevel() < 10 ? GameConstants.getExpRate_Below10(attacker.getJob()) : GameConstants.getExpRate(attacker.getJob(), ChannelServer.getInstance(map.getChannel()).getExpRate())));
+            exp = (int) Math.min(Integer.MAX_VALUE, Math.round(exp * attacker.getEXPMod() * (attacker.getStat().expBuff / 100.0f) * GameConstants.getExpRateByLevel(attacker.getLevel(), map.getChannel())));
             //do this last just incase someone has a 2x exp card and its set to max value
             int Class_Bonus_EXP = 0;
             if (Class_Bonus_EXP_PERCENT > 0) {
@@ -1440,7 +1440,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         }
 
         Skill steal = SkillFactory.getSkill(4201004);
-        final int level = chr.getTotalSkillLevel(steal), chServerrate = ChannelServer.getInstance(chr.getClient().getChannel()).getDropRate();
+        final int level = chr.getTotalSkillLevel(steal);
+        final float chServerrate = ChannelServer.getInstance(chr.getClient().getChannel()).getDropRate();
         if (level > 0 && !getStats().isBoss() && stolen == -1 && steal.getEffect(level).makeChanceResult()) {
             final MapleMonsterInformationProvider mi = MapleMonsterInformationProvider.getInstance();
             final List<MonsterDropEntry> de = mi.retrieveDrop(getId());
@@ -1448,11 +1449,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 stolen = 0;
                 return;
             }
-            final List<MonsterDropEntry> dropEntry = new ArrayList<MonsterDropEntry>(de);
+            final List<MonsterDropEntry> dropEntry = new ArrayList<>(de);
             Collections.shuffle(dropEntry);
             Item idrop;
             for (MonsterDropEntry d : dropEntry) { //set to 4x rate atm, 40% chance + 10x
-                if (d.itemId > 0 && d.questid == 0 && d.itemId / 10000 != 238 && Randomizer.nextInt(999999) < (int) (10 * d.chance * chServerrate * chr.getDropMod() * (chr.getStat().dropBuff / 100.0) * (showdown / 100.0))) { //kinda op
+                if (d.itemId > 0 && d.questid == 0 && d.itemId / 10000 != 238 && Randomizer.nextInt(999999) < (int) Math.round(d.chance * chServerrate * chr.getDropMod() * (chr.getStat().dropBuff / 100.0) * (showdown / 100.0))) { //kinda op
                     if (GameConstants.getInventoryType(d.itemId) == MapleInventoryType.EQUIP) {
                         Equip eq = (Equip) MapleItemInformationProvider.getInstance().getEquipById(d.itemId);
                         idrop = MapleItemInformationProvider.getInstance().randomizeStats(eq);

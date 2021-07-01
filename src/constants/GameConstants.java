@@ -28,6 +28,7 @@ import client.SkillFactory;
 import client.inventory.MapleInventoryType;
 import client.inventory.MapleWeaponType;
 import client.status.MonsterStatus;
+import handling.channel.ChannelServer;
 import java.awt.Point;
 import java.util.List;
 import java.util.Arrays;
@@ -2957,13 +2958,12 @@ public class GameConstants {
         return 0;
     }
 
-    public static int getExpRate_Below10(final int job) {
-        if (GameConstants.isEvan(job)) {
-            return 1;
-        } else if (GameConstants.isAran(job) || GameConstants.isKOC(job) || GameConstants.isResist(job)) {
-            return 5;
+    public static float getExpRateByLevel(final int level, final int channel) {
+        if (level < 10) {
+            return 1.0f;
+        } else {
+            return ChannelServer.getInstance(channel).getExpRate();
         }
-        return 10;
     }
 
     public static int getExpRate_Quest(final int level) {
@@ -3081,10 +3081,6 @@ public class GameConstants {
 
     public static boolean isNoSpawn(int mapID) {
         return mapID == 809040100 || mapID == 925020010 || mapID == 925020011 || mapID == 925020012 || mapID == 925020013 || mapID == 925020014 || mapID == 980010000 || mapID == 980010100 || mapID == 980010200 || mapID == 980010300 || mapID == 980010020;
-    }
-
-    public static int getExpRate(int job, int def) {
-        return def;
     }
 
     public static int getModifier(int itemId, int up) {
@@ -3563,7 +3559,7 @@ public class GameConstants {
     public static final int PARTY_INVITE = 122901;
     public static final int QUICK_SLOT = 123000;
     public static final int ITEM_TITLE = 124000;
-    
+
     public static boolean isValidLinkSkillForJob(int skillID, short jobID) {
         switch (jobID) {
             case 2312: //Mercedes
@@ -3578,7 +3574,7 @@ public class GameConstants {
         }
         return false;
     }
-    
+
     public static int getRelatedLinkSkill(final int skillID) {
         switch (skillID) {
             case 20021110: //merc
@@ -3586,17 +3582,17 @@ public class GameConstants {
             case 110: //cannon
                 return 80000000;
             case 30010112://ds
-                return 80000001;         
+                return 80000001;
         }
         return 0;
     }
-    
+
     public static int[] Blocked_NPC = new int[]{ //list of npc's you dont want to spawn anywhere.
         //Example 
         9070006, //Cursed Knight in henesys to test this altough it shud work add w/e ids later to block them from spawning
     };
 
-    public static int[] getBlockedNpc(){
+    public static int[] getBlockedNpc() {
         return Blocked_NPC;
     }
 }
