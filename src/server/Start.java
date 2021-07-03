@@ -17,7 +17,6 @@ import handling.world.guild.MapleGuild;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
-import server.Timer.*;
 import server.events.MapleOxQuizFactory;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonsterInformationProvider;
@@ -64,23 +63,21 @@ public class Start {
         System.out.print(System.lineSeparator());
 
         long start = System.currentTimeMillis();
-
+        ThreadManager.getInstance().start();
+        TimerManager.getInstance().start();
         // Loading Skills -> ok
         SkillFactory.load();
 
         System.out.print("Loading World... ");
+        // Start Channel Server... ok
+        ChannelServer.startChannel_Main();
         World.init();
         System.out.println("loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
         start = System.currentTimeMillis();
         System.out.print("Loading Timers... ");
-        WorldTimer.getInstance().start();
-        EtcTimer.getInstance().start();
-        MapTimer.getInstance().start();
-        CloneTimer.getInstance().start();
-        EventTimer.getInstance().start();
-        BuffTimer.getInstance().start();
-        PingTimer.getInstance().start();
+       
+
         System.out.println("loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
         // Loading Random Rewards -> ... Should load before Maple Quests. OK
@@ -151,15 +148,12 @@ public class Start {
         // Loading Login Server... ok
         LoginServer.run_startup_configurations();
 
-        // Start Channel Server... ok
-        ChannelServer.startChannel_Main();
-
         // Load Cash Shop Server -> ...
         CashShopServer.run_startup_configurations();
 
         Thread t3 = new Thread(() -> {
             // Loading Cheat Timer - alredy in a thread
-            CheatTimer.getInstance().register(AutobanManager.getInstance(), 60000);
+            TimerManager.getInstance().register(AutobanManager.getInstance(), 60000);
 
             // Loading Shutdown hook - already in a thread
             Runtime.getRuntime().addShutdownHook(new Thread(new Shutdown()));

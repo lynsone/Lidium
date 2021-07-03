@@ -44,7 +44,7 @@ import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
 import server.MaplePortal;
 import server.Randomizer;
-import server.Timer.CloneTimer;
+import server.TimerManager;
 import server.events.MapleSnowball.MapleSnowballs;
 import server.life.MapleMonster;
 import server.life.MobAttackInfo;
@@ -829,7 +829,7 @@ public class PlayerHandler {
                 final double maxdamage2 = maxdamage;
                 final MapleStatEffect eff2 = effect;
                 final AttackInfo attack2 = DamageParse.DivideAttack(attack, chr.isGM() ? 1 : 4);
-                CloneTimer.getInstance().schedule(new Runnable() {
+                TimerManager.getInstance().schedule(new Runnable() {
 
                     public void run() {
                         if (!clone.isHidden()) {
@@ -1052,7 +1052,7 @@ public class PlayerHandler {
                 final int visProjectile2 = visProjectile;
                 final int skillLevel2 = skillLevel;
                 final AttackInfo attack2 = DamageParse.DivideAttack(attack, chr.isGM() ? 1 : 4);
-                CloneTimer.getInstance().schedule(new Runnable() {
+                TimerManager.getInstance().schedule(new Runnable() {
 
                     public void run() {
                         if (!clone.isHidden()) {
@@ -1138,7 +1138,7 @@ public class PlayerHandler {
                 final double maxd = maxdamage;
                 final int skillLevel2 = skillLevel;
                 final AttackInfo attack2 = DamageParse.DivideAttack(attack, chr.isGM() ? 1 : 4);
-                CloneTimer.getInstance().schedule(new Runnable() {
+                TimerManager.getInstance().schedule(new Runnable() {
 
                     public void run() {
                         if (!clone.isHidden()) {
@@ -1195,7 +1195,7 @@ public class PlayerHandler {
             for (int i = 0; i < clones.length; i++) {
                 if (clones[i].get() != null) {
                     final MapleCharacter clone = clones[i].get();
-                    CloneTimer.getInstance().schedule(new Runnable() {
+                    TimerManager.getInstance().schedule(new Runnable() {
 
                         public void run() {
                             clone.getMap().broadcastMessage(CField.facialExpression(clone, emote));
@@ -1291,7 +1291,7 @@ public class PlayerHandler {
                 if (clones[i].get() != null) {
                     final MapleCharacter clone = clones[i].get();
                     final List<LifeMovementFragment> res3 = res;
-                    CloneTimer.getInstance().schedule(new Runnable() {
+                    TimerManager.getInstance().schedule(new Runnable() {
 
                         public void run() {
                             try {

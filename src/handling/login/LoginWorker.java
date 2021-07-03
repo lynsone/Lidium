@@ -27,9 +27,10 @@ import client.MapleClient;
 import constants.ServerConstants;
 import database.DatabaseConnection;
 import handling.channel.ChannelServer;
+import server.TimerManager;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import server.Timer.PingTimer;
 import tools.FileoutputUtil;
 import tools.packet.CWvsContext;
 import tools.packet.LoginPacket;
@@ -74,7 +75,7 @@ public class LoginWorker {
 
             //end temp fix
 
-            c.setIdleTask(PingTimer.getInstance().schedule(new Runnable() {
+            c.setIdleTask(TimerManager.getInstance().schedule(new Runnable() {
 
                 public void run() {
                     c.getSession().close();

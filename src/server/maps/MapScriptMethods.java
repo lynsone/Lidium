@@ -34,8 +34,8 @@ import java.util.Map;
 import scripting.EventManager;
 import scripting.NPCScriptManager;
 import server.Randomizer;
+import server.TimerManager;
 import server.MapleItemInformationProvider;
-import server.Timer.EventTimer;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.OverrideMonsterStats;
@@ -1271,7 +1271,7 @@ public class MapScriptMethods {
             case ds_tuto_ill0: {
                 c.getSession().write(UIPacket.getDirectionInfo(1, 6300));
                 showIntro(c, "Effect/Direction6.img/DemonTutorial/SceneLogo");
-                EventTimer.getInstance().schedule(new Runnable() {
+                TimerManager.getInstance().schedule(new Runnable() {
 
                     public void run() {
                         c.getSession().write(UIPacket.IntroDisableUI(false));
@@ -1292,7 +1292,7 @@ public class MapScriptMethods {
 
                 c.getSession().write(CField.showEffect("demonSlayer/text11"));
                 c.getSession().write(UIPacket.getDirectionInfo(1, 4000));
-                EventTimer.getInstance().schedule(new Runnable() {
+                TimerManager.getInstance().schedule(new Runnable() {
 
                     public void run() {
                         showIntro(c, "Effect/Direction6.img/DemonTutorial/Scene2");
@@ -1305,7 +1305,7 @@ public class MapScriptMethods {
                 c.getSession().write(UIPacket.getDirectionInfo(1, 30));
                 c.getSession().write(UIPacket.getDirectionStatus(true));
 
-                EventTimer.getInstance().schedule(new Runnable() {
+                TimerManager.getInstance().schedule(new Runnable() {
 
                     public void run() {
                         c.getSession().write(UIPacket.getDirectionInfo(3, 0));
@@ -1351,7 +1351,7 @@ public class MapScriptMethods {
                 c.getSession().write(UIPacket.getDirectionStatus(true));
                 c.getSession().write(CField.showEffect("demonSlayer/text12"));
 
-                EventTimer.getInstance().schedule(new Runnable() {
+                TimerManager.getInstance().schedule(new Runnable() {
 
                     public void run() {
                         c.getSession().write(UIPacket.getDirectionInfo(3, 0));
@@ -1373,7 +1373,7 @@ public class MapScriptMethods {
                 }
                 c.getSession().write(UIPacket.getDirectionInfo("Effect/Direction5.img/effect/tuto/balloonMsg2/0", 2000, 0, -100, 1));
                 c.getSession().write(UIPacket.getDirectionInfo("Effect/Direction5.img/effect/tuto/balloonMsg1/3", 2000, 0, -100, 1));
-                EventTimer.getInstance().schedule(new Runnable() {
+                TimerManager.getInstance().schedule(new Runnable() {
 
                     public void run() {
                         c.getSession().write(UIPacket.getDirectionInfo(3, 0));
@@ -1389,7 +1389,7 @@ public class MapScriptMethods {
                 c.getSession().write(UIPacket.getDirectionInfo(3, 1));
                 c.getSession().write(UIPacket.getDirectionInfo(1, 30));
                 c.getSession().write(UIPacket.getDirectionStatus(true));
-                EventTimer.getInstance().schedule(new Runnable() {
+                TimerManager.getInstance().schedule(new Runnable() {
 
                     public void run() {
                         c.getSession().write(UIPacket.getDirectionInfo(3, 0));
@@ -1397,14 +1397,14 @@ public class MapScriptMethods {
                         c.getSession().write(UIPacket.getDirectionInfo(1, 500));
                     }
                 }, 1000);
-                EventTimer.getInstance().schedule(new Runnable() {
+                TimerManager.getInstance().schedule(new Runnable() {
 
                     public void run() {
                         c.getSession().write(CField.showEffect("demonSlayer/text14"));
                         c.getSession().write(UIPacket.getDirectionInfo(1, 4000));
                     }
                 }, 1500);
-                EventTimer.getInstance().schedule(new Runnable() {
+                TimerManager.getInstance().schedule(new Runnable() {
 
                     public void run() {
                         final MapleMap mapto = c.getChannelServer().getMapFactory().getMap(927000020);
@@ -1427,7 +1427,7 @@ public class MapScriptMethods {
                 c.getSession().write(UIPacket.getDirectionInfo(3, 1));
                 c.getSession().write(UIPacket.getDirectionInfo(1, 30));
                 c.getSession().write(UIPacket.getDirectionStatus(true));
-                EventTimer.getInstance().schedule(new Runnable() {
+                TimerManager.getInstance().schedule(new Runnable() {
 
                     public void run() {
                         c.getSession().write(UIPacket.getDirectionInfo(3, 0));
@@ -1435,14 +1435,14 @@ public class MapScriptMethods {
                         c.getSession().write(UIPacket.getDirectionInfo(1, 500));
                     }
                 }, 1000);
-                EventTimer.getInstance().schedule(new Runnable() {
+                TimerManager.getInstance().schedule(new Runnable() {
 
                     public void run() {
                         c.getSession().write(CField.showEffect("demonSlayer/text9"));
                         c.getSession().write(UIPacket.getDirectionInfo(1, 3000));
                     }
                 }, 1500);
-                EventTimer.getInstance().schedule(new Runnable() {
+                TimerManager.getInstance().schedule(new Runnable() {
 
                     public void run() {
                         final MapleMap mapto = c.getChannelServer().getMapFactory().getMap(927000010);
@@ -1725,7 +1725,7 @@ public class MapScriptMethods {
                             c.getSession().write(UIPacket.getDirectionInfo(3, 2));
                             c.getSession().write(UIPacket.getDirectionStatus(true));
                             c.getSession().write(UIPacket.getDirectionInfo("Effect/Direction5.img/effect/mercedesInIce/merBalloon/4", 2000, 0, -100, 1));
-                            EventTimer.getInstance().schedule(new Runnable() {
+                            TimerManager.getInstance().schedule(new Runnable() {
 
                                 public void run() {
                                     c.getSession().write(UIPacket.getDirectionInfo(3, 2));
@@ -1733,7 +1733,7 @@ public class MapScriptMethods {
                                     c.getSession().write(UIPacket.getDirectionInfo("Effect/Direction5.img/effect/mercedesInIce/merBalloon/5", 2000, 0, -100, 1));
                                 }
                             }, 2000);
-                            EventTimer.getInstance().schedule(new Runnable() {
+                            TimerManager.getInstance().schedule(new Runnable() {
 
                                 public void run() {
                                     c.getSession().write(UIPacket.IntroEnableUI(0));
@@ -1761,42 +1761,42 @@ public class MapScriptMethods {
                             break;
                         case ds_tuto_0_3:
                             c.getSession().write(CField.showEffect("demonSlayer/text2"));
-                            EventTimer.getInstance().schedule(new Runnable() {
+                            TimerManager.getInstance().schedule(new Runnable() {
 
                                 public void run() {
                                     c.getSession().write(UIPacket.getDirectionInfo(1, 4000));
                                     c.getSession().write(CField.showEffect("demonSlayer/text3"));
                                 }
                             }, 2000);
-                            EventTimer.getInstance().schedule(new Runnable() {
+                            TimerManager.getInstance().schedule(new Runnable() {
 
                                 public void run() {
                                     c.getSession().write(UIPacket.getDirectionInfo(1, 500));
                                     c.getSession().write(CField.showEffect("demonSlayer/text4"));
                                 }
                             }, 6000);
-                            EventTimer.getInstance().schedule(new Runnable() {
+                            TimerManager.getInstance().schedule(new Runnable() {
 
                                 public void run() {
                                     c.getSession().write(UIPacket.getDirectionInfo(1, 4000));
                                     c.getSession().write(CField.showEffect("demonSlayer/text5"));
                                 }
                             }, 6500);
-                            EventTimer.getInstance().schedule(new Runnable() {
+                            TimerManager.getInstance().schedule(new Runnable() {
 
                                 public void run() {
                                     c.getSession().write(UIPacket.getDirectionInfo(1, 500));
                                     c.getSession().write(CField.showEffect("demonSlayer/text6"));
                                 }
                             }, 10500);
-                            EventTimer.getInstance().schedule(new Runnable() {
+                            TimerManager.getInstance().schedule(new Runnable() {
 
                                 public void run() {
                                     c.getSession().write(UIPacket.getDirectionInfo(1, 4000));
                                     c.getSession().write(CField.showEffect("demonSlayer/text7"));
                                 }
                             }, 11000);
-                            EventTimer.getInstance().schedule(new Runnable() {
+                            TimerManager.getInstance().schedule(new Runnable() {
 
                                 public void run() {
                                     c.getSession().write(UIPacket.getDirectionInfo(4, 2159307));

@@ -74,7 +74,7 @@ import javax.script.Invocable;
 import server.MapleStatEffect;
 import server.SpeedRunner;
 import server.StructItemOption;
-import server.Timer.CloneTimer;
+import server.TimerManager;
 import server.life.MapleMonsterInformationProvider;
 import server.life.MonsterDropEntry;
 import server.maps.Event_PyramidSubway;
@@ -1458,7 +1458,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         final MapleCharacter chr = (MapleCharacter) ch;
         final MapleCharacter player = getPlayer();
         getMap().broadcastMessage(CWvsContext.yellowChat(player.getName() + ", do you take " + chr.getName() + " as your wife and promise to stay beside her through all downtimes, crashes, and lags?"));
-        CloneTimer.getInstance().schedule(new Runnable() {
+        TimerManager.getInstance().schedule(new Runnable() {
 
             public void run() {
                 if (chr == null || player == null) {
@@ -1468,7 +1468,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 }
             }
         }, 10000);
-        CloneTimer.getInstance().schedule(new Runnable() {
+        TimerManager.getInstance().schedule(new Runnable() {
 
             public void run() {
                 if (chr == null || player == null) {

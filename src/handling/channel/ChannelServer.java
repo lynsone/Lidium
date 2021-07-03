@@ -78,12 +78,14 @@ public class ChannelServer {
     private EventScriptManager eventSM;
     private AramiaFireWorks works = new AramiaFireWorks();
     private static final Map<Integer, ChannelServer> instances = new HashMap<Integer, ChannelServer>();
-    private final Map<MapleSquadType, MapleSquad> mapleSquads = new ConcurrentEnumMap<MapleSquadType, MapleSquad>(MapleSquadType.class);
+    private final Map<MapleSquadType, MapleSquad> mapleSquads = new ConcurrentEnumMap<MapleSquadType, MapleSquad>(
+            MapleSquadType.class);
     private final Map<Integer, HiredMerchant> merchants = new HashMap<Integer, HiredMerchant>();
     private final List<PlayerNPC> playerNPCs = new LinkedList<PlayerNPC>();
-    private final ReentrantReadWriteLock merchLock = new ReentrantReadWriteLock(); //merchant
+    private final ReentrantReadWriteLock merchLock = new ReentrantReadWriteLock(); // merchant
     private int eventmap = -1;
-    private final Map<MapleEventType, MapleEvent> events = new EnumMap<MapleEventType, MapleEvent>(MapleEventType.class);
+    private final Map<MapleEventType, MapleEvent> events = new EnumMap<MapleEventType, MapleEvent>(
+            MapleEventType.class);
 
     private ChannelServer(final int channel) {
         this.channel = channel;
@@ -98,7 +100,8 @@ public class ChannelServer {
         if (!events.isEmpty()) {
             return;
         }
-        events.put(MapleEventType.CokePlay, new MapleCoconut(channel, MapleEventType.CokePlay)); //yep, coconut. same shit
+        events.put(MapleEventType.CokePlay, new MapleCoconut(channel, MapleEventType.CokePlay)); // yep, coconut. same
+                                                                                                 // shit
         events.put(MapleEventType.Coconut, new MapleCoconut(channel, MapleEventType.Coconut));
         events.put(MapleEventType.Fitness, new MapleFitness(channel, MapleEventType.Fitness));
         events.put(MapleEventType.OlaOla, new MapleOla(channel, MapleEventType.OlaOla));
@@ -108,7 +111,7 @@ public class ChannelServer {
     }
 
     public final void run_startup_configurations() {
-        setChannel(channel); //instances.put
+        setChannel(channel); // instances.put
         try {
             expRate = Float.parseFloat(ServerProperties.getProperty("net.sf.odinms.world.exp"));
             mesoRate = Float.parseFloat(ServerProperties.getProperty("net.sf.odinms.world.meso"));
@@ -117,8 +120,10 @@ public class ChannelServer {
             serverName = ServerProperties.getProperty("net.sf.odinms.login.serverName");
             flags = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.flags", "0"));
             adminOnly = Boolean.parseBoolean(ServerProperties.getProperty("net.sf.odinms.world.admin", "false"));
-            eventSM = new EventScriptManager(this, ServerProperties.getProperty("net.sf.odinms.channel.events").split(","));
-            port = Short.parseShort(ServerProperties.getProperty("net.sf.odinms.channel.net.port" + channel, String.valueOf(DEFAULT_PORT + channel)));
+            eventSM = new EventScriptManager(this,
+                    ServerProperties.getProperty("net.sf.odinms.channel.events").split(","));
+            port = Short.parseShort(ServerProperties.getProperty("net.sf.odinms.channel.net.port" + channel,
+                    String.valueOf(DEFAULT_PORT + channel)));
         } catch (NumberFormatException e) {
             throw new RuntimeException(e);
         }
@@ -161,7 +166,7 @@ public class ChannelServer {
         acceptor.unbindAll();
         acceptor = null;
 
-        //temporary while we dont have !addchannel
+        // temporary while we dont have !addchannel
         instances.remove(channel);
         setFinishShutdown();
     }
@@ -191,8 +196,8 @@ public class ChannelServer {
     }
 
     public final PlayerStorage getPlayerStorage() {
-        if (players == null) { //wth
-            players = new PlayerStorage(channel); //wthhhh
+        if (players == null) { // wth
+            players = new PlayerStorage(channel); // wthhhh
         }
         return players;
     }
@@ -288,16 +293,14 @@ public class ChannelServer {
     }
 
     public static final void startChannel_Main() {
-        Thread t = new Thread(() -> {
 
-            serverStartTime = System.currentTimeMillis();
+        serverStartTime = System.currentTimeMillis();
 
-            int amountOfChannels = 2; // should be constant
-            for (int i = 1; i <= amountOfChannels; i++) {
-                newInstance(i).run_startup_configurations();
-            }
-        });
-        Start.threads.add(t);
+        int amountOfChannels = 2; // should be constant
+        for (int i = 1; i <= amountOfChannels; i++) {
+            newInstance(i).run_startup_configurations();
+        }
+
     }
 
     public Map<MapleSquadType, MapleSquad> getAllSquads() {
@@ -338,7 +341,7 @@ public class ChannelServer {
             while (merchants_.hasNext()) {
                 HiredMerchant hm = merchants_.next().getValue();
                 hm.closeShop(true, false);
-                //HiredMerchantSave.QueueShopForSave(hm);
+                // HiredMerchantSave.QueueShopForSave(hm);
                 hm.getMap().removeMapObject(hm);
                 merchants_.remove();
                 ret++;
@@ -346,11 +349,11 @@ public class ChannelServer {
         } finally {
             merchLock.writeLock().unlock();
         }
-        //hacky
+        // hacky
         for (int i = 910000001; i <= 910000022; i++) {
             for (MapleMapObject mmo : mapFactory.getMap(i).getAllHiredMerchantsThreadsafe()) {
                 ((HiredMerchant) mmo).closeShop(true, false);
-                //HiredMerchantSave.QueueShopForSave((HiredMerchant) mmo);
+                // HiredMerchantSave.QueueShopForSave((HiredMerchant) mmo);
                 ret++;
             }
         }

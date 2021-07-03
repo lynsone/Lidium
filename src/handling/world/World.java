@@ -41,7 +41,8 @@ import handling.world.guild.MapleGuildAlliance;
 import handling.world.guild.MapleGuildCharacter;
 import java.util.Collection;
 import java.util.EnumMap;
-import server.Timer.WorldTimer;
+
+import server.TimerManager;
 import server.life.MapleMonster;
 import server.maps.MapleMap;
 import server.maps.MapleMapItem;
@@ -1664,7 +1665,7 @@ public class World {
     public static void registerRespawn() {
         Integer[] chs = ChannelServer.getAllInstance().toArray(new Integer[0]);
         for (int i = 0; i < chs.length; i += CHANNELS_PER_THREAD) {
-            WorldTimer.getInstance().register(new Respawn(chs, i), 4500); //divisible by 9000 if possible.
+            TimerManager.getInstance().register(new Respawn(chs, i), 4500); //divisible by 9000 if possible.
         }
         //3000 good or bad? ive no idea >_>
         //buffs can also be done, but eh

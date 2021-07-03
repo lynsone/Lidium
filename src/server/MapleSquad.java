@@ -13,7 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
-import server.Timer.EtcTimer;
 import server.maps.MapleMap;
 import tools.packet.CField;
 import tools.Pair;
@@ -127,7 +126,7 @@ public class MapleSquad {
     }
 
     public void scheduleRemoval() {
-        removal = EtcTimer.getInstance().schedule(new Runnable() {
+        removal = TimerManager.getInstance().schedule(new Runnable() {
 
             @Override
             public void run() {

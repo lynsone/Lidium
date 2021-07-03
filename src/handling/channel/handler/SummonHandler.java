@@ -43,7 +43,7 @@ import java.util.Map;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
 import server.Randomizer;
-import server.Timer.CloneTimer;
+import server.TimerManager;
 import server.movement.LifeMovementFragment;
 import server.life.MapleMonster;
 import server.maps.MapleDragon;
@@ -77,7 +77,7 @@ public class SummonHandler {
                 if (clones[i].get() != null) {
                     final MapleMap map = chr.getMap();
                     final MapleCharacter clone = clones[i].get();
-                    CloneTimer.getInstance().schedule(new Runnable() {
+                    TimerManager.getInstance().schedule(new Runnable() {
 
                         public void run() {
                             try {
