@@ -90,11 +90,14 @@ public class DatabaseConnection {
         config.addDataSourceProperty("cachePrepStmts", true);
         config.addDataSourceProperty("prepStmtCacheSize", 25);
         config.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
-
+        config.setLeakDetectionThreshold(20000);
+        config.setMaxLifetime(60000 * 5);
+        config.setMinimumIdle(5);
         ds = new HikariDataSource(config);
-        
+
     }
-    public static void closeAll(){
+
+    public static void closeAll() {
         ds.close();
     }
 }

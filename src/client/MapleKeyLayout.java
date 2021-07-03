@@ -74,11 +74,11 @@ public class MapleKeyLayout implements Serializable {
         }
     }
 
-    public final void saveKeys(final int charid) throws SQLException {
+    public final void saveKeys(Connection con, final int charid) throws SQLException {
         if (!changed) {
             return;
         }
-        Connection con = DatabaseConnection.getConnection();
+      
 
         PreparedStatement ps = con.prepareStatement("DELETE FROM keymap WHERE characterid = ?");
         ps.setInt(1, charid);
@@ -106,5 +106,6 @@ public class MapleKeyLayout implements Serializable {
         ps = con.prepareStatement(query.toString());
         ps.execute();
         ps.close();
+        
     }
 }
