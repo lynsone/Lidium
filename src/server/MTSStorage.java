@@ -169,6 +169,13 @@ public class MTSStorage {
             ps.close();
         } catch (Exception e) {
             e.printStackTrace();
+        }finally{
+            try {
+                if(con!=null && !con.isClosed()){
+                    con.close();
+                }
+            } catch (Exception ignore) {
+            }
         }
         packageId.set(lastPackage);
     }

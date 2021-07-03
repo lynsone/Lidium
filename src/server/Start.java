@@ -40,13 +40,21 @@ public class Start {
             ServerConstants.Use_Fixed_IV = false;
             System.out.println("[!!! Admin Only Mode Active !!!]");
         }
-
+        var con=DatabaseConnection.getConnection();
         try {
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET loggedin = 0")) {
+            try (PreparedStatement ps = con.prepareStatement("UPDATE accounts SET loggedin = 0")) {
                 ps.executeUpdate();
+                ps.close();
             }
         } catch (SQLException ex) {
             throw new RuntimeException("[EXCEPTION] Please check if the SQL server is active.");
+        }finally{
+            try {
+                if(con!=null && !con.isClosed()){
+                    con.close();
+                }
+            } catch (Exception ignore) {
+            }
         }
         System.out.println("Starting " + ServerProperties.getProperty("net.sf.odinms.login.serverName") + " v" + ServerConstants.MAPLE_VERSION + "." + ServerConstants.MAPLE_PATCH);
 

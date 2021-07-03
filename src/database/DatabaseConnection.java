@@ -1,130 +1,100 @@
-/*
-This file is part of the OdinMS Maple Story Server
-Copyright (C) 2008 ~ 2010 Patrick Huy <patrick.huy@frz.cc> 
-Matthias Butz <matze@odinms.de>
-Jan Christian Meyer <vimes@odinms.de>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License version 3
-as published by the Free Software Foundation. You may not use, modify
-or distribute this program under any other version of the
-GNU Affero General Public License.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedList;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import server.ServerProperties;
 
-/**
- * All OdinMS servers maintain a Database Connection. This class therefore "singletonices" the connection per process.
- *
- *
- * @author Frz
- */
 public class DatabaseConnection {
+    private static HikariDataSource ds;
 
-    private static final ThreadLocal<Connection> con = new ThreadLocalConnection();
-    public static final int CLOSE_CURRENT_RESULT = 1;
-    /**
-     * The constant indicating that the current <code>ResultSet</code> object
-     * should not be closed when calling <code>getMoreResults</code>.
-     *
-     * @since 1.4
-     */
-    public static final int KEEP_CURRENT_RESULT = 2;
-    /**
-     * The constant indicating that all <code>ResultSet</code> objects that
-     * have previously been kept open should be closed when calling
-     * <code>getMoreResults</code>.
-     *
-     * @since 1.4
-     */
-    public static final int CLOSE_ALL_RESULTS = 3;
-    /**
-     * The constant indicating that a batch statement executed successfully
-     * but that no count of the number of rows it affected is available.
-     *
-     * @since 1.4
-     */
-    public static final int SUCCESS_NO_INFO = -2;
-    /**
-     * The constant indicating that an error occured while executing a
-     * batch statement.
-     *
-     * @since 1.4
-     */
-    public static final int EXECUTE_FAILED = -3;
-    /**
-     * The constant indicating that generated keys should be made
-     * available for retrieval.
-     *
-     * @since 1.4
-     */
-    public static final int RETURN_GENERATED_KEYS = 1;
-    /**
-     * The constant indicating that generated keys should not be made
-     * available for retrieval.
-     *
-     * @since 1.4
-     */
-    public static final int NO_GENERATED_KEYS = 2;
-
-    public static final Connection getConnection() {
-        Connection get = con.get();
-        try {
-            if (get.isClosed()) {
-                con.remove();
-                return getConnection();
+    public static Connection getConnection() {
+        if (ds != null) {
+            try {
+                return ds.getConnection();
+            } catch (SQLException sqle) {
+                sqle.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return get;
+
+        for (int denies = 0; denies <= 3; denies++) { // There is no way it can pass with a null out of here?
+            try {
+                return DriverManager.getConnection(
+                        ServerProperties.getProperty("database.url",
+                                "jdbc:mysql://localhost:3306/v111?autoReconnect=true"),
+                        ServerProperties.getProperty("database.user", "root"),
+                        ServerProperties.getProperty("database.password", "root"));
+            } catch (SQLException sqle) {
+                denies++;
+
+                if (denies == 3) {
+                    sqle.printStackTrace();
+                }
+            }
+        }
+        return null;
     }
 
-    public static final void closeAll() throws SQLException {
-        for (final Connection con : ThreadLocalConnection.allConnections) {
-            if (con != null) {
+    private static int getNumberOfAccounts() {
+        try {
+            Connection con = DriverManager.getConnection(
+                    ServerProperties.getProperty("database.url", "jdbc:mysql://localhost:3306/v111?autoReconnect=true"),
+                    ServerProperties.getProperty("database.user", "root"),
+                    ServerProperties.getProperty("database.password", "root"));
+            try (PreparedStatement ps = con.prepareStatement("SELECT count(*) FROM accounts")) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    rs.next();
+                    return rs.getInt(1);
+                }
+            } finally {
                 con.close();
             }
+        } catch (SQLException sqle) {
+            return 20;
         }
     }
 
-    private static final class ThreadLocalConnection extends ThreadLocal<Connection> {
-
-        public static final Collection<Connection> allConnections = new LinkedList<Connection>();
-
-        @Override
-        protected final Connection initialValue() {
-            try {
-                Class.forName(ServerProperties.getProperty("database.driver", "com.mysql.cj.jdbc.Driver")); // touch the mysql driver
-            } catch (final ClassNotFoundException e) {
-                System.err.println("ERROR" + e);
-            }
-            try {
-                final Connection con = DriverManager.getConnection(
-                        ServerProperties.getProperty("database.url", "jdbc:mysql://localhost:3306/v111?autoReconnect=true"),
-                        ServerProperties.getProperty("database.user", "root"),
-                        ServerProperties.getProperty("database.password", "root")
-                );
-                allConnections.add(con);
-                return con;
-            } catch (SQLException e) {
-                System.err.println("ERROR" + e);
-                return null;
-            }
+    public DatabaseConnection() {
+        try {
+            Class.forName(ServerProperties.getProperty("database.driver", "com.mysql.cj.jdbc.Driver"));
+        } catch (ClassNotFoundException e) {
+            System.out.println("[SEVERE] SQL Driver Not Found. Consider death by clams.");
+            e.printStackTrace();
         }
+
+        ds = null;
+
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(
+                ServerProperties.getProperty("database.url", "jdbc:mysql://localhost:3306/v111?autoReconnect=true"));
+
+        config.setUsername(ServerProperties.getProperty("database.user", "root"));
+        config.setPassword(ServerProperties.getProperty("database.password", "root"));
+
+        // Make sure pool size is comfortable for the worst case scenario.
+        // Under 100 accounts? Make it 10. Over 10000 accounts? Make it 30.
+        int poolSize = (int) Math.ceil(0.00202020202 * getNumberOfAccounts() + 9.797979798);
+        if (poolSize < 10) {
+            poolSize = 10;
+        } else if (poolSize > 30) {
+            poolSize = 30;
+        }
+
+        config.setConnectionTimeout(30 * 1000);
+        config.setMaximumPoolSize(poolSize);
+
+        config.addDataSourceProperty("cachePrepStmts", true);
+        config.addDataSourceProperty("prepStmtCacheSize", 25);
+        config.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
+
+        ds = new HikariDataSource(config);
+        
+    }
+    public static void closeAll(){
+        ds.close();
     }
 }
