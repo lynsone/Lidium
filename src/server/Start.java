@@ -40,25 +40,13 @@ public class Start {
             ServerConstants.Use_Fixed_IV = false;
             System.out.println("[!!! Admin Only Mode Active !!!]");
         }
-        var con = DatabaseConnection.getConnection();
+
         try {
-<<<<<<< HEAD
-            try (PreparedStatement ps = con.prepareStatement("UPDATE accounts SET loggedin = 0")) {
-=======
             try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET loggedin = 0")) {
->>>>>>> parent of 05c6e05 (Merge branch 'atnight348:main' into main)
                 ps.executeUpdate();
-                ps.close();
             }
         } catch (SQLException ex) {
             throw new RuntimeException("[EXCEPTION] Please check if the SQL server is active.");
-        } finally {
-            try {
-                if (con != null && !con.isClosed()) {
-                    con.close();
-                }
-            } catch (Exception ignore) {
-            }
         }
         System.out.println("Starting " + ServerProperties.getProperty("net.sf.odinms.login.serverName") + " v" + ServerConstants.MAPLE_VERSION + "." + ServerConstants.MAPLE_PATCH);
 
@@ -178,8 +166,7 @@ public class Start {
         MapleMonsterInformationProvider.getInstance().addExtra();
         LoginServer.setOn(); //now or later
         RankingWorker.run();
-        Thread tdc = new Thread(new DiseaseChecker());
-        threads.add(tdc);
+
         threads.parallelStream().forEach(tx -> {
             tx.start();
         });
@@ -197,39 +184,4 @@ public class Start {
     public static void main(final String args[]) throws InterruptedException {
         instance.run();
     }
-<<<<<<< HEAD
-
-    public static class DiseaseChecker implements Runnable {
-
-        @Override
-        public void run() {
-            System.out.println("Starting Diseases checker thread...");
-            try {
-                while (true) {
-                    // Remove parallelStream(). if the processor suffers xD
-                    // System.out.println("Checking diseases...");
-                    ChannelServer.getAllInstances().parallelStream().forEach((chs) -> {
-                        chs.getPlayerStorage().getAllCharacters().parallelStream().forEach((chr) -> {
-                            MapleMap map = chr.getMap();
-                            if (map != null) {
-                                if (chr.getDiseaseSize() > 0) {
-                                    chr.getAllDiseases().parallelStream().forEach((m) -> {
-                                        // System.out.print(">removing " + m.disease);
-                                        chr.dispelDebuff(m.disease);
-                                    });
-                                }
-                            }
-                        });
-
-                    });
-
-                    Thread.sleep(2000);
-                }
-            } catch (Exception e) {
-            }
-
-        }
-    }
-=======
->>>>>>> parent of 05c6e05 (Merge branch 'atnight348:main' into main)
 }
