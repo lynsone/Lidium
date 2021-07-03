@@ -200,32 +200,32 @@ public class InventoryHandler {
         final MapleInventoryType invType = MapleInventoryType.getByType(mode);
         MapleInventory Inv = c.getPlayer().getInventory(invType);
 
-        final List<Item> itemMap = new LinkedList<Item>();
-        for (Item item : Inv.list()) {
+        final List<Item> itemMap = new LinkedList<>();
+        Inv.list().forEach(item -> {
             itemMap.add(item.copy()); // clone all  items T___T.
-        }
-        for (Item itemStats : itemMap) {
+        });
+        itemMap.forEach(itemStats -> {
             MapleInventoryManipulator.removeFromSlot(c, invType, itemStats.getPosition(), itemStats.getQuantity(), true, false);
-        }
+        });
 
         final List<Item> sortedItems = sortItems(itemMap);
-        for (Item item : sortedItems) {
+        sortedItems.forEach(item -> {
             MapleInventoryManipulator.addFromDrop(c, item, false);
-        }
+        });
         c.getSession().write(CWvsContext.finishedGather(mode));
         c.getSession().write(CWvsContext.enableActions());
         itemMap.clear();
         sortedItems.clear();
     }
 
-    private static final List<Item> sortItems(final List<Item> passedMap) {
-        final List<Integer> itemIds = new ArrayList<Integer>(); // empty list.
-        for (Item item : passedMap) {
+    private static List<Item> sortItems(final List<Item> passedMap) {
+        final List<Integer> itemIds = new ArrayList<>(); // empty list.
+        passedMap.forEach(item -> {
             itemIds.add(item.getItemId()); // adds all item ids to the empty list to be sorted.
-        }
+        });
         Collections.sort(itemIds); // sorts item ids
 
-        final List<Item> sortedList = new LinkedList<Item>(); // ordered list pl0x <3.
+        final List<Item> sortedList = new LinkedList<>(); // ordered list pl0x <3.
 
         for (Integer val : itemIds) {
             for (Item item : passedMap) {
@@ -494,16 +494,14 @@ public class InventoryHandler {
                         StructItemOption pot = pots.get(Randomizer.nextInt(pots.size())).get(reqLevel);
                         if (pot != null && pot.reqLevel / 10 <= reqLevel && GameConstants.optionTypeFits(pot.optionType, eqq.getItemId()) && GameConstants.potentialIDFits(pot.opID, new_state, i)) { //optionType
                             //have to research optionType before making this truely official-like
-                            if (i == 0) {
-                                eqq.setPotential1(pot.opID);
-                            } else if (i == 1) {
-                                eqq.setPotential2(pot.opID);
-                            } else if (i == 2) {
-                                eqq.setPotential3(pot.opID);
-                            } else if (i == 3) {
-                                eqq.setPotential4(pot.opID);
-                            } else if (i == 4) {
-                                eqq.setPotential5(pot.opID);
+                            switch (i) {
+                                case 0 -> eqq.setPotential1(pot.opID);
+                                case 1 -> eqq.setPotential2(pot.opID);
+                                case 2 -> eqq.setPotential3(pot.opID);
+                                case 3 -> eqq.setPotential4(pot.opID);
+                                case 4 -> eqq.setPotential5(pot.opID);
+                                default -> {
+                                }
                             }
                             rewarded = true;
                         }
@@ -521,26 +519,25 @@ public class InventoryHandler {
             c.getSession().write(CWvsContext.enableActions());
         } else {
             c.getSession().write(InventoryPacket.getInventoryFull());
-            return;
         }
     }
 
     public static final void addToScrollLog(int accountID, int charID, int scrollID, int itemID, byte oldSlots, byte newSlots, byte viciousHammer, String result, boolean ws, boolean ls, int vega) {
         try {
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO scroll_log VALUES(DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            ps.setInt(1, accountID);
-            ps.setInt(2, charID);
-            ps.setInt(3, scrollID);
-            ps.setInt(4, itemID);
-            ps.setByte(5, oldSlots);
-            ps.setByte(6, newSlots);
-            ps.setByte(7, viciousHammer);
-            ps.setString(8, result);
-            ps.setByte(9, (byte) (ws ? 1 : 0));
-            ps.setByte(10, (byte) (ls ? 1 : 0));
-            ps.setInt(11, vega);
-            ps.execute();
-            ps.close();
+            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO scroll_log VALUES(DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                ps.setInt(1, accountID);
+                ps.setInt(2, charID);
+                ps.setInt(3, scrollID);
+                ps.setInt(4, itemID);
+                ps.setByte(5, oldSlots);
+                ps.setByte(6, newSlots);
+                ps.setByte(7, viciousHammer);
+                ps.setString(8, result);
+                ps.setByte(9, (byte) (ws ? 1 : 0));
+                ps.setByte(10, (byte) (ls ? 1 : 0));
+                ps.setInt(11, vega);
+                ps.execute();
+            }
         } catch (SQLException e) {
             FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
         }
@@ -686,7 +683,7 @@ public class InventoryHandler {
         }
 
         if (legendarySpirit && vegas == 0) {
-            if (chr.getSkillLevel(SkillFactory.getSkill(chr.getStat().getSkillByJob(1003, chr.getJob()))) <= 0) {
+            if (chr.getSkillLevel(SkillFactory.getSkill(PlayerStats.getSkillByJob(1003, chr.getJob()))) <= 0) {
                 c.getSession().write(CWvsContext.enableActions());
                 return false;
             }
@@ -846,7 +843,7 @@ public class InventoryHandler {
 
         if (toUse != null && toUse.getQuantity() >= 1 && toUse.getItemId() == itemId && !chr.hasBlockedInventory() && !chr.inPVP()) {
             switch (toUse.getItemId()) {
-                case 2430007: { // Blank Compass
+                case 2430007 ->  { // Blank Compass
                     final MapleInventory inventory = chr.getInventory(MapleInventoryType.SETUP);
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
 
@@ -863,9 +860,8 @@ public class InventoryHandler {
                         MapleInventoryManipulator.addById(c, 2430007, (short) 1, "Scripted item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date()); // Blank Compass
                     }
                     NPCScriptManager.getInstance().start(c, 2084001);
-                    break;
                 }
-                case 2430008: { // Gold Compass
+                case 2430008 ->  { // Gold Compass
                     chr.saveLocation(SavedLocationType.RICHIE);
                     MapleMap map;
                     boolean warped = false;
@@ -884,9 +880,9 @@ public class InventoryHandler {
                     } else { // Or mabe some other message.
                         c.getPlayer().dropMessage(5, "All maps are currently in use, please try again later.");
                     }
-                    break;
                 }
-                case 2430112: //miracle cube fragment
+                case 2430112 -> {
+                    //miracle cube fragment
                     if (c.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() >= 1) {
                         if (c.getPlayer().getInventory(MapleInventoryType.USE).countById(2430112) >= 25) {
                             if (MapleInventoryManipulator.checkSpace(c, 2049400, 1, "") && MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, toUse.getItemId(), 25, true, false)) {
@@ -906,8 +902,9 @@ public class InventoryHandler {
                     } else {
                         c.getPlayer().dropMessage(5, "Please make some space.");
                     }
-                    break;
-                case 2430481: //super miracle cube fragment
+                }
+                case 2430481 -> {
+                    //super miracle cube fragment
                     if (c.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() >= 1) {
                         if (c.getPlayer().getInventory(MapleInventoryType.USE).countById(2430481) >= 30) {
                             if (MapleInventoryManipulator.checkSpace(c, 2049701, 1, "") && MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, toUse.getItemId(), 30, true, false)) {
@@ -927,8 +924,9 @@ public class InventoryHandler {
                     } else {
                         c.getPlayer().dropMessage(5, "Please make some space.");
                     }
-                    break;
-                case 2430691: // nebulite diffuser fragment
+                }
+                case 2430691 -> {
+                    // nebulite diffuser fragment
                     if (c.getPlayer().getInventory(MapleInventoryType.CASH).getNumFreeSlot() >= 1) {
                         if (c.getPlayer().getInventory(MapleInventoryType.USE).countById(2430691) >= 10) {
                             if (MapleInventoryManipulator.checkSpace(c, 5750001, 1, "") && MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, toUse.getItemId(), 10, true, false)) {
@@ -942,8 +940,9 @@ public class InventoryHandler {
                     } else {
                         c.getPlayer().dropMessage(5, "Please make some space.");
                     }
-                    break;
-                case 2430748: // premium fusion ticket 
+                }
+                case 2430748 -> {
+                    // premium fusion ticket
                     if (c.getPlayer().getInventory(MapleInventoryType.ETC).getNumFreeSlot() >= 1) {
                         if (c.getPlayer().getInventory(MapleInventoryType.USE).countById(2430748) >= 20) {
                             if (MapleInventoryManipulator.checkSpace(c, 4420000, 1, "") && MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, toUse.getItemId(), 20, true, false)) {
@@ -957,8 +956,9 @@ public class InventoryHandler {
                     } else {
                         c.getPlayer().dropMessage(5, "Please make some space.");
                     }
-                    break;
-                case 2430692: // nebulite box
+                }
+                case 2430692 -> {
+                    // nebulite box
                     if (c.getPlayer().getInventory(MapleInventoryType.SETUP).getNumFreeSlot() >= 1) {
                         if (c.getPlayer().getInventory(MapleInventoryType.USE).countById(2430692) >= 1) {
                             final int rank = Randomizer.nextInt(100) < 30 ? (Randomizer.nextInt(100) < 4 ? 2 : 1) : 0;
@@ -983,29 +983,26 @@ public class InventoryHandler {
                     } else {
                         c.getPlayer().dropMessage(5, "Please make some space.");
                     }
-                    break;
-                case 5680019: {//starling hair 
+                }
+                case 5680019 ->  {//starling hair 
                     //if (c.getPlayer().getGender() == 1) {
                     int hair = 32150 + (c.getPlayer().getHair() % 10);
                     c.getPlayer().setHair(hair);
                     c.getPlayer().updateSingleStat(MapleStat.HAIR, hair);
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (byte) 1, false);
                     //}
-                    break;
                 }
-                case 5680020: {//starling hair 
+                case 5680020 ->  {//starling hair 
                     //if (c.getPlayer().getGender() == 0) {
                     int hair = 32160 + (c.getPlayer().getHair() % 10);
                     c.getPlayer().setHair(hair);
                     c.getPlayer().updateSingleStat(MapleStat.HAIR, hair);
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (byte) 1, false);
                     //}
-                    break;
                 }
-                case 3994225:
-                    c.getPlayer().dropMessage(5, "Please bring this item to the NPC.");
-                    break;
-                case 2430212: //energy drink
+                case 3994225 -> c.getPlayer().dropMessage(5, "Please bring this item to the NPC.");
+                case 2430212 -> {
+                    //energy drink
                     MapleQuestStatus marr = c.getPlayer().getQuestNAdd(MapleQuest.getInstance(GameConstants.ENERGY_DRINK));
                     if (marr.getCustomData() == null) {
                         marr.setCustomData("0");
@@ -1017,60 +1014,66 @@ public class InventoryHandler {
                         MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
                         c.getPlayer().setFatigue(c.getPlayer().getFatigue() - 5);
                     }
-                    break;
-                case 2430213: //energy drink
-                    marr = c.getPlayer().getQuestNAdd(MapleQuest.getInstance(GameConstants.ENERGY_DRINK));
+                }
+                case 2430213 -> {
+                    //energy drink
+                    MapleQuestStatus marr = c.getPlayer().getQuestNAdd(MapleQuest.getInstance(GameConstants.ENERGY_DRINK));
                     if (marr.getCustomData() == null) {
                         marr.setCustomData("0");
                     }
-                    lastTime = Long.parseLong(marr.getCustomData());
+                    long lastTime = Long.parseLong(marr.getCustomData());
                     if (lastTime + (600000) > System.currentTimeMillis()) {
                         c.getPlayer().dropMessage(5, "You can only use one energy drink per 10 minutes.");
                     } else if (c.getPlayer().getFatigue() > 0) {
                         MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
                         c.getPlayer().setFatigue(c.getPlayer().getFatigue() - 10);
                     }
-                    break;
-                case 2430220: //energy drink
-                case 2430214: //energy drink
+                }
+                case 2430220, 2430214 -> //energy drink
+                {
+                    //energy drink
                     if (c.getPlayer().getFatigue() > 0) {
                         MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
                         c.getPlayer().setFatigue(c.getPlayer().getFatigue() - 30);
                     }
-                    break;
-                case 2430227: //energy drink
+                }
+                case 2430227 -> {
+                    //energy drink
                     if (c.getPlayer().getFatigue() > 0) {
                         MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
                         c.getPlayer().setFatigue(c.getPlayer().getFatigue() - 50);
                     }
-                    break;
-                case 2430231: //energy drink
-                    marr = c.getPlayer().getQuestNAdd(MapleQuest.getInstance(GameConstants.ENERGY_DRINK));
+                }
+                case 2430231 -> {
+                    //energy drink
+                    MapleQuestStatus marr = c.getPlayer().getQuestNAdd(MapleQuest.getInstance(GameConstants.ENERGY_DRINK));
                     if (marr.getCustomData() == null) {
                         marr.setCustomData("0");
                     }
-                    lastTime = Long.parseLong(marr.getCustomData());
+                    long lastTime = Long.parseLong(marr.getCustomData());
                     if (lastTime + (600000) > System.currentTimeMillis()) {
                         c.getPlayer().dropMessage(5, "You can only use one energy drink per 10 minutes.");
                     } else if (c.getPlayer().getFatigue() > 0) {
                         MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
                         c.getPlayer().setFatigue(c.getPlayer().getFatigue() - 40);
                     }
-                    break;
-                case 2430144: //smb
+                }
+                case 2430144 -> {
+                    //smb
                     final int itemid = Randomizer.nextInt(373) + 2290000;
                     if (MapleItemInformationProvider.getInstance().itemExists(itemid) && !MapleItemInformationProvider.getInstance().getName(itemid).contains("Special") && !MapleItemInformationProvider.getInstance().getName(itemid).contains("Event")) {
                         MapleInventoryManipulator.addById(c, itemid, (short) 1, "Reward item: " + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
                         MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
                     }
-                    break;
-                case 2430370:
+                }
+                case 2430370 -> {
                     if (MapleInventoryManipulator.checkSpace(c, 2028062, (short) 1, "")) {
                         MapleInventoryManipulator.addById(c, 2028062, (short) 1, "Reward item: " + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
                         MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
                     }
-                    break;
-                case 2430158: //lion king
+                }
+                case 2430158 -> {
+                    //lion king
                     if (c.getPlayer().getInventory(MapleInventoryType.ETC).getNumFreeSlot() >= 1) {
                         if (c.getPlayer().getInventory(MapleInventoryType.ETC).countById(4000630) >= 100) {
                             if (MapleInventoryManipulator.checkSpace(c, 4310010, 1, "") && MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, toUse.getItemId(), 1, true, false)) {
@@ -1090,12 +1093,13 @@ public class InventoryHandler {
                     } else {
                         c.getPlayer().dropMessage(5, "Please make some space.");
                     }
-                    break;
-                case 2430159:
+                }
+                case 2430159 -> {
                     MapleQuest.getInstance(3182).forceComplete(c.getPlayer(), 2161004);
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
-                    break;
-                case 2430200: //thunder stone
+                }
+                case 2430200 -> {
+                    //thunder stone
                     if (c.getPlayer().getQuestStatus(31152) != 2) {
                         c.getPlayer().dropMessage(5, "You have no idea how to use it.");
                     } else {
@@ -1113,644 +1117,805 @@ public class InventoryHandler {
                             c.getPlayer().dropMessage(5, "Please make some space.");
                         }
                     }
-                    break;
-                case 2430130:
-                case 2430131: //energy charge
+                }
+                case 2430130, 2430131 -> {
+                    //energy charge
                     if (GameConstants.isResist(c.getPlayer().getJob())) {
                         MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
                         c.getPlayer().gainExp(Math.round(20000 + (c.getPlayer().getLevel() * 50 * c.getChannelServer().getExpRate())), true, true, false);
                     } else {
                         c.getPlayer().dropMessage(5, "You may not use this item.");
                     }
-                    break;
-                case 2430132:
-                case 2430133:
-                case 2430134: //resistance box
-                case 2430142:
+                }
+                case 2430132, 2430133, 2430134, 2430142 -> {
                     if (c.getPlayer().getInventory(MapleInventoryType.EQUIP).getNumFreeSlot() >= 1) {
-                        if (c.getPlayer().getJob() == 3200 || c.getPlayer().getJob() == 3210 || c.getPlayer().getJob() == 3211 || c.getPlayer().getJob() == 3212) {
-                            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
-                            MapleInventoryManipulator.addById(c, 1382101, (short) 1, "Scripted item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date());
-                        } else if (c.getPlayer().getJob() == 3300 || c.getPlayer().getJob() == 3310 || c.getPlayer().getJob() == 3311 || c.getPlayer().getJob() == 3312) {
-                            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
-                            MapleInventoryManipulator.addById(c, 1462093, (short) 1, "Scripted item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date());
-                        } else if (c.getPlayer().getJob() == 3500 || c.getPlayer().getJob() == 3510 || c.getPlayer().getJob() == 3511 || c.getPlayer().getJob() == 3512) {
-                            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
-                            MapleInventoryManipulator.addById(c, 1492080, (short) 1, "Scripted item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date());
-                        } else {
-                            c.getPlayer().dropMessage(5, "You may not use this item.");
+                        switch (c.getPlayer().getJob()) {
+                            case 3200:
+                            case 3210:
+                            case 3211:
+                            case 3212:
+                                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
+                                MapleInventoryManipulator.addById(c, 1382101, (short) 1, "Scripted item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date());
+                                break;
+                            case 3300:
+                            case 3310:
+                            case 3311:
+                            case 3312:
+                                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
+                                MapleInventoryManipulator.addById(c, 1462093, (short) 1, "Scripted item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date());
+                                break;
+                            case 3500:
+                            case 3510:
+                            case 3511:
+                            case 3512:
+                                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
+                                MapleInventoryManipulator.addById(c, 1492080, (short) 1, "Scripted item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date());
+                                break;
+                            default:
+                                c.getPlayer().dropMessage(5, "You may not use this item.");
+                                break;
                         }
                     } else {
                         c.getPlayer().dropMessage(5, "Make some space.");
                     }
-                    break;
-                case 2430036: //croco 1 day
+                }
+                case 2430036 -> {
+                    //croco 1 day
                     mountid = 1027;
                     expiration_days = 1;
-                    break;
-                case 2430170: //croco 7 day
+                }
+                case 2430170 -> {
+                    //croco 7 day
                     mountid = 1027;
                     expiration_days = 7;
-                    break;
-                case 2430037: //black scooter 1 day
+                }
+                case 2430037 -> {
+                    //black scooter 1 day
                     mountid = 1028;
                     expiration_days = 1;
-                    break;
-                case 2430038: //pink scooter 1 day
+                }
+                case 2430038 -> //resistance box
+                {
+                    //pink scooter 1 day
                     mountid = 1029;
                     expiration_days = 1;
-                    break;
-                case 2430039: //clouds 1 day
+                }
+                case 2430039 -> {
+                    //clouds 1 day
                     mountid = 1030;
                     expiration_days = 1;
-                    break;
-                case 2430040: //balrog 1 day
+                }
+                case 2430040 -> {
+                    //balrog 1 day
                     mountid = 1031;
                     expiration_days = 1;
-                    break;
-                case 2430223: //balrog 1 day
+                }
+                case 2430223 -> {
+                    //balrog 1 day
                     mountid = 1031;
                     expiration_days = 15;
-                    break;
-                case 2430259: //balrog 1 day
+                }
+                case 2430259 -> {
+                    //balrog 1 day
                     mountid = 1031;
                     expiration_days = 3;
-                    break;
-                case 2430242: //motorcycle
+                }
+                case 2430242 -> {
+                    //motorcycle
                     mountid = 80001018;
                     expiration_days = 10;
-                    break;
-                case 2430243: //power suit
+                }
+                case 2430243 -> {
+                    //power suit
                     mountid = 80001019;
                     expiration_days = 10;
-                    break;
-                case 2430261: //power suit
+                }
+                case 2430261 -> {
+                    //power suit
                     mountid = 80001019;
                     expiration_days = 3;
-                    break;
-                case 2430249: //motorcycle
+                }
+                case 2430249 -> {
+                    //motorcycle
                     mountid = 80001027;
                     expiration_days = 3;
-                    break;
-                case 2430225: //balrog 1 day
+                }
+                case 2430225 -> {
+                    //balrog 1 day
                     mountid = 1031;
                     expiration_days = 10;
-                    break;
-                case 2430053: //croco 30 day
+                }
+                case 2430053 -> {
+                    //croco 30 day
                     mountid = 1027;
                     expiration_days = 1;
-                    break;
-                case 2430054: //black scooter 30 day
+                }
+                case 2430054 -> {
+                    //black scooter 30 day
                     mountid = 1028;
                     expiration_days = 30;
-                    break;
-                case 2430055: //pink scooter 30 day
+                }
+                case 2430055 -> {
+                    //pink scooter 30 day
                     mountid = 1029;
                     expiration_days = 30;
-                    break;
-                case 2430257: //pink
+                }
+                case 2430257 -> {
+                    //pink
                     mountid = 1029;
                     expiration_days = 7;
-                    break;
-                case 2430056: //mist rog 30 day
+                }
+                case 2430056 -> {
+                    //mist rog 30 day
                     mountid = 1035;
                     expiration_days = 30;
-                    break;
-                case 2430057:
+                }
+                case 2430057 -> {
                     mountid = 1033;
                     expiration_days = 30;
-                    break;
-                case 2430072: //ZD tiger 7 day
+                }
+                case 2430072 -> {
+                    //ZD tiger 7 day
                     mountid = 1034;
                     expiration_days = 7;
-                    break;
-                case 2430073: //lion 15 day
+                }
+                case 2430073 -> {
+                    //lion 15 day
                     mountid = 1036;
                     expiration_days = 15;
-                    break;
-                case 2430074: //unicorn 15 day
+                }
+                case 2430074 -> {
+                    //unicorn 15 day
                     mountid = 1037;
                     expiration_days = 15;
-                    break;
-                case 2430272: //low rider 15 day
+                }
+                case 2430272 -> {
+                    //low rider 15 day
                     mountid = 1038;
                     expiration_days = 3;
-                    break;
-                case 2430275: //spiegelmann
+                }
+                case 2430275 -> {
+                    //spiegelmann
                     mountid = 80001033;
                     expiration_days = 7;
-                    break;
-                case 2430075: //low rider 15 day
+                }
+                case 2430075 -> {
+                    //low rider 15 day
                     mountid = 1038;
                     expiration_days = 15;
-                    break;
-                case 2430076: //red truck 15 day
+                }
+                case 2430076 -> {
+                    //red truck 15 day
                     mountid = 1039;
                     expiration_days = 15;
-                    break;
-                case 2430077: //gargoyle 15 day
+                }
+                case 2430077 -> {
+                    //gargoyle 15 day
                     mountid = 1040;
                     expiration_days = 15;
-                    break;
-                case 2430080: //shinjo 20 day
+                }
+                case 2430080 -> {
+                    //shinjo 20 day
                     mountid = 1042;
                     expiration_days = 20;
-                    break;
-                case 2430082: //orange mush 7 day
+                }
+                case 2430082 -> {
+                    //orange mush 7 day
                     mountid = 1044;
                     expiration_days = 7;
-                    break;
-                case 2430260: //orange mush 7 day
+                }
+                case 2430260 -> {
+                    //orange mush 7 day
                     mountid = 1044;
                     expiration_days = 3;
-                    break;
-                case 2430091: //nightmare 10 day
+                }
+                case 2430091 -> {
+                    //nightmare 10 day
                     mountid = 1049;
                     expiration_days = 10;
-                    break;
-                case 2430092: //yeti 10 day
+                }
+                case 2430092 -> {
+                    //yeti 10 day
                     mountid = 1050;
                     expiration_days = 10;
-                    break;
-                case 2430263: //yeti 10 day
+                }
+                case 2430263 -> {
+                    //yeti 10 day
                     mountid = 1050;
                     expiration_days = 3;
-                    break;
-                case 2430093: //ostrich 10 day
+                }
+                case 2430093 -> {
+                    //ostrich 10 day
                     mountid = 1051;
                     expiration_days = 10;
-                    break;
-                case 2430101: //pink bear 10 day
+                }
+                case 2430101 -> {
+                    //pink bear 10 day
                     mountid = 1052;
                     expiration_days = 10;
-                    break;
-                case 2430102: //transformation robo 10 day
+                }
+                case 2430102 -> {
+                    //transformation robo 10 day
                     mountid = 1053;
                     expiration_days = 10;
-                    break;
-                case 2430103: //chicken 30 day
+                }
+                case 2430103 -> {
+                    //chicken 30 day
                     mountid = 1054;
                     expiration_days = 30;
-                    break;
-                case 2430266: //chicken 30 day
+                }
+                case 2430266 -> {
+                    //chicken 30 day
                     mountid = 1054;
                     expiration_days = 3;
-                    break;
-                case 2430265: //chariot
+                }
+                case 2430265 -> {
+                    //chariot
                     mountid = 1151;
                     expiration_days = 3;
-                    break;
-                case 2430258: //law officer
+                }
+                case 2430258 -> {
+                    //law officer
                     mountid = 1115;
                     expiration_days = 365;
-                    break;
-                case 2430117: //lion 1 year
+                }
+                case 2430117 -> {
+                    //lion 1 year
                     mountid = 1036;
                     expiration_days = 365;
-                    break;
-                case 2430118: //red truck 1 year
+                }
+                case 2430118 -> {
+                    //red truck 1 year
                     mountid = 1039;
                     expiration_days = 365;
-                    break;
-                case 2430119: //gargoyle 1 year
+                }
+                case 2430119 -> {
+                    //gargoyle 1 year
                     mountid = 1040;
                     expiration_days = 365;
-                    break;
-                case 2430120: //unicorn 1 year
+                }
+                case 2430120 -> {
+                    //unicorn 1 year
                     mountid = 1037;
                     expiration_days = 365;
-                    break;
-                case 2430271: //owl 30 day
+                }
+                case 2430271 -> {
+                    //owl 30 day
                     mountid = 1069;
                     expiration_days = 3;
-                    break;
-                case 2430136: //owl 30 day
+                }
+                case 2430136 -> {
+                    //owl 30 day
                     mountid = 1069;
                     expiration_days = 30;
-                    break;
-                case 2430137: //owl 1 year
+                }
+                case 2430137 -> {
+                    //owl 1 year
                     mountid = 1069;
                     expiration_days = 365;
-                    break;
-                case 2430145: //mothership
+                }
+                case 2430145 -> {
+                    //mothership
                     mountid = 1070;
                     expiration_days = 30;
-                    break;
-                case 2430146: //mothership
+                }
+                case 2430146 -> {
+                    //mothership
                     mountid = 1070;
                     expiration_days = 365;
-                    break;
-                case 2430147: //mothership
+                }
+                case 2430147 -> {
+                    //mothership
                     mountid = 1071;
                     expiration_days = 30;
-                    break;
-                case 2430148: //mothership
+                }
+                case 2430148 -> {
+                    //mothership
                     mountid = 1071;
                     expiration_days = 365;
-                    break;
-                case 2430135: //os4
+                }
+                case 2430135 -> {
+                    //os4
                     mountid = 1065;
                     expiration_days = 15;
-                    break;
-                case 2430149: //leonardo 30 day
+                }
+                case 2430149 -> {
+                    //leonardo 30 day
                     mountid = 1072;
                     expiration_days = 30;
-                    break;
-                case 2430262: //leonardo 30 day
+                }
+                case 2430262 -> {
+                    //leonardo 30 day
                     mountid = 1072;
                     expiration_days = 3;
-                    break;
-                case 2430179: //witch 15 day
+                }
+                case 2430179 -> {
+                    //witch 15 day
                     mountid = 1081;
                     expiration_days = 15;
-                    break;
-                case 2430264: //witch 15 day
+                }
+                case 2430264 -> {
+                    //witch 15 day
                     mountid = 1081;
                     expiration_days = 3;
-                    break;
-                case 2430201: //giant bunny 60 day
+                }
+                case 2430201 -> {
+                    //giant bunny 60 day
                     mountid = 1096;
                     expiration_days = 60;
-                    break;
-                case 2430228: //tiny bunny 60 day
+                }
+                case 2430228 -> {
+                    //tiny bunny 60 day
                     mountid = 1101;
                     expiration_days = 60;
-                    break;
-                case 2430276: //tiny bunny 60 day
+                }
+                case 2430276 -> {
+                    //tiny bunny 60 day
                     mountid = 1101;
                     expiration_days = 15;
-                    break;
-                case 2430277: //tiny bunny 60 day
+                }
+                case 2430277 -> {
+                    //tiny bunny 60 day
                     mountid = 1101;
                     expiration_days = 365;
-                    break;
-                case 2430283: //trojan
+                }
+                case 2430283 -> {
+                    //trojan
                     mountid = 1025;
                     expiration_days = 10;
-                    break;
-                case 2430291: //hot air
+                }
+                case 2430291 -> {
+                    //hot air
                     mountid = 1145;
                     expiration_days = -1;
-                    break;
-                case 2430293: //nadeshiko
+                }
+                case 2430293 -> {
+                    //nadeshiko
                     mountid = 1146;
                     expiration_days = -1;
-                    break;
-                case 2430295: //pegasus
+                }
+                case 2430295 -> {
+                    //pegasus
                     mountid = 1147;
                     expiration_days = -1;
-                    break;
-                case 2430297: //dragon
+                }
+                case 2430297 -> {
+                    //dragon
                     mountid = 1148;
                     expiration_days = -1;
-                    break;
-                case 2430299: //broom
+                }
+                case 2430299 -> {
+                    //broom
                     mountid = 1149;
                     expiration_days = -1;
-                    break;
-                case 2430301: //cloud
+                }
+                case 2430301 -> {
+                    //cloud
                     mountid = 1150;
                     expiration_days = -1;
-                    break;
-                case 2430303: //chariot
+                }
+                case 2430303 -> {
+                    //chariot
                     mountid = 1151;
                     expiration_days = -1;
-                    break;
-                case 2430305: //nightmare
+                }
+                case 2430305 -> {
+                    //nightmare
                     mountid = 1152;
                     expiration_days = -1;
-                    break;
-                case 2430307: //rog
+                }
+                case 2430307 -> {
+                    //rog
                     mountid = 1153;
                     expiration_days = -1;
-                    break;
-                case 2430309: //mist rog
+                }
+                case 2430309 -> {
+                    //mist rog
                     mountid = 1154;
                     expiration_days = -1;
-                    break;
-                case 2430311: //owl
+                }
+                case 2430311 -> {
+                    //owl
                     mountid = 1156;
                     expiration_days = -1;
-                    break;
-                case 2430313: //helicopter
+                }
+                case 2430313 -> {
+                    //helicopter
                     mountid = 1156;
                     expiration_days = -1;
-                    break;
-                case 2430315: //pentacle
+                }
+                case 2430315 -> {
+                    //pentacle
                     mountid = 1118;
                     expiration_days = -1;
-                    break;
-                case 2430317: //frog
+                }
+                case 2430317 -> {
+                    //frog
                     mountid = 1121;
                     expiration_days = -1;
-                    break;
-                case 2430319: //turtle
+                }
+                case 2430319 -> {
+                    //turtle
                     mountid = 1122;
                     expiration_days = -1;
-                    break;
-                case 2430321: //buffalo
+                }
+                case 2430321 -> {
+                    //buffalo
                     mountid = 1123;
                     expiration_days = -1;
-                    break;
-                case 2430323: //tank
+                }
+                case 2430323 -> {
+                    //tank
                     mountid = 1124;
                     expiration_days = -1;
-                    break;
-                case 2430325: //viking
+                }
+                case 2430325 -> {
+                    //viking
                     mountid = 1129;
                     expiration_days = -1;
-                    break;
-                case 2430327: //pachinko
+                }
+                case 2430327 -> {
+                    //pachinko
                     mountid = 1130;
                     expiration_days = -1;
-                    break;
-                case 2430329: //kurenai
+                }
+                case 2430329 -> {
+                    //kurenai
                     mountid = 1063;
                     expiration_days = -1;
-                    break;
-                case 2430331: //horse
+                }
+                case 2430331 -> {
+                    //horse
                     mountid = 1025;
                     expiration_days = -1;
-                    break;
-                case 2430333: //tiger
+                }
+                case 2430333 -> {
+                    //tiger
                     mountid = 1034;
                     expiration_days = -1;
-                    break;
-                case 2430335: //hyena
+                }
+                case 2430335 -> {
+                    //hyena
                     mountid = 1136;
                     expiration_days = -1;
-                    break;
-                case 2430337: //ostrich
+                }
+                case 2430337 -> {
+                    //ostrich
                     mountid = 1051;
                     expiration_days = -1;
-                    break;
-                case 2430339: //low rider
+                }
+                case 2430339 -> {
+                    //low rider
                     mountid = 1138;
                     expiration_days = -1;
-                    break;
-                case 2430341: //napoleon
+                }
+                case 2430341 -> {
+                    //napoleon
                     mountid = 1139;
                     expiration_days = -1;
-                    break;
-                case 2430343: //croking
+                }
+                case 2430343 -> {
+                    //croking
                     mountid = 1027;
                     expiration_days = -1;
-                    break;
-                case 2430346: //lovely
+                }
+                case 2430346 -> {
+                    //lovely
                     mountid = 1029;
                     expiration_days = -1;
-                    break;
-                case 2430348: //retro
+                }
+                case 2430348 -> {
+                    //retro
                     mountid = 1028;
                     expiration_days = -1;
-                    break;
-                case 2430350: //f1
+                }
+                case 2430350 -> {
+                    //f1
                     mountid = 1033;
                     expiration_days = -1;
-                    break;
-                case 2430352: //power suit
+                }
+                case 2430352 -> {
+                    //power suit
                     mountid = 1064;
                     expiration_days = -1;
-                    break;
-                case 2430354: //giant rabbit
+                }
+                case 2430354 -> {
+                    //giant rabbit
                     mountid = 1096;
                     expiration_days = -1;
-                    break;
-                case 2430356: //small rabit
+                }
+                case 2430356 -> {
+                    //small rabit
                     mountid = 1101;
                     expiration_days = -1;
-                    break;
-                case 2430358: //rabbit rickshaw
+                }
+                case 2430358 -> {
+                    //rabbit rickshaw
                     mountid = 1102;
                     expiration_days = -1;
-                    break;
-                case 2430360: //chicken
+                }
+                case 2430360 -> {
+                    //chicken
                     mountid = 1054;
                     expiration_days = -1;
-                    break;
-                case 2430362: //transformer
+                }
+                case 2430362 -> {
+                    //transformer
                     mountid = 1053;
                     expiration_days = -1;
-                    break;
-                case 2430292: //hot air
+                }
+                case 2430292 -> {
+                    //hot air
                     mountid = 1145;
                     expiration_days = 90;
-                    break;
-                case 2430294: //nadeshiko
+                }
+                case 2430294 -> {
+                    //nadeshiko
                     mountid = 1146;
                     expiration_days = 90;
-                    break;
-                case 2430296: //pegasus
+                }
+                case 2430296 -> {
+                    //pegasus
                     mountid = 1147;
                     expiration_days = 90;
-                    break;
-                case 2430298: //dragon
+                }
+                case 2430298 -> {
+                    //dragon
                     mountid = 1148;
                     expiration_days = 90;
-                    break;
-                case 2430300: //broom
+                }
+                case 2430300 -> {
+                    //broom
                     mountid = 1149;
                     expiration_days = 90;
-                    break;
-                case 2430302: //cloud
+                }
+                case 2430302 -> {
+                    //cloud
                     mountid = 1150;
                     expiration_days = 90;
-                    break;
-                case 2430304: //chariot
+                }
+                case 2430304 -> {
+                    //chariot
                     mountid = 1151;
                     expiration_days = 90;
-                    break;
-                case 2430306: //nightmare
+                }
+                case 2430306 -> {
+                    //nightmare
                     mountid = 1152;
                     expiration_days = 90;
-                    break;
-                case 2430308: //rog
+                }
+                case 2430308 -> {
+                    //rog
                     mountid = 1153;
                     expiration_days = 90;
-                    break;
-                case 2430310: //mist rog
+                }
+                case 2430310 -> {
+                    //mist rog
                     mountid = 1154;
                     expiration_days = 90;
-                    break;
-                case 2430312: //owl
+                }
+                case 2430312 -> {
+                    //owl
                     mountid = 1156;
                     expiration_days = 90;
-                    break;
-                case 2430314: //helicopter
+                }
+                case 2430314 -> {
+                    //helicopter
                     mountid = 1156;
                     expiration_days = 90;
-                    break;
-                case 2430316: //pentacle
+                }
+                case 2430316 -> {
+                    //pentacle
                     mountid = 1118;
                     expiration_days = 90;
-                    break;
-                case 2430318: //frog
+                }
+                case 2430318 -> {
+                    //frog
                     mountid = 1121;
                     expiration_days = 90;
-                    break;
-                case 2430320: //turtle
+                }
+                case 2430320 -> {
+                    //turtle
                     mountid = 1122;
                     expiration_days = 90;
-                    break;
-                case 2430322: //buffalo
+                }
+                case 2430322 -> {
+                    //buffalo
                     mountid = 1123;
                     expiration_days = 90;
-                    break;
-                case 2430326: //viking
+                }
+                case 2430326 -> {
+                    //viking
                     mountid = 1129;
                     expiration_days = 90;
-                    break;
-                case 2430328: //pachinko
+                }
+                case 2430328 -> {
+                    //pachinko
                     mountid = 1130;
                     expiration_days = 90;
-                    break;
-                case 2430330: //kurenai
+                }
+                case 2430330 -> {
+                    //kurenai
                     mountid = 1063;
                     expiration_days = 90;
-                    break;
-                case 2430332: //horse
+                }
+                case 2430332 -> {
+                    //horse
                     mountid = 1025;
                     expiration_days = 90;
-                    break;
-                case 2430334: //tiger
+                }
+                case 2430334 -> {
+                    //tiger
                     mountid = 1034;
                     expiration_days = 90;
-                    break;
-                case 2430336: //hyena
+                }
+                case 2430336 -> {
+                    //hyena
                     mountid = 1136;
                     expiration_days = 90;
-                    break;
-                case 2430338: //ostrich
+                }
+                case 2430338 -> {
+                    //ostrich
                     mountid = 1051;
                     expiration_days = 90;
-                    break;
-                case 2430340: //low rider
+                }
+                case 2430340 -> {
+                    //low rider
                     mountid = 1138;
                     expiration_days = 90;
-                    break;
-                case 2430342: //napoleon
+                }
+                case 2430342 -> {
+                    //napoleon
                     mountid = 1139;
                     expiration_days = 90;
-                    break;
-                case 2430344: //croking
+                }
+                case 2430344 -> {
+                    //croking
                     mountid = 1027;
                     expiration_days = 90;
-                    break;
-                case 2430347: //lovely
+                }
+                case 2430347 -> {
+                    //lovely
                     mountid = 1029;
                     expiration_days = 90;
-                    break;
-                case 2430349: //retro
+                }
+                case 2430349 -> {
+                    //retro
                     mountid = 1028;
                     expiration_days = 90;
-                    break;
-                case 2430351: //f1
+                }
+                case 2430351 -> {
+                    //f1
                     mountid = 1033;
                     expiration_days = 90;
-                    break;
-                case 2430353: //power suit
+                }
+                case 2430353 -> {
+                    //power suit
                     mountid = 1064;
                     expiration_days = 90;
-                    break;
-                case 2430355: //giant rabbit
+                }
+                case 2430355 -> {
+                    //giant rabbit
                     mountid = 1096;
                     expiration_days = 90;
-                    break;
-                case 2430357: //small rabit
+                }
+                case 2430357 -> {
+                    //small rabit
                     mountid = 1101;
                     expiration_days = 90;
-                    break;
-                case 2430359: //rabbit rickshaw
+                }
+                case 2430359 -> {
+                    //rabbit rickshaw
                     mountid = 1102;
                     expiration_days = 90;
-                    break;
-                case 2430361: //chicken
+                }
+                case 2430361 -> {
+                    //chicken
                     mountid = 1054;
                     expiration_days = 90;
-                    break;
-                case 2430363: //transformer
+                }
+                case 2430363 -> {
+                    //transformer
                     mountid = 1053;
                     expiration_days = 90;
-                    break;
-                case 2430324: //high way
+                }
+                case 2430324 -> {
+                    //high way
                     mountid = 1158;
                     expiration_days = -1;
-                    break;
-                case 2430345: //high way
+                }
+                case 2430345 -> {
+                    //high way
                     mountid = 1158;
                     expiration_days = 90;
-                    break;
-                case 2430367: //law off
+                }
+                case 2430367 -> {
+                    //law off
                     mountid = 1115;
                     expiration_days = 3;
-                    break;
-                case 2430365: //pony
+                }
+                case 2430365 -> {
+                    //pony
                     mountid = 1025;
                     expiration_days = 365;
-                    break;
-                case 2430366: //pony
+                }
+                case 2430366 -> {
+                    //pony
                     mountid = 1025;
                     expiration_days = 15;
-                    break;
-                case 2430369: //nightmare
+                }
+                case 2430369 -> {
+                    //nightmare
                     mountid = 1049;
                     expiration_days = 10;
-                    break;
-                case 2430392: //speedy
+                }
+                case 2430392 -> {
+                    //speedy
                     mountid = 80001038;
                     expiration_days = 90;
-                    break;
-                case 2430476: //red truck? but name is pegasus?
+                }
+                case 2430476 -> {
+                    //red truck? but name is pegasus?
                     mountid = 1039;
                     expiration_days = 15;
-                    break;
-                case 2430477: //red truck? but name is pegasus?
+                }
+                case 2430477 -> {
+                    //red truck? but name is pegasus?
                     mountid = 1039;
                     expiration_days = 365;
-                    break;
-                case 2430232: //fortune
+                }
+                case 2430232 -> {
+                    //fortune
                     mountid = 1106;
                     expiration_days = 10;
-                    break;
-                case 2430511: //spiegel
+                }
+                case 2430511 -> {
+                    //spiegel
                     mountid = 80001033;
                     expiration_days = 15;
-                    break;
-                case 2430512: //rspiegel
+                }
+                case 2430512 -> {
+                    //rspiegel
                     mountid = 80001033;
                     expiration_days = 365;
-                    break;
-                case 2430536: //buddy buggy
+                }
+                case 2430536 -> {
+                    //buddy buggy
                     mountid = 80001114;
                     expiration_days = 365;
-                    break;
-                case 2430537: //buddy buggy
+                }
+                case 2430537 -> {
+                    //buddy buggy
                     mountid = 80001114;
                     expiration_days = 15;
-                    break;
-                case 2430229: //bunny rickshaw 60 day
+                }
+                case 2430229 -> {
+                    //bunny rickshaw 60 day
                     mountid = 1102;
                     expiration_days = 60;
-                    break;
-                case 2430199: //santa sled
+                }
+                case 2430199 -> {
+                    //santa sled
                     mountid = 1102;
                     expiration_days = 60;
-                    break;
-                case 2430206: //race
+                }
+                case 2430206 -> {
+                    //race
                     mountid = 1089;
                     expiration_days = 7;
-                    break;
-                case 2430211: //race
+                }
+                case 2430211 -> {
+                    //race
                     mountid = 80001009;
                     expiration_days = 30;
-                    break;
-                default:
-                    System.out.println("New scripted item : " + toUse.getItemId());
-                    break;
+                }
+                default -> System.out.println("New scripted item : " + toUse.getItemId());
             }
-        }
+            //energy drink
+            //resistance box
+                    }
         if (mountid > 0) {
-            mountid = c.getPlayer().getStat().getSkillByJob(mountid, c.getPlayer().getJob());
+            mountid = PlayerStats.getSkillByJob(mountid, c.getPlayer().getJob());
             final int fk = GameConstants.getMountItem(mountid, c.getPlayer());
             if (GameConstants.GMS && fk > 0 && mountid < 80001000) { //TODO JUMP
                 for (int i = 80001001; i < 80001999; i++) {
@@ -1823,18 +1988,22 @@ public class InventoryHandler {
         String box;
 
         switch (toUse.getItemId()) {
-            case 4280000: // Gold box
+            case 4280000 -> {
+                // Gold box
                 reward = RandomRewards.getGoldBoxReward();
                 keyIDforRemoval = 5490000;
                 box = "Gold";
-                break;
-            case 4280001: // Silver box
+            }
+            case 4280001 -> {
+                // Silver box
                 reward = RandomRewards.getSilverBoxReward();
                 keyIDforRemoval = 5490001;
                 box = "Silver";
-                break;
-            default: // Up to no good
+            }
+            default -> {
+                // Up to no good
                 return;
+            }
         }
 
         // Get the quantity
@@ -1887,8 +2056,9 @@ public class InventoryHandler {
         boolean used = false, cc = false;
 
         switch (itemId) {
-            case 5043001: // NPC Teleport Rock
-            case 5043000: { // NPC Teleport Rock
+            case 5043001, 5043000 -> // NPC Teleport Rock
+            {
+                // NPC Teleport Rock
                 final short questid = slea.readShort();
                 final int npcid = slea.readInt();
                 final MapleQuest quest = MapleQuest.getInstance(questid);
@@ -1905,36 +2075,25 @@ public class InventoryHandler {
                         c.getPlayer().dropMessage(1, "Unknown error has occurred.");
                     }
                 }
-                break;
             }
-            case 5041001:
-            case 5040004:
-            case 5040003:
-            case 5040002:
-            case 2320000: // The Teleport Rock
-            case 5041000: // VIP Teleport Rock
-            case 5040000: // The Teleport Rock
-            case 5040001: { // Teleport Coke
+            case 5041001, 5040004, 5040003, 5040002, 2320000, 5041000, 5040000, 5040001 ->  { // Teleport Coke
                 used = UseTeleRock(slea, c, itemId);
-                break;
             }
-            case 5450005: {
+            case 5450005 -> {
                 c.getPlayer().setConversation(4);
                 c.getPlayer().getStorage().sendStorage(c, 1022005);
-                break;
             }
-            case 5050000: { // AP Reset
-                Map<MapleStat, Integer> statupdate = new EnumMap<MapleStat, Integer>(MapleStat.class);
+            case 5050000 -> {
+                // AP Reset
+                Map<MapleStat, Integer> statupdate = new EnumMap<>(MapleStat.class);
                 final int apto = GameConstants.GMS ? (int) slea.readLong() : slea.readInt();
                 final int apfrom = GameConstants.GMS ? (int) slea.readLong() : slea.readInt();
-
                 if (apto == apfrom) {
-                    break; // Hack
+                    // Hack
                 }
                 final int job = c.getPlayer().getJob();
                 final PlayerStats playerst = c.getPlayer().getStat();
                 used = true;
-
                 switch (apto) { // AP to
                     case 64: // str
                         if (playerst.getStr() >= 999) {
@@ -1968,66 +2127,70 @@ public class InventoryHandler {
                         break;
                 }
                 switch (apfrom) { // AP to
-                    case 64: // str
+                    case 64 -> {
+                        // str
                         if (playerst.getStr() <= 4 || (c.getPlayer().getJob() % 1000 / 100 == 1 && playerst.getStr() <= 35)) {
                             used = false;
                         }
-                        break;
-                    case 128: // dex
+                    }
+                    case 128 -> {
+                        // dex
                         if (playerst.getDex() <= 4 || (c.getPlayer().getJob() % 1000 / 100 == 3 && playerst.getDex() <= 25) || (c.getPlayer().getJob() % 1000 / 100 == 4 && playerst.getDex() <= 25) || (c.getPlayer().getJob() % 1000 / 100 == 5 && playerst.getDex() <= 20)) {
                             used = false;
                         }
-                        break;
-                    case 256: // int
+                    }
+                    case 256 -> {
+                        // int
                         if (playerst.getInt() <= 4 || (c.getPlayer().getJob() % 1000 / 100 == 2 && playerst.getInt() <= 20)) {
                             used = false;
                         }
-                        break;
-                    case 512: // luk
+                    }
+                    case 512 -> {
+                        // luk
                         if (playerst.getLuk() <= 4) {
                             used = false;
                         }
-                        break;
-                    case 2048: // hp
+                    }
+                    case 2048 -> {
+                        // hp
                         if (/*playerst.getMaxMp() < ((c.getPlayer().getLevel() * 14) + 134) || */c.getPlayer().getHpApUsed() <= 0 || c.getPlayer().getHpApUsed() >= 10000) {
                             used = false;
                             c.getPlayer().dropMessage(1, "You need points in HP or MP in order to take points out.");
                         }
-                        break;
-                    case 8192: // mp
+                    }
+                    case 8192 -> {
+                        // mp
                         if (/*playerst.getMaxMp() < ((c.getPlayer().getLevel() * 14) + 134) || */c.getPlayer().getHpApUsed() <= 0 || c.getPlayer().getHpApUsed() >= 10000) {
                             used = false;
                             c.getPlayer().dropMessage(1, "You need points in HP or MP in order to take points out.");
                         }
-                        break;
+                    }
                 }
+                // AP to
                 if (used) {
                     switch (apto) { // AP to
-                        case 64: { // str
+                        case 64 ->  { // str
                             final int toSet = playerst.getStr() + 1;
                             playerst.setStr((short) toSet, c.getPlayer());
                             statupdate.put(MapleStat.STR, toSet);
-                            break;
                         }
-                        case 128: { // dex
+                        case 128 ->  { // dex
                             final int toSet = playerst.getDex() + 1;
                             playerst.setDex((short) toSet, c.getPlayer());
                             statupdate.put(MapleStat.DEX, toSet);
-                            break;
                         }
-                        case 256: { // int
+                        case 256 ->  { // int
                             final int toSet = playerst.getInt() + 1;
                             playerst.setInt((short) toSet, c.getPlayer());
                             statupdate.put(MapleStat.INT, toSet);
-                            break;
                         }
-                        case 512: { // luk
+                        case 512 ->  { // luk
                             final int toSet = playerst.getLuk() + 1;
                             playerst.setLuk((short) toSet, c.getPlayer());
                             statupdate.put(MapleStat.LUK, toSet);
-                            break;
                         }
-                        case 2048: // hp
+                        case 2048 -> {
+                            // hp
                             int maxhp = playerst.getMaxHp();
                             if (GameConstants.isBeginnerJob(job)) { // Beginner
                                 maxhp += Randomizer.rand(4, 8);
@@ -2050,9 +2213,10 @@ public class InventoryHandler {
                             c.getPlayer().setHpApUsed((short) (c.getPlayer().getHpApUsed() + 1));
                             playerst.setMaxHp(maxhp, c.getPlayer());
                             statupdate.put(MapleStat.MAXHP, (int) maxhp);
-                            break;
+                        }
 
-                        case 8192: // mp
+                        case 8192 -> {
+                            // mp
                             int maxmp = playerst.getMaxMp();
 
                             if (GameConstants.isBeginnerJob(job)) { // Beginner
@@ -2072,8 +2236,9 @@ public class InventoryHandler {
                             c.getPlayer().setHpApUsed((short) (c.getPlayer().getHpApUsed() + 1));
                             playerst.setMaxMp(maxmp, c.getPlayer());
                             statupdate.put(MapleStat.MAXMP, (int) maxmp);
-                            break;
+                        }
                     }
+                    // AP to
                     switch (apfrom) { // AP from
                         case 64: { // str
                             final int toSet = playerst.getStr() - 1;
@@ -2144,33 +2309,32 @@ public class InventoryHandler {
                     }
                     c.getSession().write(CWvsContext.updatePlayerStats(statupdate, true, c.getPlayer()));
                 }
-                break;
             }
-            case 5220083: {//starter pack
+            case 5220083 -> {
+                //starter pack
                 used = true;
-                for (Entry<Integer, StructFamiliar> f : MapleItemInformationProvider.getInstance().getFamiliars().entrySet()) {
-                    if (f.getValue().itemid == 2870055 || f.getValue().itemid == 2871002 || f.getValue().itemid == 2870235 || f.getValue().itemid == 2870019) {
-                        MonsterFamiliar mf = c.getPlayer().getFamiliars().get(f.getKey());
-                        if (mf != null) {
-                            if (mf.getVitality() >= 3) {
-                                mf.setExpiry((long) Math.min(System.currentTimeMillis() + 90 * 24 * 60 * 60000L, mf.getExpiry() + 30 * 24 * 60 * 60000L));
-                            } else {
-                                mf.setVitality(mf.getVitality() + 1);
-                                mf.setExpiry((long) (mf.getExpiry() + 30 * 24 * 60 * 60000L));
-                            }
+                MapleItemInformationProvider.getInstance().getFamiliars().entrySet().stream().filter(f -> (f.getValue().itemid == 2870055 || f.getValue().itemid == 2871002 || f.getValue().itemid == 2870235 || f.getValue().itemid == 2870019)).map(f -> {
+                    MonsterFamiliar mf = c.getPlayer().getFamiliars().get(f.getKey());
+                    if (mf != null) {
+                        if (mf.getVitality() >= 3) {
+                            mf.setExpiry((long) Math.min(System.currentTimeMillis() + 90 * 24 * 60 * 60000L, mf.getExpiry() + 30 * 24 * 60 * 60000L));
                         } else {
-                            mf = new MonsterFamiliar(c.getPlayer().getId(), f.getKey(), (long) (System.currentTimeMillis() + 30 * 24 * 60 * 60000L));
-                            c.getPlayer().getFamiliars().put(f.getKey(), mf);
+                            mf.setVitality(mf.getVitality() + 1);
+                            mf.setExpiry((long) (mf.getExpiry() + 30 * 24 * 60 * 60000L));
                         }
-                        c.getSession().write(CField.registerFamiliar(mf));
+                    } else {
+                        mf = new MonsterFamiliar(c.getPlayer().getId(), f.getKey(), (long) (System.currentTimeMillis() + 30 * 24 * 60 * 60000L));
+                        c.getPlayer().getFamiliars().put(f.getKey(), mf);
                     }
-                }
-                break;
+                    return mf;
+                }).forEachOrdered(mf -> {
+                    c.getSession().write(CField.registerFamiliar(mf));
+                });
             }
-            case 5220084: {//booster pack
+            case 5220084 -> {
+                //booster pack
                 if (c.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() < 3) {
                     c.getPlayer().dropMessage(5, "Make 3 USE space.");
-                    break;
                 }
                 used = true;
                 int[] familiars = new int[3];
@@ -2195,24 +2359,14 @@ public class InventoryHandler {
                 c.getSession().write(MTSCSPacket.getBoosterPack(familiars[0], familiars[1], familiars[2]));
                 c.getSession().write(MTSCSPacket.getBoosterPackClick());
                 c.getSession().write(MTSCSPacket.getBoosterPackReveal());
-                break;
             }
-            case 5050001: // SP Reset (1st job)
-            case 5050002: // SP Reset (2nd job)
-            case 5050003: // SP Reset (3rd job)
-            case 5050004:  // SP Reset (4th job)
-            case 5050005: //evan sp resets
-            case 5050006:
-            case 5050007:
-            case 5050008:
-            case 5050009: {
+            case 5050001, 5050002, 5050003, 5050004, 5050005, 5050006, 5050007, 5050008, 5050009 -> // The Teleport Rock
+            {
                 if (itemId >= 5050005 && !GameConstants.isEvan(c.getPlayer().getJob())) {
                     c.getPlayer().dropMessage(1, "This reset is only for Evans.");
-                    break;
                 } //well i dont really care other than this o.o
                 if (itemId < 5050005 && GameConstants.isEvan(c.getPlayer().getJob())) {
                     c.getPlayer().dropMessage(1, "This reset is only for non-Evans.");
-                    break;
                 } //well i dont really care other than this o.o
                 int skill1 = slea.readInt();
                 int skill2 = slea.readInt();
@@ -2222,17 +2376,14 @@ public class InventoryHandler {
                         return;
                     }
                 }
-
                 Skill skillSPTo = SkillFactory.getSkill(skill1);
                 Skill skillSPFrom = SkillFactory.getSkill(skill2);
-
                 if (skillSPTo.isBeginnerSkill() || skillSPFrom.isBeginnerSkill()) {
                     c.getPlayer().dropMessage(1, "You may not add beginner skills.");
-                    break;
                 }
-                if (GameConstants.getSkillBookForSkill(skill1) != GameConstants.getSkillBookForSkill(skill2)) { //resistance evan
+                if (GameConstants.getSkillBookForSkill(skill1) != GameConstants.getSkillBookForSkill(skill2)) {
+                    //resistance evan
                     c.getPlayer().dropMessage(1, "You may not add different job skills.");
-                    break;
                 }
                 //if (GameConstants.getJobNumber(skill1 / 10000) > GameConstants.getJobNumber(skill2 / 10000)) { //putting 3rd job skillpoints into 4th job for example
                 //    c.getPlayer().dropMessage(1, "You may not add skillpoints to a higher job.");
@@ -2241,33 +2392,22 @@ public class InventoryHandler {
                 if ((c.getPlayer().getSkillLevel(skillSPTo) + 1 <= skillSPTo.getMaxLevel()) && c.getPlayer().getSkillLevel(skillSPFrom) > 0 && skillSPTo.canBeLearnedBy(c.getPlayer().getJob())) {
                     if (skillSPTo.isFourthJob() && (c.getPlayer().getSkillLevel(skillSPTo) + 1 > c.getPlayer().getMasterLevel(skillSPTo))) {
                         c.getPlayer().dropMessage(1, "You will exceed the master level.");
-                        break;
                     }
                     if (itemId >= 5050005) {
                         if (GameConstants.getSkillBookForSkill(skill1) != (itemId - 5050005) * 2 && GameConstants.getSkillBookForSkill(skill1) != (itemId - 5050005) * 2 + 1) {
                             c.getPlayer().dropMessage(1, "You may not add this job SP using this reset.");
-                            break;
                         }
                     } else {
                         int theJob = GameConstants.getJobNumber(skill2 / 10000);
                         switch (skill2 / 10000) {
-                            case 430:
-                                theJob = 1;
-                                break;
-                            case 432:
-                            case 431:
-                                theJob = 2;
-                                break;
-                            case 433:
-                                theJob = 3;
-                                break;
-                            case 434:
-                                theJob = 4;
-                                break;
+                            case 430 -> theJob = 1;
+                            case 432, 431 -> theJob = 2;
+                            case 433 -> theJob = 3;
+                            case 434 -> theJob = 4;
                         }
-                        if (theJob != itemId - 5050000) { //you may only subtract from the skill if the ID matches Sp reset
+                        if (theJob != itemId - 5050000) {
+                            //you may only subtract from the skill if the ID matches Sp reset
                             c.getPlayer().dropMessage(1, "You may not subtract from this skill. Use the appropriate SP reset.");
-                            break;
                         }
                     }
                     final Map<Skill, SkillEntry> sa = new HashMap<>();
@@ -2276,9 +2416,10 @@ public class InventoryHandler {
                     c.getPlayer().changeSkillsLevel(sa);
                     used = true;
                 }
-                break;
             }
-            case 5500000: { // Magic Hourglass 1 day
+            case 5500000 -> // VIP Teleport Rock
+            {
+                // Magic Hourglass 1 day
                 final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(slea.readShort());
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 final int days = 1;
@@ -2297,9 +2438,10 @@ public class InventoryHandler {
                         c.getPlayer().dropMessage(1, "It may not be used on this item.");
                     }
                 }
-                break;
             }
-            case 5500001: { // Magic Hourglass 7 day
+            case 5500001 -> // The Teleport Rock
+            {
+                // Magic Hourglass 7 day
                 final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(slea.readShort());
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 final int days = 7;
@@ -2318,9 +2460,8 @@ public class InventoryHandler {
                         c.getPlayer().dropMessage(1, "It may not be used on this item.");
                     }
                 }
-                break;
             }
-            case 5500002: { // Magic Hourglass 20 day
+            case 5500002 ->  { // Magic Hourglass 20 day
                 final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(slea.readShort());
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 final int days = 20;
@@ -2339,16 +2480,16 @@ public class InventoryHandler {
                         c.getPlayer().dropMessage(1, "It may not be used on this item.");
                     }
                 }
-                break;
             }
-            case 5500005: { // Magic Hourglass 50 day
+            case 5500005 ->  {
+                // Magic Hourglass 50 day
                 final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(slea.readShort());
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 final int days = 50;
                 if (item != null && !GameConstants.isAccessory(item.getItemId()) && item.getExpiration() > -1 && !ii.isCash(item.getItemId()) && System.currentTimeMillis() + (100 * 24 * 60 * 60 * 1000L) > item.getExpiration() + (days * 24 * 60 * 60 * 1000L)) {
                     boolean change = true;
                     for (String z : GameConstants.RESERVED) {
-                        if (c.getPlayer().getName().indexOf(z) != -1 || item.getOwner().indexOf(z) != -1) {
+                        if (c.getPlayer().getName().contains(z) || item.getOwner().contains(z)) {
                             change = false;
                         }
                     }
@@ -2360,16 +2501,15 @@ public class InventoryHandler {
                         c.getPlayer().dropMessage(1, "It may not be used on this item.");
                     }
                 }
-                break;
             }
-            case 5500006: { // Magic Hourglass 99 day
+            case 5500006 ->  { // Magic Hourglass 99 day
                 final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(slea.readShort());
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 final int days = 99;
                 if (item != null && !GameConstants.isAccessory(item.getItemId()) && item.getExpiration() > -1 && !ii.isCash(item.getItemId()) && System.currentTimeMillis() + (100 * 24 * 60 * 60 * 1000L) > item.getExpiration() + (days * 24 * 60 * 60 * 1000L)) {
                     boolean change = true;
                     for (String z : GameConstants.RESERVED) {
-                        if (c.getPlayer().getName().indexOf(z) != -1 || item.getOwner().indexOf(z) != -1) {
+                        if (c.getPlayer().getName().contains(z) || item.getOwner().contains(z)) {
                             change = false;
                         }
                     }
@@ -2381,15 +2521,13 @@ public class InventoryHandler {
                         c.getPlayer().dropMessage(1, "It may not be used on this item.");
                     }
                 }
-                break;
             }
-            case 5060000: { // Item Tag
+            case 5060000 ->  {// Item Tag
                 final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(slea.readShort());
-
                 if (item != null && item.getOwner().equals("")) {
                     boolean change = true;
                     for (String z : GameConstants.RESERVED) {
-                        if (c.getPlayer().getName().indexOf(z) != -1) {
+                        if (c.getPlayer().getName().contains(z)) {
                             change = false;
                         }
                     }
@@ -2399,16 +2537,15 @@ public class InventoryHandler {
                         used = true;
                     }
                 }
-                break;
             }
-            case 5680015: {
-                if (c.getPlayer().getFatigue() > 0) {
-                    c.getPlayer().setFatigue(0);
-                    used = true;
-                }
-                break;
+            case 5680015 ->  {if (c.getPlayer().getFatigue() > 0) {
+                c.getPlayer().setFatigue(0);
+                used = true;
             }
-            case 5534000: { //tims lab
+            }
+            case 5534000 -> // SP Reset (1st job)
+            {
+                //tims lab
                 final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem((byte) slea.readInt());
                 if (item != null) {
                     final Equip eq = (Equip) item;
@@ -2424,9 +2561,10 @@ public class InventoryHandler {
                 } else {
                     c.getPlayer().getMap().broadcastMessage(CField.showPotentialReset(false, c.getPlayer().getId(), false, itemId));
                 }
-                break;
             }
-            case 5062000: { //miracle cube
+            case 5062000 -> // SP Reset (2nd job)
+            {
+                //miracle cube
                 if (c.getPlayer().getLevel() < 50) {
                     c.getPlayer().dropMessage(1, "You may not use this until level 50.");
                 } else {
@@ -2447,10 +2585,10 @@ public class InventoryHandler {
                         c.getPlayer().getMap().broadcastMessage(CField.showPotentialReset(false, c.getPlayer().getId(), false, itemId));
                     }
                 }
-                break;
             }
-            case 5062100:
-            case 5062001: { //premium cube
+            case 5062100, 5062001 -> // SP Reset (3rd job)
+            {
+                //premium cube
                 if (c.getPlayer().getLevel() < 70) {
                     c.getPlayer().dropMessage(1, "You may not use this until level 70.");
                 } else {
@@ -2471,9 +2609,10 @@ public class InventoryHandler {
                         c.getPlayer().getMap().broadcastMessage(CField.showPotentialReset(false, c.getPlayer().getId(), false, itemId));
                     }
                 }
-                break;
             }
-            case 5062002: { //super miracle cube
+            case 5062002 -> // SP Reset (4th job)
+            {
+                //super miracle cube
                 if (c.getPlayer().getLevel() < 100) {
                     c.getPlayer().dropMessage(1, "You may not use this until level 100.");
                 } else {
@@ -2494,9 +2633,10 @@ public class InventoryHandler {
                         c.getPlayer().getMap().broadcastMessage(CField.showPotentialReset(false, c.getPlayer().getId(), false, itemId));
                     }
                 }
-                break;
             }
-            case 5750000: { //alien cube
+            case 5750000 -> //evan sp resets
+            {
+                //alien cube
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(1, "You may not use this until level 10.");
                 } else {
@@ -2525,9 +2665,9 @@ public class InventoryHandler {
                         c.getPlayer().dropMessage(5, "You do not have sufficient inventory slot.");
                     }
                 }
-                break;
             }
-            case 5750001: { // socket diffuser
+            case 5750001 -> {
+                // socket diffuser
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(1, "You may not use this until level 10.");
                 } else {
@@ -2546,9 +2686,9 @@ public class InventoryHandler {
                         c.getPlayer().dropMessage(5, "This item's nebulite cannot be removed.");
                     }
                 }
-                break;
             }
-            case 5521000: { // Karma
+            case 5521000 -> {
+                // Karma
                 final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
                 final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
 
@@ -2568,10 +2708,9 @@ public class InventoryHandler {
                         used = true;
                     }
                 }
-                break;
             }
-            case 5520001: //p.karma
-            case 5520000: { // Karma
+            case 5520001, 5520000 -> {
+                // Karma
                 final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
                 final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
 
@@ -2591,9 +2730,9 @@ public class InventoryHandler {
                         used = true;
                     }
                 }
-                break;
             }
-            case 5570000: { // Vicious Hammer
+            case 5570000 ->  {
+                // Vicious Hammer
                 slea.readInt(); // Inventory type, Hammered eq is always EQ.
                 final Equip item = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem((byte) slea.readInt());
                 // another int here, D3 49 DC 00
@@ -2608,21 +2747,16 @@ public class InventoryHandler {
                         c.getPlayer().dropMessage(5, "You may not use it on this item.");
                         c.getSession().write(MTSCSPacket.ViciousHammer(true, (byte) 0));
                     }
-                }
-
-                break;
-            }
-            case 5610001:
-            case 5610000: { // Vega 30
+                }            }
+            case 5610001, 5610000 ->  { // Vega 30
                 slea.readInt(); // Inventory type, always eq
                 final short dst = (short) slea.readInt();
                 slea.readInt(); // Inventory type, always use
                 final short src = (short) slea.readInt();
                 used = UseUpgradeScroll(src, dst, (short) 2, c, c.getPlayer(), itemId, false); //cannot use ws with vega but we dont care
                 cc = used;
-                break;
             }
-            case 5060001: { // Sealing Lock
+            case 5060001 ->  { // Sealing Lock
                 final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
                 final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
                 // another int here, lock = 5A E5 F2 0A, 7 day = D2 30 F3 0A
@@ -2634,9 +2768,8 @@ public class InventoryHandler {
                     c.getPlayer().forceReAddItem_Flag(item, type);
                     used = true;
                 }
-                break;
             }
-            case 5061000: { // Sealing Lock 7 days
+            case 5061000 ->  { // Sealing Lock 7 days
                 final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
                 final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
                 // another int here, lock = 5A E5 F2 0A, 7 day = D2 30 F3 0A
@@ -2649,9 +2782,8 @@ public class InventoryHandler {
                     c.getPlayer().forceReAddItem_Flag(item, type);
                     used = true;
                 }
-                break;
             }
-            case 5061001: { // Sealing Lock 30 days
+            case 5061001 ->  { // Sealing Lock 30 days
                 final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
                 final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
                 // another int here, lock = 5A E5 F2 0A, 7 day = D2 30 F3 0A
@@ -2665,9 +2797,8 @@ public class InventoryHandler {
                     c.getPlayer().forceReAddItem_Flag(item, type);
                     used = true;
                 }
-                break;
             }
-            case 5061002: { // Sealing Lock 90 days
+            case 5061002 ->  { // Sealing Lock 90 days
                 final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
                 final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
                 // another int here, lock = 5A E5 F2 0A, 7 day = D2 30 F3 0A
@@ -2681,9 +2812,8 @@ public class InventoryHandler {
                     c.getPlayer().forceReAddItem_Flag(item, type);
                     used = true;
                 }
-                break;
             }
-            case 5061003: { // Sealing Lock 365 days
+            case 5061003 ->  { // Sealing Lock 365 days
                 final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
                 final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
                 // another int here, lock = 5A E5 F2 0A, 7 day = D2 30 F3 0A
@@ -2697,9 +2827,8 @@ public class InventoryHandler {
                     c.getPlayer().forceReAddItem_Flag(item, type);
                     used = true;
                 }
-                break;
             }
-            case 5063000: {
+            case 5063000 ->  {
                 final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
                 final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
                 // another int here, lock = 5A E5 F2 0A, 7 day = D2 30 F3 0A
@@ -2711,28 +2840,25 @@ public class InventoryHandler {
                     c.getPlayer().forceReAddItem_Flag(item, type);
                     used = true;
                 }
-                break;
             }
-            case 5064000: {
-                System.out.println("slea..." + slea.toString());
-                final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
-                final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
+            case 5064000 ->  { System.out.println("slea..." + slea.toString());
+            final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
+            final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
                 // another int here, lock = 5A E5 F2 0A, 7 day = D2 30 F3 0A
-                if (item != null && item.getType() == 1) { //equip
+                if (item != null && item.getType() == 1) {
+                    //equip
                     if (((Equip) item).getEnhance() >= 8) {
-                        break; //cannot be used
+                        //cannot be used
+                        
                     }
                     short flag = item.getFlag();
                     flag |= ItemFlag.SHIELD_WARD.getValue();
                     item.setFlag(flag);
-
                     c.getPlayer().forceReAddItem_Flag(item, type);
                     used = true;
                 }
-                break;
             }
-            case 5060004:
-            case 5060003: {//peanut
+            case 5060004, 5060003 ->  { //peanut
                 Item item = c.getPlayer().getInventory(MapleInventoryType.ETC).findById(itemId == 5060003 ? 4170023 : 4170024);
                 if (item == null || item.getQuantity() <= 0) { // hacking{
                     return;
@@ -2741,85 +2867,67 @@ public class InventoryHandler {
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.ETC, item.getPosition(), (short) 1, false);
                     used = true;
                 }
-                break;
             }
-
-            case 5070000: { // Megaphone
+            case 5070000 -> {
+                // Megaphone
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
-                    break;
                 }
                 if (c.getPlayer().getMapId() == GameConstants.JAIL) {
                     c.getPlayer().dropMessage(5, "Cannot be used here.");
-                    break;
                 }
                 if (!c.getPlayer().getCheatTracker().canSmega()) {
                     c.getPlayer().dropMessage(5, "You may only use this every 15 seconds.");
-                    break;
                 }
                 if (!c.getChannelServer().getMegaphoneMuteState()) {
                     final String message = slea.readMapleAsciiString();
-
                     if (message.length() > 65) {
-                        break;
                     }
                     final StringBuilder sb = new StringBuilder();
                     addMedalString(c.getPlayer(), sb);
                     sb.append(c.getPlayer().getName());
                     sb.append(" : ");
                     sb.append(message);
-
                     c.getPlayer().getMap().broadcastMessage(CWvsContext.serverNotice(2, sb.toString()));
                     used = true;
                 } else {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
                 }
-                break;
             }
-            case 5071000: { // Megaphone
+            case 5071000 ->  { // Megaphone
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
-                    break;
                 }
                 if (c.getPlayer().getMapId() == GameConstants.JAIL) {
                     c.getPlayer().dropMessage(5, "Cannot be used here.");
-                    break;
                 }
                 if (!c.getPlayer().getCheatTracker().canSmega()) {
                     c.getPlayer().dropMessage(5, "You may only use this every 15 seconds.");
-                    break;
                 }
                 if (!c.getChannelServer().getMegaphoneMuteState()) {
                     final String message = slea.readMapleAsciiString();
-
                     if (message.length() > 65) {
-                        break;
                     }
                     final StringBuilder sb = new StringBuilder();
                     addMedalString(c.getPlayer(), sb);
                     sb.append(c.getPlayer().getName());
                     sb.append(" : ");
                     sb.append(message);
-
                     c.getChannelServer().broadcastSmegaPacket(CWvsContext.serverNotice(2, sb.toString()));
                     used = true;
                 } else {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
                 }
-                break;
             }
-            case 5077000: { // 3 line Megaphone
+            case 5077000 ->  { // 3 line Megaphone
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
-                    break;
                 }
                 if (c.getPlayer().getMapId() == GameConstants.JAIL) {
                     c.getPlayer().dropMessage(5, "Cannot be used here.");
-                    break;
                 }
                 if (!c.getPlayer().getCheatTracker().canSmega()) {
                     c.getPlayer().dropMessage(5, "You may only use this every 15 seconds.");
-                    break;
                 }
                 if (!c.getChannelServer().getMegaphoneMuteState()) {
                     final byte numLines = slea.readByte();
@@ -2842,162 +2950,127 @@ public class InventoryHandler {
                 } else {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
                 }
-                break;
             }
-            case 5079004: { // Heart Megaphone
+            case 5079004 ->  { // Heart Megaphone
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
-                    break;
                 }
                 if (c.getPlayer().getMapId() == GameConstants.JAIL) {
                     c.getPlayer().dropMessage(5, "Cannot be used here.");
-                    break;
                 }
                 if (!c.getPlayer().getCheatTracker().canSmega()) {
                     c.getPlayer().dropMessage(5, "You may only use this every 15 seconds.");
-                    break;
                 }
                 if (!c.getChannelServer().getMegaphoneMuteState()) {
                     final String message = slea.readMapleAsciiString();
-
                     if (message.length() > 65) {
-                        break;
                     }
                     World.Broadcast.broadcastSmega(CWvsContext.echoMegaphone(c.getPlayer().getName(), message));
                     used = true;
                 } else {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
                 }
-                break;
             }
-            case 5073000: { // Heart Megaphone
+            case 5073000 ->  { // Heart Megaphone
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
-                    break;
                 }
                 if (c.getPlayer().getMapId() == GameConstants.JAIL) {
                     c.getPlayer().dropMessage(5, "Cannot be used here.");
-                    break;
                 }
                 if (!c.getPlayer().getCheatTracker().canSmega()) {
                     c.getPlayer().dropMessage(5, "You may only use this every 15 seconds.");
-                    break;
                 }
                 if (!c.getChannelServer().getMegaphoneMuteState()) {
                     final String message = slea.readMapleAsciiString();
-
                     if (message.length() > 65) {
-                        break;
                     }
                     final StringBuilder sb = new StringBuilder();
                     addMedalString(c.getPlayer(), sb);
                     sb.append(c.getPlayer().getName());
                     sb.append(" : ");
                     sb.append(message);
-
                     final boolean ear = slea.readByte() != 0;
                     World.Broadcast.broadcastSmega(CWvsContext.serverNotice(9, c.getChannel(), sb.toString(), ear));
                     used = true;
                 } else {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
                 }
-                break;
             }
-            case 5074000: { // Skull Megaphone
+            case 5074000 ->  {                 // Skull Megaphone
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
-                    break;
                 }
                 if (c.getPlayer().getMapId() == GameConstants.JAIL) {
                     c.getPlayer().dropMessage(5, "Cannot be used here.");
-                    break;
                 }
                 if (!c.getPlayer().getCheatTracker().canSmega()) {
                     c.getPlayer().dropMessage(5, "You may only use this every 15 seconds.");
-                    break;
                 }
                 if (!c.getChannelServer().getMegaphoneMuteState()) {
                     final String message = slea.readMapleAsciiString();
-
                     if (message.length() > 65) {
-                        break;
                     }
                     final StringBuilder sb = new StringBuilder();
                     addMedalString(c.getPlayer(), sb);
                     sb.append(c.getPlayer().getName());
                     sb.append(" : ");
                     sb.append(message);
-
                     final boolean ear = slea.readByte() != 0;
-
                     World.Broadcast.broadcastSmega(CWvsContext.serverNotice(22, c.getChannel(), sb.toString(), ear));
                     used = true;
                 } else {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
                 }
-                break;
             }
-            case 5072000: { // Super Megaphone
+            case 5072000 -> //p.karma
+            {
+                // Super Megaphone
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
-                    break;
                 }
                 if (c.getPlayer().getMapId() == GameConstants.JAIL) {
                     c.getPlayer().dropMessage(5, "Cannot be used here.");
-                    break;
                 }
                 if (!c.getPlayer().getCheatTracker().canSmega()) {
                     c.getPlayer().dropMessage(5, "You may only use this every 15 seconds.");
-                    break;
                 }
                 if (!c.getChannelServer().getMegaphoneMuteState()) {
                     final String message = slea.readMapleAsciiString();
-
                     if (message.length() > 65) {
-                        break;
                     }
                     final StringBuilder sb = new StringBuilder();
                     addMedalString(c.getPlayer(), sb);
                     sb.append(c.getPlayer().getName());
                     sb.append(" : ");
                     sb.append(message);
-
                     final boolean ear = slea.readByte() != 0;
-
                     World.Broadcast.broadcastSmega(CWvsContext.serverNotice(3, c.getChannel(), sb.toString(), ear));
                     used = true;
                 } else {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
                 }
-                break;
             }
-            case 5076000: { // Item Megaphone
+            case 5076000 ->  {                 // Item Megaphone
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
-                    break;
                 }
                 if (c.getPlayer().getMapId() == GameConstants.JAIL) {
                     c.getPlayer().dropMessage(5, "Cannot be used here.");
-                    break;
                 }
                 if (!c.getPlayer().getCheatTracker().canSmega()) {
                     c.getPlayer().dropMessage(5, "You may only use this every 15 seconds.");
-                    break;
                 }
                 if (!c.getChannelServer().getMegaphoneMuteState()) {
                     final String message = slea.readMapleAsciiString();
-
                     if (message.length() > 65) {
-                        break;
                     }
                     final StringBuilder sb = new StringBuilder();
                     addMedalString(c.getPlayer(), sb);
                     sb.append(c.getPlayer().getName());
                     sb.append(" : ");
                     sb.append(message);
-
                     final boolean ear = slea.readByte() > 0;
-
                     Item item = null;
                     if (slea.readByte() == 1) { //item
                         byte invType = (byte) slea.readInt();
@@ -3012,28 +3085,18 @@ public class InventoryHandler {
                 } else {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
                 }
-                break;
             }
-            case 5075000: // MapleTV Messenger
-            case 5075001: // MapleTV Star Messenger
-            case 5075002: { // MapleTV Heart Messenger
-                c.getPlayer().dropMessage(5, "There are no MapleTVs to broadcast the message to.");
-                break;
-            }
-            case 5075003:
-            case 5075004:
-            case 5075005: {
+            case 5075000, 5075001, 5075002 ->  { // MapleTV Heart Messenger
+                c.getPlayer().dropMessage(5, "There are no MapleTVs to broadcast the message to.");            }
+            case 5075003, 5075004, 5075005 -> {
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
-                    break;
                 }
                 if (c.getPlayer().getMapId() == GameConstants.JAIL) {
                     c.getPlayer().dropMessage(5, "Cannot be used here.");
-                    break;
                 }
                 if (!c.getPlayer().getCheatTracker().canSmega()) {
                     c.getPlayer().dropMessage(5, "You may only use this every 15 seconds.");
-                    break;
                 }
                 int tvType = itemId % 10;
                 if (tvType == 3) {
@@ -3041,19 +3104,17 @@ public class InventoryHandler {
                 }
                 boolean ear = tvType != 1 && tvType != 2 && slea.readByte() > 1; //for tvType 1/2, there is no byte. 
                 MapleCharacter victim = tvType == 1 || tvType == 4 ? null : c.getChannelServer().getPlayerStorage().getCharacterByName(slea.readMapleAsciiString()); //for tvType 4, there is no string.
-                if (tvType == 0 || tvType == 3) { //doesn't allow two
+                if (tvType == 0 || tvType == 3) {
+                    //doesn't allow two
                     victim = null;
                 } else if (victim == null) {
                     c.getPlayer().dropMessage(1, "That character is not in the channel.");
-                    break;
                 }
                 String message = slea.readMapleAsciiString();
                 World.Broadcast.broadcastSmega(CWvsContext.serverNotice(3, c.getChannel(), c.getPlayer().getName() + " : " + message, ear));
                 used = true;
-                break;
             }
-            case 5090100: // Wedding Invitation Card
-            case 5090000: { // Note
+            case 5090100, 5090000 ->  { // Note
                 final String sendTo = slea.readMapleAsciiString();
                 final String msg = slea.readMapleAsciiString();
                 if (MapleCharacterUtil.canCreateChar(sendTo, false)) { // Name does not exist 
@@ -3068,28 +3129,16 @@ public class InventoryHandler {
                         c.getSession().write(MTSCSPacket.OnMemoResult((byte) 5, (byte) 0));
                     }
                 }
-                break;
             }
-            case 5100000: { // Congratulatory Song
+            case 5100000 ->  { // Congratulatory Song
                 c.getPlayer().getMap().broadcastMessage(CField.musicChange("Jukebox/Congratulation"));
                 used = true;
-                break;
             }
-            case 5190001:
-            case 5190002:
-            case 5190003:
-            case 5190004:
-            case 5190005:
-            case 5190006:
-            case 5190007:
-            case 5190008:
-            case 5190000: { // Pet Flags
+            case 5190001, 5190002, 5190003, 5190004, 5190005, 5190006, 5190007, 5190008, 5190000 ->  { // Pet Flags
                 final int uniqueid = (int) slea.readLong();
                 MaplePet pet = c.getPlayer().getPet(0);
                 int slo = 0;
-
                 if (pet == null) {
-                    break;
                 }
                 if (pet.getUniqueId() != uniqueid) {
                     pet = c.getPlayer().getPet(1);
@@ -3100,14 +3149,11 @@ public class InventoryHandler {
                             slo = 2;
                             if (pet != null) {
                                 if (pet.getUniqueId() != uniqueid) {
-                                    break;
                                 }
                             } else {
-                                break;
                             }
                         }
                     } else {
-                        break;
                     }
                 }
                 PetFlag zz = PetFlag.getByAddId(itemId);
@@ -3118,19 +3164,12 @@ public class InventoryHandler {
                     c.getSession().write(MTSCSPacket.changePetFlag(uniqueid, true, zz.getValue()));
                     used = true;
                 }
-                break;
             }
-            case 5191001:
-            case 5191002:
-            case 5191003:
-            case 5191004:
-            case 5191000: { // Pet Flags
+            case 5191001, 5191002, 5191003, 5191004, 5191000 ->  { // Pet Flags
                 final int uniqueid = (int) slea.readLong();
                 MaplePet pet = c.getPlayer().getPet(0);
                 int slo = 0;
-
                 if (pet == null) {
-                    break;
                 }
                 if (pet.getUniqueId() != uniqueid) {
                     pet = c.getPlayer().getPet(1);
@@ -3141,14 +3180,11 @@ public class InventoryHandler {
                             slo = 2;
                             if (pet != null) {
                                 if (pet.getUniqueId() != uniqueid) {
-                                    break;
                                 }
                             } else {
-                                break;
                             }
                         }
                     } else {
-                        break;
                     }
                 }
                 PetFlag zz = PetFlag.getByDelId(itemId);
@@ -3159,30 +3195,23 @@ public class InventoryHandler {
                     c.getSession().write(MTSCSPacket.changePetFlag(uniqueid, false, zz.getValue()));
                     used = true;
                 }
-                break;
             }
-            case 5501001:
-            case 5501002: { //expiry mount
+            case 5501001, 5501002 ->  { //expiry mount
                 final Skill skil = SkillFactory.getSkill(slea.readInt());
                 if (skil == null || skil.getId() / 10000 != 8000 || c.getPlayer().getSkillLevel(skil) <= 0 || !skil.isTimeLimited() || GameConstants.getMountItem(skil.getId(), c.getPlayer()) <= 0) {
-                    break;
                 }
                 final long toAdd = (itemId == 5501001 ? 30 : 60) * 24 * 60 * 60 * 1000L;
                 final long expire = c.getPlayer().getSkillExpiry(skil);
                 if (expire < System.currentTimeMillis() || (long) (expire + toAdd) >= System.currentTimeMillis() + (365 * 24 * 60 * 60 * 1000L)) {
-                    break;
                 }
                 c.getPlayer().changeSingleSkillLevel(skil, c.getPlayer().getSkillLevel(skil), c.getPlayer().getMasterLevel(skil), (long) (expire + toAdd));
                 used = true;
-                break;
             }
-            case 5170000: { // Pet name change
+            case 5170000 ->  { // Pet name change
                 final int uniqueid = (int) slea.readLong();
                 MaplePet pet = c.getPlayer().getPet(0);
                 int slo = 0;
-
                 if (pet == null) {
-                    break;
                 }
                 if (pet.getUniqueId() != uniqueid) {
                     pet = c.getPlayer().getPet(1);
@@ -3193,19 +3222,16 @@ public class InventoryHandler {
                             slo = 2;
                             if (pet != null) {
                                 if (pet.getUniqueId() != uniqueid) {
-                                    break;
                                 }
                             } else {
-                                break;
                             }
                         }
                     } else {
-                        break;
                     }
                 }
                 String nName = slea.readMapleAsciiString();
                 for (String z : GameConstants.RESERVED) {
-                    if (pet.getName().indexOf(z) != -1 || nName.indexOf(z) != -1) {
+                    if (pet.getName().contains(z) || nName.contains(z)) {
                         break;
                     }
                 }
@@ -3216,13 +3242,10 @@ public class InventoryHandler {
                     c.getPlayer().getMap().broadcastMessage(MTSCSPacket.changePetName(c.getPlayer(), nName, slo));
                     used = true;
                 }
-                break;
             }
-            case 5700000: {
+            case 5700000 ->  {
                 slea.skip(8);
-                if (c.getPlayer().getAndroid() == null) {
-                    break;
-                }
+                if (c.getPlayer().getAndroid() == null) {                }
                 String nName = slea.readMapleAsciiString();
                 for (String z : GameConstants.RESERVED) {
                     if (c.getPlayer().getAndroid().getName().indexOf(z) != -1 || nName.indexOf(z) != -1) {
@@ -3234,54 +3257,11 @@ public class InventoryHandler {
                     c.getPlayer().setAndroid(c.getPlayer().getAndroid()); //respawn it
                     used = true;
                 }
-                break;
             }
-            case 5240000:
-            case 5240001:
-            case 5240002:
-            case 5240003:
-            case 5240004:
-            case 5240005:
-            case 5240006:
-            case 5240007:
-            case 5240008:
-            case 5240009:
-            case 5240010:
-            case 5240011:
-            case 5240012:
-            case 5240013:
-            case 5240014:
-            case 5240015:
-            case 5240016:
-            case 5240017:
-            case 5240018:
-            case 5240019:
-            case 5240020:
-            case 5240021:
-            case 5240022:
-            case 5240023:
-            case 5240024:
-            case 5240025:
-            case 5240026:
-            case 5240027:
-            case 5240029:
-            case 5240030:
-            case 5240031:
-            case 5240032:
-            case 5240033:
-            case 5240034:
-            case 5240035:
-            case 5240036:
-            case 5240037:
-            case 5240038:
-            case 5240039:
-            case 5240040:
-            case 5240028: { // Pet food
+            case 5240000, 5240001, 5240002, 5240003, 5240004, 5240005, 5240006, 5240007, 5240008, 5240009, 5240010, 5240011, 5240012, 5240013, 5240014, 5240015, 5240016, 5240017, 5240018, 5240019, 5240020, 5240021, 5240022, 5240023, 5240024, 5240025, 5240026, 5240027, 5240029, 5240030, 5240031, 5240032, 5240033, 5240034, 5240035, 5240036, 5240037, 5240038, 5240039, 5240040, 5240028 ->  {
+                // Pet food
                 MaplePet pet = c.getPlayer().getPet(0);
-
-                if (pet == null) {
-                    break;
-                }
+                if (pet == null) {                }
                 if (!pet.canConsume(itemId)) {
                     pet = c.getPlayer().getPet(1);
                     if (pet != null) {
@@ -3289,14 +3269,11 @@ public class InventoryHandler {
                             pet = c.getPlayer().getPet(2);
                             if (pet != null) {
                                 if (!pet.canConsume(itemId)) {
-                                    break;
                                 }
                             } else {
-                                break;
                             }
                         }
                     } else {
-                        break;
                     }
                 }
                 final byte petindex = c.getPlayer().getPetIndex(pet);
@@ -3316,10 +3293,9 @@ public class InventoryHandler {
                 c.getSession().write(PetPacket.updatePet(pet, c.getPlayer().getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition()), true));
                 c.getPlayer().getMap().broadcastMessage(c.getPlayer(), PetPacket.commandResponse(c.getPlayer().getId(), (byte) 1, petindex, true, true), true);
                 used = true;
-                break;
             }
-            case 5230001:
-            case 5230000: {// owl of minerva
+            case 5230001, 5230000 -> {
+                // owl of minerva
                 final int itemSearch = slea.readInt();
                 final List<HiredMerchant> hms = c.getChannelServer().searchMerchant(itemSearch);
                 if (hms.size() > 0) {
@@ -3328,20 +3304,16 @@ public class InventoryHandler {
                 } else {
                     c.getPlayer().dropMessage(1, "Unable to find the item.");
                 }
-                break;
             }
-            case 5281001: //idk, but probably
-            case 5280001: // Gas Skill
-            case 5281000: { // Passed gas
+            case 5281001, 5280001, 5281000 ->  {// Passed gas
                 Rectangle bounds = new Rectangle((int) c.getPlayer().getPosition().getX(), (int) c.getPlayer().getPosition().getY(), 1, 1);
                 MapleMist mist = new MapleMist(bounds, c.getPlayer());
                 c.getPlayer().getMap().spawnMist(mist, 10000, true);
                 c.getSession().write(CWvsContext.enableActions());
                 used = true;
-                break;
             }
-            case 5370001:
-            case 5370000: { // Chalkboard
+
+            case 5370001, 5370000 ->  { // Chalkboard
                 for (MapleEventType t : MapleEventType.values()) {
                     final MapleEvent e = ChannelServer.getInstance(c.getChannel()).getEvent(t);
                     if (e.isRunning()) {
@@ -3355,31 +3327,16 @@ public class InventoryHandler {
                     }
                 }
                 c.getPlayer().setChalkboard(slea.readMapleAsciiString());
-                break;
             }
-            case 5079000:
-            case 5079001:
-            case 5390007:
-            case 5390008:
-            case 5390009:
-            case 5390000: // Diablo Messenger
-            case 5390001: // Cloud 9 Messenger
-            case 5390002: // Loveholic Messenger
-            case 5390003: // New Year Megassenger 1
-            case 5390004: // New Year Megassenger 2
-            case 5390005: // Cute Tiger Messenger
-            case 5390006: { // Tiger Roar's Messenger
+            case 5079000, 5079001, 5390007, 5390008, 5390009, 5390000, 5390001, 5390002, 5390003, 5390004, 5390005, 5390006 ->  { // Tiger Roar's Messenger
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
-                    break;
                 }
                 if (c.getPlayer().getMapId() == GameConstants.JAIL) {
                     c.getPlayer().dropMessage(5, "Cannot be used here.");
-                    break;
                 }
                 if (!c.getPlayer().getCheatTracker().canAvatarSmega()) {
                     c.getPlayer().dropMessage(5, "You may only use this every 5 minutes.");
-                    break;
                 }
                 if (!c.getChannelServer().getMegaphoneMuteState()) {
                     final List<String> lines = new LinkedList<>();
@@ -3396,11 +3353,8 @@ public class InventoryHandler {
                 } else {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
                 }
-                break;
             }
-            case 5452001:
-            case 5450003:
-            case 5450000: { // Mu Mu the Travelling Merchant
+            case 5452001, 5450003, 5450000 ->  { // Mu Mu the Travelling Merchant
                 for (int i : GameConstants.blockedMaps) {
                     if (c.getPlayer().getMapId() == i) {
                         c.getPlayer().dropMessage(5, "You may not use this command here.");
@@ -3418,71 +3372,87 @@ public class InventoryHandler {
                     MapleShopFactory.getInstance().getShop(61).sendShop(c);
                 }
                 //used = true;
-                break;
             }
-            case 5300000:
-            case 5300001:
-            case 5300002: { // Cash morphs
+            case 5300000, 5300001, 5300002 ->  { // Cash morphs
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 ii.getItemEffect(itemId).applyTo(c.getPlayer());
                 used = true;
-                break;
             }
-            default:
-                if (itemId / 10000 == 512) {
-                    final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                    String msg = ii.getMsg(itemId);
-                    final String ourMsg = slea.readMapleAsciiString();
+            default ->  { if (itemId / 10000 == 512) {
+                final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                String msg = ii.getMsg(itemId);
+                final String ourMsg = slea.readMapleAsciiString();
+                if (!msg.contains("%s")) {
+                    msg = ourMsg;
+                } else {
+                    msg = msg.replaceFirst("%s", c.getPlayer().getName());
                     if (!msg.contains("%s")) {
-                        msg = ourMsg;
+                        msg = ii.getMsg(itemId).replaceFirst("%s", ourMsg);
                     } else {
-                        msg = msg.replaceFirst("%s", c.getPlayer().getName());
-                        if (!msg.contains("%s")) {
+                        try {
+                            msg = msg.replaceFirst("%s", ourMsg);
+                        } catch (Exception e) {
                             msg = ii.getMsg(itemId).replaceFirst("%s", ourMsg);
-                        } else {
-                            try {
-                                msg = msg.replaceFirst("%s", ourMsg);
-                            } catch (Exception e) {
-                                msg = ii.getMsg(itemId).replaceFirst("%s", ourMsg);
-                            }
                         }
                     }
-                    c.getPlayer().getMap().startMapEffect(msg, itemId);
-
-                    final int buff = ii.getStateChangeItem(itemId);
-                    if (buff != 0) {
-                        for (MapleCharacter mChar : c.getPlayer().getMap().getCharactersThreadsafe()) {
-                            ii.getItemEffect(buff).applyTo(mChar);
-                        }
-                    }
-                    used = true;
-                } else if (itemId / 10000 == 510) {
-                    c.getPlayer().getMap().startJukebox(c.getPlayer().getName(), itemId);
-                    used = true;
-                } else if (itemId / 10000 == 520) {
-                    final int mesars = MapleItemInformationProvider.getInstance().getMeso(itemId);
-                    if (mesars > 0 && c.getPlayer().getMeso() < (Integer.MAX_VALUE - mesars)) {
-                        used = true;
-                        if (Math.random() > 0.1) {
-                            final int gainmes = Randomizer.nextInt(mesars);
-                            c.getPlayer().gainMeso(gainmes, false);
-                            c.getSession().write(MTSCSPacket.sendMesobagSuccess(gainmes));
-                        } else {
-                            c.getSession().write(MTSCSPacket.sendMesobagFailed(false)); // not random
-                        }
-                    }
-                } else if (itemId / 10000 == 562) {
-                    if (UseSkillBook(slot, itemId, c, c.getPlayer())) {
-                        c.getPlayer().gainSP(1);
-                    } //this should handle removing
-                } else if (itemId / 10000 == 553) {
-                    UseRewardItem(slot, itemId, c, c.getPlayer());// this too
-                } else if (itemId / 10000 != 519) {
-                    System.out.println("Unhandled CS item : " + itemId);
-                    System.out.println(slea.toString(true));
                 }
-                break;
+                c.getPlayer().getMap().startMapEffect(msg, itemId);
+                
+                final int buff = ii.getStateChangeItem(itemId);
+                if (buff != 0) {
+                    c.getPlayer().getMap().getCharactersThreadsafe().forEach(mChar -> {
+                        ii.getItemEffect(buff).applyTo(mChar);
+                    });
+                }
+                used = true;
+            } else if (itemId / 10000 == 510) {
+                c.getPlayer().getMap().startJukebox(c.getPlayer().getName(), itemId);
+                used = true;
+            } else if (itemId / 10000 == 520) {
+                final int mesars = MapleItemInformationProvider.getInstance().getMeso(itemId);
+                if (mesars > 0 && c.getPlayer().getMeso() < (Integer.MAX_VALUE - mesars)) {
+                    used = true;
+                    if (Math.random() > 0.1) {
+                        final int gainmes = Randomizer.nextInt(mesars);
+                        c.getPlayer().gainMeso(gainmes, false);
+                        c.getSession().write(MTSCSPacket.sendMesobagSuccess(gainmes));
+                    } else {
+                        c.getSession().write(MTSCSPacket.sendMesobagFailed(false)); // not random
+                    }
+                }
+            } else if (itemId / 10000 == 562) {
+                if (UseSkillBook(slot, itemId, c, c.getPlayer())) {
+                    c.getPlayer().gainSP(1);
+                } //this should handle removing
+            } else if (itemId / 10000 == 553) {
+                UseRewardItem(slot, itemId, c, c.getPlayer());// this too
+            } else if (itemId / 10000 != 519) {
+                System.out.println("Unhandled CS item : " + itemId);
+                System.out.println(slea.toString(true));
+            }
+            }
         }
+        // NPC Teleport Rock
+        // The Teleport Rock
+        // VIP Teleport Rock
+        // The Teleport Rock
+        // SP Reset (1st job)
+        // SP Reset (2nd job)
+        // SP Reset (3rd job)
+        // SP Reset (4th job)
+        //evan sp resets
+        //p.karma
+        // MapleTV Messenger
+        // MapleTV Star Messenger
+        // Wedding Invitation Card
+        //idk, but probably
+        // Gas Skill
+        // Diablo Messenger
+        // Cloud 9 Messenger
+        // Loveholic Messenger
+        // New Year Megassenger 1
+        // New Year Megassenger 2
+        // Cute Tiger Messenger
 
         if (used) {
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (short) 1, false, true);
@@ -3727,12 +3697,9 @@ public class InventoryHandler {
         }
         if (eff.getConsume() == 2) {
             if (c.getPlayer().getParty() != null && c.getPlayer().isAlive()) {
-                for (final MaplePartyCharacter pc : c.getPlayer().getParty().getMembers()) {
-                    final MapleCharacter chr = c.getPlayer().getMap().getCharacterById(pc.getId());
-                    if (chr != null && chr.isAlive()) {
-                        eff.applyTo(chr);
-                    }
-                }
+                c.getPlayer().getParty().getMembers().stream().map(pc -> c.getPlayer().getMap().getCharacterById(pc.getId())).filter(chr -> (chr != null && chr.isAlive())).forEachOrdered(chr -> {
+                    eff.applyTo(chr);
+                });
             } else {
                 eff.applyTo(c.getPlayer());
             }
@@ -3778,7 +3745,7 @@ public class InventoryHandler {
         }
     }
 
-    private static final boolean getIncubatedItems(MapleClient c, int itemId) {
+    private static boolean getIncubatedItems(MapleClient c, int itemId) {
         if (c.getPlayer().getInventory(MapleInventoryType.EQUIP).getNumFreeSlot() < 2 || c.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() < 2 || c.getPlayer().getInventory(MapleInventoryType.SETUP).getNumFreeSlot() < 2) {
             c.getPlayer().dropMessage(5, "Please make room in your inventory.");
             return false;
@@ -3844,13 +3811,13 @@ public class InventoryHandler {
                 HiredMerchant merchant = null;
                 List<MapleMapObject> objects;
                 switch (OWL_ID) {
-                    case 0:
+                    case 0 -> {
                         objects = mapp.getAllHiredMerchantsThreadsafe();
                         for (MapleMapObject ob : objects) {
-                            if (ob instanceof IMaplePlayerShop) {
-                                final IMaplePlayerShop ips = (IMaplePlayerShop) ob;
-                                if (ips instanceof HiredMerchant) {
-                                    final HiredMerchant merch = (HiredMerchant) ips;
+                            if (ob instanceof IMaplePlayerShop iMaplePlayerShop) {
+                                final IMaplePlayerShop ips = iMaplePlayerShop;
+                                if (ips instanceof HiredMerchant hiredMerchant) {
+                                    final HiredMerchant merch = hiredMerchant;
                                     if (merch.getOwnerId() == id) {
                                         merchant = merch;
                                         break;
@@ -3858,14 +3825,14 @@ public class InventoryHandler {
                                 }
                             }
                         }
-                        break;
-                    case 1:
+                    }
+                    case 1 -> {
                         objects = mapp.getAllHiredMerchantsThreadsafe();
                         for (MapleMapObject ob : objects) {
-                            if (ob instanceof IMaplePlayerShop) {
-                                final IMaplePlayerShop ips = (IMaplePlayerShop) ob;
-                                if (ips instanceof HiredMerchant) {
-                                    final HiredMerchant merch = (HiredMerchant) ips;
+                            if (ob instanceof IMaplePlayerShop iMaplePlayerShop) {
+                                final IMaplePlayerShop ips = iMaplePlayerShop;
+                                if (ips instanceof HiredMerchant hiredMerchant) {
+                                    final HiredMerchant merch = hiredMerchant;
                                     if (merch.getStoreId() == id) {
                                         merchant = merch;
                                         break;
@@ -3873,16 +3840,16 @@ public class InventoryHandler {
                                 }
                             }
                         }
-                        break;
-                    default:
+                    }
+                    default -> {
                         final MapleMapObject ob = mapp.getMapObject(id, MapleMapObjectType.HIRED_MERCHANT);
-                        if (ob instanceof IMaplePlayerShop) {
-                            final IMaplePlayerShop ips = (IMaplePlayerShop) ob;
-                            if (ips instanceof HiredMerchant) {
-                                merchant = (HiredMerchant) ips;
+                        if (ob instanceof IMaplePlayerShop iMaplePlayerShop) {
+                            final IMaplePlayerShop ips = iMaplePlayerShop;
+                            if (ips instanceof HiredMerchant hiredMerchant) {
+                                merchant = hiredMerchant;
                             }
                         }
-                        break;
+                    }
                 }
                 if (merchant != null) {
                     if (merchant.isOwner(c.getPlayer())) {

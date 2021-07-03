@@ -59,6 +59,7 @@ public class MapleQuestAction implements Serializable {
     private List<QuestItem> items = null;
     private List<Triple<Integer, Integer, Integer>> skill = null;
     private List<Pair<Integer, Integer>> state = null;
+    private int questBonus = 4; // move this to config file
 
     /** Creates a new instance of MapleQuestAction */
     public MapleQuestAction(MapleQuestActionType type, ResultSet rse, MapleQuest quest, PreparedStatement pss, PreparedStatement psq, PreparedStatement psi) throws SQLException {
@@ -152,23 +153,21 @@ public class MapleQuestAction implements Serializable {
     public void runStart(MapleCharacter c, Integer extSelection) {
         MapleQuestStatus status;
         switch (type) {
-            case exp:
+            case exp -> {
                 status = c.getQuest(quest);
                 if (status.getForfeited() > 0) {
                     break;
                 }
-                c.gainExp(intStore * GameConstants.getExpRate_Quest(c.getLevel()) * (c.getStat().questBonus) * ((c.getTrait(MapleTraitType.sense).getLevel() * 3 / 10) + 100) / 100, true, true, true);
-                break;
-            case item:
+                c.gainExp((intStore * GameConstants.getExpRate_Quest(c.getLevel()) * (c.getStat().questBonus) * ((c.getTrait(MapleTraitType.sense).getLevel() * 3 / 10) + 100) / 100) * questBonus, true, true, true);
+            }
+            case item -> {
                 // first check for randomness in item selection
-                Map<Integer, Integer> props = new HashMap<Integer, Integer>();
-                for (QuestItem item : items) {
-                    if (item.prop > 0 && canGetItem(item, c)) {
-                        for (int i = 0; i < item.prop; i++) {
-                            props.put(props.size(), item.itemid);
-                        }
+                Map<Integer, Integer> props = new HashMap<>();
+                items.stream().filter(item -> (item.prop > 0 && canGetItem(item, c))).forEachOrdered(item -> {
+                    for (int i = 0; i < item.prop; i++) {
+                        props.put(props.size(), item.itemid);
                     }
-                }
+                });
                 int selection = 0;
                 int extNum = 0;
                 if (props.size() > 0) {
@@ -209,27 +208,28 @@ public class MapleQuestAction implements Serializable {
                         c.getClient().getSession().write(InfoPacket.getShowItemGain(id, count, true));
                     }
                 }
-                break;
-            case nextQuest:
+            }
+
+            case nextQuest -> {
                 status = c.getQuest(quest);
                 if (status.getForfeited() > 0) {
                     break;
                 }
                 c.getClient().getSession().write(CField.updateQuestFinish(quest.getId(), status.getNpc(), intStore));
-                break;
-            case money:
+            }
+            case money -> {
                 status = c.getQuest(quest);
                 if (status.getForfeited() > 0) {
                     break;
                 }
                 c.gainMeso(intStore, true, true);
-                break;
-            case quest:
+            }
+            case quest -> {
                 for (Pair<Integer, Integer> q : state) {
                     c.updateQuest(new MapleQuestStatus(MapleQuest.getInstance(q.left), q.right));
                 }
-                break;
-            case skill:
+            }
+            case skill -> {
                 final Map<Skill, SkillEntry> sa = new HashMap<>();
                 for (Triple<Integer, Integer, Integer> skills : skill) {
                     final int skillid = skills.left;
@@ -248,8 +248,8 @@ public class MapleQuestAction implements Serializable {
                     }
                 }
                 c.changeSkillsLevel(sa);
-                break;
-            case pop:
+            }
+            case pop -> {
                 status = c.getQuest(quest);
                 if (status.getForfeited() > 0) {
                     break;
@@ -258,8 +258,8 @@ public class MapleQuestAction implements Serializable {
                 c.addFame(fameGain);
                 c.updateSingleStat(MapleStat.FAME, c.getFame());
                 c.getClient().getSession().write(InfoPacket.getShowFameGain(fameGain));
-                break;
-            case buffItemID:
+            }
+            case buffItemID -> {
                 status = c.getQuest(quest);
                 if (status.getForfeited() > 0) {
                     break;
@@ -269,16 +269,15 @@ public class MapleQuestAction implements Serializable {
                     break;
                 }
                 MapleItemInformationProvider.getInstance().getItemEffect(tobuff).applyTo(c);
-                break;
-            case infoNumber: {
+            }
+            case infoNumber ->  {
 //		System.out.println("quest : "+intStore+"");
 //		MapleQuest.getInstance(intStore).forceComplete(c, 0);
-                break;
+
             }
-            case sp: {
+            case sp ->  {
                 status = c.getQuest(quest);
                 if (status.getForfeited() > 0) {
-                    break;
                 }
                 final int sp_val = intStore;
                 if (applicableJobs.size() > 0) {
@@ -296,23 +295,15 @@ public class MapleQuestAction implements Serializable {
                 } else {
                     c.gainSP(sp_val);
                 }
-                break;
             }
-            case charmEXP:
-            case charismaEXP:
-            case craftEXP:
-            case insightEXP:
-            case senseEXP:
-            case willEXP: {
+            case charmEXP, charismaEXP, craftEXP, insightEXP, senseEXP, willEXP -> {
                 status = c.getQuest(quest);
                 if (status.getForfeited() > 0) {
-                    break;
                 }
                 c.getTrait(MapleTraitType.getByQuestName(type.name())).addExp(intStore, c);
-                break;
             }
-            default:
-                break;
+            default -> {
+            }
         }
     }
 
@@ -416,7 +407,7 @@ public class MapleQuestAction implements Serializable {
     public void runEnd(MapleCharacter c, Integer extSelection) {
         switch (type) {
             case exp: {
-                c.gainExp(intStore * GameConstants.getExpRate_Quest(c.getLevel()) * (c.getStat().questBonus) * ((c.getTrait(MapleTraitType.sense).getLevel() * 3 / 10) + 100) / 100, true, true, true);
+                c.gainExp((intStore * GameConstants.getExpRate_Quest(c.getLevel()) * (c.getStat().questBonus) * ((c.getTrait(MapleTraitType.sense).getLevel() * 3 / 10) + 100) / 100) * questBonus, true, true, true);
                 break;
             }
             case item: {
