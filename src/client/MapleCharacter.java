@@ -20,55 +20,60 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package client;
 
-import client.MapleTrait.MapleTraitType;
-import constants.GameConstants;
-import client.inventory.MapleInventoryType;
-import client.inventory.MapleInventory;
-import client.inventory.Item;
-import client.inventory.ItemLoader;
-import client.inventory.MapleInventoryIdentifier;
-import client.inventory.MapleMount;
-import client.inventory.MaplePet;
-import client.inventory.ItemFlag;
-import client.inventory.MapleRing;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.Deque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Deque;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.io.Serializable;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import handling.login.LoginInformationProvider.JobType;
+import client.MapleTrait.MapleTraitType;
 import client.anticheat.CheatTracker;
 import client.anticheat.ReportType;
 import client.inventory.Equip;
+import client.inventory.Item;
+import client.inventory.ItemFlag;
+import client.inventory.ItemLoader;
 import client.inventory.MapleAndroid;
 import client.inventory.MapleImp;
 import client.inventory.MapleImp.ImpFlag;
+import client.inventory.MapleInventory;
+import client.inventory.MapleInventoryIdentifier;
+import client.inventory.MapleInventoryType;
+import client.inventory.MapleMount;
+import client.inventory.MaplePet;
+import client.inventory.MapleRing;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
-import constants.ServerConstants;
+import constants.GameConstants;
 import database.DatabaseConnection;
 import database.DatabaseException;
 import handling.cashshop.handler.CashShopOperation;
 import handling.channel.ChannelServer;
+import handling.login.LoginInformationProvider.JobType;
 import handling.login.LoginServer;
 import handling.world.CharacterTransfer;
 import handling.world.MapleCharacterLook;
@@ -85,70 +90,64 @@ import handling.world.family.MapleFamilyBuff;
 import handling.world.family.MapleFamilyCharacter;
 import handling.world.guild.MapleGuild;
 import handling.world.guild.MapleGuildCharacter;
-import java.awt.Rectangle;
-import java.lang.ref.WeakReference;
-import java.util.Date;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import tools.MockIOSession;
 import scripting.EventInstanceManager;
 import scripting.NPCScriptManager;
+import server.CashShop;
 import server.MapleAchievements;
+import server.MapleCarnivalChallenge;
+import server.MapleCarnivalParty;
+import server.MapleInventoryManipulator;
+import server.MapleItemInformationProvider;
 import server.MaplePortal;
 import server.MapleShop;
 import server.MapleStatEffect;
+import server.MapleStatEffect.CancelEffectAction;
 import server.MapleStorage;
 import server.MapleTrade;
-import server.Randomizer;
 import server.RandomRewards;
-import server.MapleCarnivalParty;
-import server.MapleItemInformationProvider;
+import server.Randomizer;
+import server.Timer.BuffTimer;
+import server.Timer.MapTimer;
 import server.life.MapleMonster;
+import server.life.MobSkill;
+import server.life.MobSkillFactory;
+import server.life.PlayerNPC;
 import server.maps.AnimatedMapleMapObject;
+import server.maps.Event_PyramidSubway;
+import server.maps.FieldLimitType;
 import server.maps.MapleDoor;
+import server.maps.MapleDragon;
+import server.maps.MapleExtractor;
+import server.maps.MapleFoothold;
 import server.maps.MapleMap;
 import server.maps.MapleMapFactory;
 import server.maps.MapleMapObject;
 import server.maps.MapleMapObjectType;
 import server.maps.MapleSummon;
-import server.maps.FieldLimitType;
+import server.maps.MechDoor;
 import server.maps.SavedLocationType;
+import server.movement.LifeMovementFragment;
 import server.quest.MapleQuest;
 import server.shops.IMaplePlayerShop;
-import server.CashShop;
-import tools.Pair;
-import tools.packet.MTSCSPacket;
-import tools.packet.MobPacket;
-import tools.packet.PetPacket;
-import tools.packet.MonsterCarnivalPacket;
-import server.MapleCarnivalChallenge;
-import server.MapleInventoryManipulator;
-import server.MapleStatEffect.CancelEffectAction;
-import server.Timer.BuffTimer;
-import server.Timer.MapTimer;
-import server.life.MobSkill;
-import server.life.MobSkillFactory;
-import server.life.PlayerNPC;
-import server.maps.Event_PyramidSubway;
-import server.maps.MapleDragon;
-import server.maps.MapleExtractor;
-import server.maps.MapleFoothold;
-import server.maps.MechDoor;
-import server.movement.LifeMovementFragment;
 import tools.ConcurrentEnumMap;
 import tools.FileoutputUtil;
+import tools.MockIOSession;
+import tools.Pair;
 import tools.StringUtil;
 import tools.Triple;
+import tools.packet.CField;
 import tools.packet.CField.EffectPacket;
 import tools.packet.CField.NPCPacket;
-import tools.packet.CField;
 import tools.packet.CField.SummonPacket;
 import tools.packet.CWvsContext;
 import tools.packet.CWvsContext.BuddylistPacket;
 import tools.packet.CWvsContext.BuffPacket;
 import tools.packet.CWvsContext.InfoPacket;
 import tools.packet.CWvsContext.InventoryPacket;
+import tools.packet.MTSCSPacket;
+import tools.packet.MobPacket;
+import tools.packet.MonsterCarnivalPacket;
+import tools.packet.PetPacket;
 import tools.packet.PlayerShopPacket;
 
 public class MapleCharacter extends AnimatedMapleMapObject implements Serializable, MapleCharacterLook {
@@ -1572,7 +1571,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 cs.save();
             }
             PlayerNPC.updateByCharId(this);
-            keylayout.saveKeys(id);
+            keylayout.saveKeys(con,id);
             mount.saveMount(id);
             monsterbook.saveCards(accountid);
 
@@ -1701,14 +1700,19 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                     rs.close();
                 }
                 con.setAutoCommit(true);
-                con.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
-                if (con != null && !con.isClosed()) {
-                    con.close();
-                }
+                con.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+                
             } catch (SQLException e) {
                 FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
                 System.err
                         .println(MapleClient.getLogMessage(this, "[charsave] Error going back to autocommit mode") + e);
+            }
+            try {
+                if (con != null && !con.isClosed()) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                //TODO: handle exception
             }
         }
     }
