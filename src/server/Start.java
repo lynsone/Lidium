@@ -23,6 +23,7 @@ import server.life.MapleLifeFactory;
 import server.life.MapleMonsterInformationProvider;
 import server.life.MobSkillFactory;
 import server.life.PlayerNPC;
+import server.maps.MapleMap;
 import server.quest.MapleQuest;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -177,7 +178,8 @@ public class Start {
         MapleMonsterInformationProvider.getInstance().addExtra();
         LoginServer.setOn(); // now or later
         RankingWorker.run();
-
+        Thread tdc = new Thread(new DiseaseChecker());
+        threads.add(tdc);
         threads.parallelStream().forEach(tx -> {
             tx.start();
         });
@@ -194,5 +196,37 @@ public class Start {
 
     public static void main(final String args[]) throws InterruptedException {
         instance.run();
+    }
+
+    public static class DiseaseChecker implements Runnable {
+
+        @Override
+        public void run() {
+            System.out.println("Starting Diseases checker thread...");
+            try {
+                while (true) {
+                    // Remove parallelStream(). if the processor suffers xD
+                    // System.out.println("Checking diseases...");
+                    ChannelServer.getAllInstances().parallelStream().forEach((chs) -> {
+                        chs.getPlayerStorage().getAllCharacters().parallelStream().forEach((chr) -> {
+                            MapleMap map = chr.getMap();
+                            if (map != null) {
+                                if (chr.getDiseaseSize() > 0) {
+                                    chr.getAllDiseases().parallelStream().forEach((m) -> {
+                                        // System.out.print(">removing " + m.disease);
+                                        chr.dispelDebuff(m.disease);
+                                    });
+                                }
+                            }
+                        });
+
+                    });
+
+                    Thread.sleep(2000);
+                }
+            } catch (Exception e) {
+            }
+
+        }
     }
 }
