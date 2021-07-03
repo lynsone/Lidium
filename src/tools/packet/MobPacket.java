@@ -344,8 +344,8 @@ public class MobPacket {
 
         mplew.writePos(life.getTruePosition());
         mplew.write(life.getStance()); // Bitfield
-        mplew.writeShort(0); // FH
-        mplew.writeShort(life.getFh()); // Origin FH
+        mplew.writeShort(life.originFh());
+        mplew.writeShort(life.getFh());
         mplew.write(life.isFake() ? -4 : newSpawn ? -2 : -1);
         mplew.write(life.getCarnivalTeam());
         mplew.writeInt(0);
