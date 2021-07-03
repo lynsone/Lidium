@@ -271,7 +271,7 @@ public class MobPacket {
         addMonsterStatus(mplew, life);
         mplew.writePos(life.getTruePosition());
         mplew.write(life.getStance());
-        mplew.writeShort(0); // FH
+        mplew.writeShort(life.originFh());  // FH
         mplew.writeShort(life.getFh()); // Origin FH
         mplew.write(spawnType);
         if (spawnType == -3 || spawnType >= 0) {
