@@ -24,7 +24,8 @@ package server.events;
 import client.MapleCharacter;
 import client.MapleDisease;
 import java.util.concurrent.ScheduledFuture;
-import server.Timer.EventTimer;
+
+import server.TimerManager;
 import server.life.MobSkillFactory;
 import server.maps.MapleMap;
 import tools.packet.CField;
@@ -243,7 +244,7 @@ public class MapleSnowball extends MapleEvent {
                             oBall.setHittable(false);
                             final MapleMap map = chr.getMap();
                             oBall.broadcast(map, 4);
-                            oBall.snowmanSchedule = EventTimer.getInstance().schedule(new Runnable() {
+                            oBall.snowmanSchedule = TimerManager.getInstance().schedule(new Runnable() {
 
                                 @Override
                                 public void run() {

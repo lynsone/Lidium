@@ -29,12 +29,11 @@ import handling.world.World;
 import handling.world.exped.PartySearch;
 import java.util.concurrent.ScheduledFuture;
 import server.Randomizer;
-import server.Timer.MapTimer;
 import server.quest.MapleQuest;
 import server.life.MapleLifeFactory;
 import tools.packet.CField;
 import tools.packet.CWvsContext;
-
+import server.TimerManager;
 public class Event_PyramidSubway {
 
     private int kill = 0, cool = 0, miss = 0, skill = 0, type, energybar = 100, bar = 0;
@@ -57,7 +56,7 @@ public class Event_PyramidSubway {
 		}
 	    }
             commenceTimerNextMap(c, 1);
-            energyBarDecrease = MapTimer.getInstance().register(new Runnable() {
+            energyBarDecrease = TimerManager.getInstance().register(new Runnable() {
 
                 public void run() {
                     energybar -= (c.getParty() != null && c.getParty().getMembers().size() > 1 ? 5 : 2);
@@ -119,7 +118,7 @@ public class Event_PyramidSubway {
                 ourMap.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9700023), c.getPosition());
             }
         }
-        timerSchedule = MapTimer.getInstance().schedule(new Runnable() {
+        timerSchedule = TimerManager.getInstance().schedule(new Runnable() {
 
             public void run() {
                 boolean ret = false;

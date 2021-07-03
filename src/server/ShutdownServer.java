@@ -10,7 +10,7 @@ import handling.world.World;
 import java.lang.management.ManagementFactory;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import server.Timer.*;
+
 import tools.packet.CWvsContext;
 
 public class ShutdownServer implements ShutdownServerMBean {
@@ -38,7 +38,7 @@ public class ShutdownServer implements ShutdownServerMBean {
 
     public int mode = 0;
 
-    public void shutdown() {//can execute twice
+    public void shutdown() {// can execute twice
         run();
     }
 
@@ -46,7 +46,8 @@ public class ShutdownServer implements ShutdownServerMBean {
     public void run() {
         if (mode == 0) {
             int ret = 0;
-            World.Broadcast.broadcastMessage(CWvsContext.serverNotice(0, "The world is going to shutdown soon. Please log off safely."));
+            World.Broadcast.broadcastMessage(
+                    CWvsContext.serverNotice(0, "The world is going to shutdown soon. Please log off safely."));
             for (ChannelServer cs : ChannelServer.getAllInstances()) {
                 cs.setShutdown();
                 cs.setServerMessage("The world is going to shutdown soon. Please log off safely.");
@@ -61,7 +62,8 @@ public class ShutdownServer implements ShutdownServerMBean {
             mode++;
             System.out.println("Shutdown 2 commencing...");
             try {
-                World.Broadcast.broadcastMessage(CWvsContext.serverNotice(0, "The world is going to shutdown now. Please log off safely."));
+                World.Broadcast.broadcastMessage(
+                        CWvsContext.serverNotice(0, "The world is going to shutdown now. Please log off safely."));
                 Integer[] chs = ChannelServer.getAllInstance().toArray(new Integer[0]);
 
                 for (int i : chs) {
@@ -80,20 +82,15 @@ public class ShutdownServer implements ShutdownServerMBean {
             } catch (Exception e) {
                 System.err.println(e);
             }
-            WorldTimer.getInstance().stop();
-            MapTimer.getInstance().stop();
-            BuffTimer.getInstance().stop();
-            CloneTimer.getInstance().stop();
-            EventTimer.getInstance().stop();
-            EtcTimer.getInstance().stop();
-            PingTimer.getInstance().stop();
+            TimerManager.getInstance().stop();
+            ThreadManager.getInstance().stop();
             System.out.println("Shutdown 2 has finished.");
             try {
                 Thread.sleep(5000);
             } catch (Exception e) {
                 System.err.println(e);
             }
-            //DO NOT USE System.exit(0) HERE!! It causes issues on linux and is not needed.
+            // DO NOT USE System.exit(0) HERE!! It causes issues on linux and is not needed.
         }
     }
 }

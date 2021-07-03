@@ -21,13 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package server.events;
 
-import java.util.concurrent.ScheduledFuture;
 import client.MapleCharacter;
 import server.Randomizer;
-import server.Timer.EventTimer;
-import tools.packet.CField;
-import server.maps.MapleMap;
-import server.maps.SavedLocationType;
 
 public class MapleOla extends MapleSurvival { //survival/ola so similar.
     private int[] stages = new int[3];

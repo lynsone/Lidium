@@ -84,8 +84,6 @@ import server.MapleCarnivalFactory.MCSkill;
 import server.MapleSquad;
 import server.MapleSquad.MapleSquadType;
 import server.SpeedRunner;
-import server.Timer.MapTimer;
-import server.Timer.EtcTimer;
 import server.events.MapleEvent;
 import server.maps.MapleNodes.DirectionInfo;
 import server.maps.MapleNodes.MapleNodeInfo;
@@ -98,6 +96,7 @@ import tools.packet.CField;
 import tools.packet.CField.SummonPacket;
 import tools.packet.CWvsContext;
 import tools.packet.CWvsContext.PartyPacket;
+import server.TimerManager;
 
 public final class MapleMap {
 
@@ -594,7 +593,7 @@ public final class MapleMap {
 
     public final void killMonster(final MapleMonster monster, final MapleCharacter chr, final boolean withDrops, final boolean second, byte animation, final int lastSkill) {
         if ((monster.getId() == 8810122 || monster.getId() == 8810018) && !second) {
-            MapTimer.getInstance().schedule(() -> {
+            TimerManager.getInstance().schedule(() -> {
                 killMonster(monster, chr, true, true, (byte) 1);
                 killAllMonsters(true);
             }, 3000);
@@ -1059,7 +1058,7 @@ public final class MapleMap {
         reactor.setTimerActive(false);
 
         if (reactor.getDelay() > 0) {
-            MapTimer.getInstance().schedule(() -> {
+            TimerManager.getInstance().schedule(() -> {
                 respawnReactor(reactor);
             }, reactor.getDelay());
         }
@@ -1588,7 +1587,7 @@ public final class MapleMap {
     public final void spawnMist(final MapleMist mist, final int duration, boolean fake) {
         spawnAndAddRangedMapObject(mist, mist::sendSpawnData);
 
-        final MapTimer tMan = MapTimer.getInstance();
+        final TimerManager tMan = TimerManager.getInstance();
         final ScheduledFuture<?> poisonSchedule;
         switch (mist.isPoisonMist()) {
             case 1 -> {
@@ -1690,7 +1689,7 @@ public final class MapleMap {
         } finally {
             mapobjectlocks.get(MapleMapObjectType.ITEM).readLock().unlock();
         }
-        MapTimer.getInstance().schedule(() -> {
+        TimerManager.getInstance().schedule(() -> {
             final Point pos = new Point(Randomizer.nextInt(800) + 531, -806);
             final int theItem = Randomizer.nextInt(1000);
             int itemid = 0;
@@ -1751,7 +1750,7 @@ public final class MapleMap {
                     if (item.getItemId() == GameConstants.getCustomReactItem(react.getReactorId(), react.getReactItem().getLeft()) && react.getReactItem().getRight() == item.getQuantity()) {
                         if (react.getArea().contains(drop.getTruePosition())) {
                             if (!react.isTimerActive()) {
-                                MapTimer.getInstance().schedule(new ActivateItemReactor(drop, react, c), 5000);
+                                TimerManager.getInstance().schedule(new ActivateItemReactor(drop, react, c), 5000);
                                 react.setTimerActive(true);
                                 break;
                             }
@@ -1860,7 +1859,7 @@ public final class MapleMap {
         mapEffect = new MapleMapEffect(msg, itemId);
         mapEffect.setJukebox(jukebox);
         broadcastMessage(mapEffect.makeStartData());
-        MapTimer.getInstance().schedule(() -> {
+        TimerManager.getInstance().schedule(() -> {
             if (mapEffect != null) {
                 broadcastMessage(mapEffect.makeDestroyData());
                 mapEffect = null;
@@ -1870,7 +1869,7 @@ public final class MapleMap {
 
     public final void startExtendedMapEffect(final String msg, final int itemId) {
         broadcastMessage(CField.startMapEffect(msg, itemId, true));
-        MapTimer.getInstance().schedule(() -> {
+        TimerManager.getInstance().schedule(() -> {
             broadcastMessage(CField.removeMapEffect());
             broadcastMessage(CField.startMapEffect(msg, itemId, false));
             //dont remove mapeffect.
@@ -2191,7 +2190,7 @@ public final class MapleMap {
                     }
                 };
             }
-            squadSchedule = MapTimer.getInstance().schedule(run, 300000); //5 mins
+            squadSchedule = TimerManager.getInstance().schedule(run, 300000); //5 mins
         }
     }
 
@@ -2845,7 +2844,7 @@ public final class MapleMap {
                 reactor.setTimerActive(false);
 
                 if (reactor.getDelay() > 0) {
-                    MapTimer.getInstance().schedule(() -> {
+                    TimerManager.getInstance().schedule(() -> {
                         reactor.forceHitReactor((byte) 0);
                     }, reactor.getDelay());
                 }
@@ -3400,7 +3399,7 @@ public final class MapleMap {
     public final void resetShammos(final MapleClient c) {
         killAllMonsters(true);
         broadcastMessage(CWvsContext.serverNotice(5, "A player has moved too far from Shammos. Shammos is going back to the start."));
-        EtcTimer.getInstance().schedule(() -> {
+        TimerManager.getInstance().schedule(() -> {
             if (c.getPlayer() != null) {
                 c.getPlayer().changeMap(MapleMap.this, getPortal(0));
                 if (getCharactersThreadsafe().size() > 1) {

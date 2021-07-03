@@ -54,6 +54,8 @@ import handling.world.World;
 import handling.world.family.MapleFamilyCharacter;
 import handling.world.guild.MapleGuildCharacter;
 import java.util.Arrays;
+
+import server.TimerManager;
 import server.maps.MapleMap;
 import server.shops.IMaplePlayerShop;
 import tools.FileoutputUtil;
@@ -64,7 +66,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.mina.common.IoSession;
-import server.Timer.PingTimer;
+
 import server.quest.MapleQuest;
 import tools.packet.CField;
 
@@ -1202,7 +1204,7 @@ public class MapleClient implements Serializable {
         lastPing = System.currentTimeMillis();
         session.write(LoginPacket.getPing());
 
-        PingTimer.getInstance().schedule(() -> {
+        TimerManager.getInstance().schedule(() -> {
             try {
                 if (getLatency() < 0) {
                     disconnect(true, false);

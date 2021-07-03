@@ -106,8 +106,7 @@ import server.MapleStorage;
 import server.MapleTrade;
 import server.RandomRewards;
 import server.Randomizer;
-import server.Timer.BuffTimer;
-import server.Timer.MapTimer;
+import server.TimerManager;
 import server.life.MapleMonster;
 import server.life.MobSkill;
 import server.life.MobSkillFactory;
@@ -1986,7 +1985,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         client.getSession().write(CField.getClock(time));
         final MapleMap ourMap = getMap();
         time *= 1000;
-        mapTimeLimitTask = MapTimer.getInstance().register(() -> {
+        mapTimeLimitTask = TimerManager.getInstance().register(() -> {
             if (ourMap.getId() == GameConstants.JAIL) {
                 getQuestNAdd(MapleQuest.getInstance(GameConstants.JAIL_TIME))
                         .setCustomData(String.valueOf(System.currentTimeMillis()));
@@ -2254,7 +2253,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 addHP((int) (effect.getHpR() * this.stats.getCurrentMaxHp()));
                 addMP((int) (effect.getMpR() * this.stats.getCurrentMaxMp(this.getJob())));
                 setSchedule(MapleBuffStat.INFINITY,
-                        BuffTimer.getInstance().schedule(new CancelEffectAction(this, effect, start, stat),
+                TimerManager.getInstance().schedule(new CancelEffectAction(this, effect, start, stat),
                                 effect.alchemistModifyVal(this, 4000, false)));
                 return;
             }

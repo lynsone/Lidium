@@ -25,12 +25,12 @@ import client.MapleCharacter;
 import client.MapleStat;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
-import server.Timer.EventTimer;
 import server.events.MapleOxQuizFactory.MapleOxQuizEntry;
 import server.maps.MapleMap;
 import tools.packet.CField;
 import tools.Pair;
 import tools.packet.CWvsContext;
+import server.TimerManager;
 
 public class MapleOxQuiz extends MapleEvent {
 
@@ -96,7 +96,7 @@ public class MapleOxQuiz extends MapleEvent {
         if (oxSchedule2 != null) {
             oxSchedule2.cancel(false);
         }
-        oxSchedule2 = EventTimer.getInstance().schedule(new Runnable() {
+        oxSchedule2 = TimerManager.getInstance().schedule(new Runnable() {
 
             public void run() {
                 int number = 0;
@@ -128,7 +128,7 @@ public class MapleOxQuiz extends MapleEvent {
         if (oxSchedule != null) {
             oxSchedule.cancel(false);
         }
-        oxSchedule = EventTimer.getInstance().schedule(new Runnable() {
+        oxSchedule = TimerManager.getInstance().schedule(new Runnable() {
 
              @Override
              public void run() {

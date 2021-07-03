@@ -28,7 +28,7 @@ import constants.GameConstants;
 import handling.channel.ChannelServer;
 import handling.world.MaplePartyCharacter;
 import server.Randomizer;
-import server.Timer.MapTimer;
+import server.TimerManager;
 import server.life.MapleLifeFactory;
 import server.quest.MapleQuest;
 import tools.FileoutputUtil;
@@ -444,7 +444,7 @@ public class Event_DojoAgent {
         if (mobid != 0) {
             final int rand = Randomizer.nextInt(3);
 
-            MapTimer.getInstance().schedule(new Runnable() {
+            TimerManager.getInstance().schedule(new Runnable() {
 
                 @Override
                 public void run() {

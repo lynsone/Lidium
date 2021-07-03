@@ -31,11 +31,10 @@ import java.util.LinkedList;
 import java.util.List;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
-import server.Timer.EtcTimer;
 import server.maps.MapleMapObjectType;
 import tools.packet.CWvsContext;
 import tools.packet.PlayerShopPacket;
-
+import server.TimerManager;
 public class HiredMerchant extends AbstractPlayerStore {
 
     public ScheduledFuture<?> schedule;
@@ -47,7 +46,7 @@ public class HiredMerchant extends AbstractPlayerStore {
         super(owner, itemId, desc, "", 6);
         start = System.currentTimeMillis();
         blacklist = new LinkedList<String>();
-        this.schedule = EtcTimer.getInstance().schedule(new Runnable() {
+        this.schedule = TimerManager.getInstance().schedule(new Runnable() {
 
             @Override
             public void run() {

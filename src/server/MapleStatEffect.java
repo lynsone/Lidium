@@ -6,52 +6,51 @@ import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 
-import client.inventory.Item;
-import constants.GameConstants;
 import client.MapleBuffStat;
 import client.MapleCharacter;
 import client.MapleCoolDownValueHolder;
 import client.MapleDisease;
-import client.inventory.MapleInventory;
-import client.inventory.MapleInventoryType;
 import client.MapleStat;
 import client.MapleTrait.MapleTraitType;
-import client.SkillFactory;
 import client.PlayerStats;
 import client.Skill;
+import client.SkillFactory;
+import client.inventory.Item;
+import client.inventory.MapleInventory;
+import client.inventory.MapleInventoryType;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
+import constants.GameConstants;
 import handling.channel.ChannelServer;
 import handling.world.MaplePartyCharacter;
 import provider.MapleData;
-import provider.MapleDataType;
 import provider.MapleDataTool;
+import provider.MapleDataType;
+import server.MapleCarnivalFactory.MCSkill;
+
+import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.maps.MapleDoor;
+import server.maps.MapleExtractor;
 import server.maps.MapleMap;
 import server.maps.MapleMapObject;
 import server.maps.MapleMapObjectType;
 import server.maps.MapleMist;
 import server.maps.MapleSummon;
-import server.maps.SummonMovementType;
-import java.util.EnumMap;
-import java.util.Map.Entry;
-import server.MapleCarnivalFactory.MCSkill;
-import server.Timer.BuffTimer;
-import server.life.MapleLifeFactory;
-import server.maps.MapleExtractor;
 import server.maps.MechDoor;
-import tools.packet.CField;
-import tools.Pair;
+import server.maps.SummonMovementType;
 import tools.CaltechEval;
 import tools.FileoutputUtil;
+import tools.Pair;
 import tools.Triple;
-import tools.packet.CField.EffectPacket;
 import tools.packet.CField;
+import tools.packet.CField.EffectPacket;
 import tools.packet.CWvsContext;
 import tools.packet.CWvsContext.BuffPacket;
 
@@ -1873,7 +1872,7 @@ public class MapleStatEffect implements Serializable {
                 localstatups.put(MapleBuffStat.MORPH, x);
             }
             chr.getClient().getSession().write(BuffPacket.giveBuff(localsourceid, getDuration(), localstatups, this));
-            chr.registerEffect(this, starttime, BuffTimer.getInstance().schedule(new CancelEffectAction(chr, this, starttime, localstatups), isSubTime(sourceid) ? getSubTime() : getDuration()), localstatups, false, getDuration(), applyfrom.getId());
+            chr.registerEffect(this, starttime, TimerManager.getInstance().schedule(new CancelEffectAction(chr, this, starttime, localstatups), isSubTime(sourceid) ? getSubTime() : getDuration()), localstatups, false, getDuration(), applyfrom.getId());
         }
     }
 
@@ -1912,7 +1911,7 @@ public class MapleStatEffect implements Serializable {
     }
 
     public final void silentApplyBuff(final MapleCharacter chr, final long starttime, final int localDuration, final Map<MapleBuffStat, Integer> statup, final int cid) {
-        chr.registerEffect(this, starttime, BuffTimer.getInstance().schedule(new CancelEffectAction(chr, this, starttime, statup),
+        chr.registerEffect(this, starttime, TimerManager.getInstance().schedule(new CancelEffectAction(chr, this, starttime, statup),
                 ((starttime + localDuration) - System.currentTimeMillis())), statup, true, localDuration, cid);
 
         final SummonMovementType summonMovementType = getSummonMovementType();
@@ -1952,7 +1951,7 @@ public class MapleStatEffect implements Serializable {
             applyto.cancelEffect(this, true, -1, stat);
             applyto.getMap().broadcastMessage(applyto, BuffPacket.giveEnergyChargeTest(applyto.getId(), 10000, duration / 1000), false);
             final CancelEffectAction cancelAction = new CancelEffectAction(applyto, this, starttime, stat);
-            final ScheduledFuture<?> schedule = BuffTimer.getInstance().schedule(cancelAction, ((starttime + duration) - System.currentTimeMillis()));
+            final ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, ((starttime + duration) - System.currentTimeMillis()));
             applyto.registerEffect(this, starttime, schedule, stat, false, duration, applyto.getId());
 
         }
@@ -2512,7 +2511,7 @@ public class MapleStatEffect implements Serializable {
         }
         final long starttime = System.currentTimeMillis();
         final CancelEffectAction cancelAction = new CancelEffectAction(applyto, this, starttime, localstatups);
-        final ScheduledFuture<?> schedule = BuffTimer.getInstance().schedule(cancelAction, maskedDuration > 0 ? maskedDuration : localDuration);
+        final ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, maskedDuration > 0 ? maskedDuration : localDuration);
         applyto.registerEffect(this, starttime, schedule, localstatups, false, localDuration, applyfrom.getId());
     }
 
