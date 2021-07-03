@@ -56,8 +56,8 @@ public class MobSkillFactory {
     private void initialize() {
         Thread t = new Thread(() -> {
             long start = System.currentTimeMillis();
+            Connection con = DatabaseConnection.getConnection();
             try {
-                Connection con = DatabaseConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement("SELECT * FROM wz_mobskilldata");
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
@@ -67,6 +67,13 @@ public class MobSkillFactory {
                 ps.close();
             } catch (Exception e) {
                 e.printStackTrace();
+            }finally{
+                try {
+                    if(con!=null && !con.isClosed()){
+                        con.close();
+                    }
+                } catch (Exception ignore) {
+                }
             }
             System.out.println("MOB SKILL Factory loaded in " + (System.currentTimeMillis() - start) + "ms.");
         });

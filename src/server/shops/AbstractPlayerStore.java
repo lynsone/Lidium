@@ -23,6 +23,7 @@ package server.shops;
 import constants.GameConstants;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.util.LinkedList;
@@ -141,7 +142,7 @@ public abstract class AbstractPlayerStore extends MapleMapObject implements IMap
             ps.setInt(2, ownerId);
             ps.executeUpdate();
             ps.close();
-            ps = con.prepareStatement("INSERT INTO hiredmerch (characterid, accountid, Mesos, time) VALUES (?, ?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS);
+            ps = con.prepareStatement("INSERT INTO hiredmerch (characterid, accountid, Mesos, time) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, ownerId);
             ps.setInt(2, owneraccount);
             ps.setInt(3, meso.get());
