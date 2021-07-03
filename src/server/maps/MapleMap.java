@@ -1399,6 +1399,10 @@ public final class MapleMap {
 
     public final void spawnMonster_sSack(final MapleMonster mob, final Point pos, final int spawnType) {
         mob.setPosition(calcPointBelow(new Point(pos.x, pos.y - 1)));
+        MapleFoothold fh = getFootholds().findBelow(mob.getPosition());
+        if (fh != null) {
+            mob.setFh(fh.getId());
+        }
         spawnMonster(mob, spawnType);
     }
 

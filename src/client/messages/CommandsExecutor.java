@@ -216,14 +216,15 @@ public class CommandsExecutor {
         levelCommandsCursor = new Pair<>((List<String>) new ArrayList<String>(), (List<String>) new ArrayList<String>());
         addCommand("job", 1, JobCommand.class);
         addCommand("warp", 1, WarpCommand.class);
-        addCommand("goto", 1, GoToCommand.class);    
-        addCommand("heal", 1, HealCommand.class);       
+        addCommand("goto", 1, GoToCommand.class);
+        addCommand("heal", 1, HealCommand.class);
         addCommand("hide", 1, HideCommand.class);
-        addCommand("itemcheck", 1, ItemCheckCommand.class);       
+        addCommand("itemcheck", 1, ItemCheckCommand.class);
         addCommand("mapname", 1, MapNameCommand.class);
         addCommand("onlinechannel", 1, OnlineChannelCommand.class);
         addCommand("online", 1, OnlineCommand.class);
         addCommand("reports", 1, ReportsCommand.class);
+        addCommand("song", 1, SongCommand.class);
         //addCommand("", 1, Command.class);
         //addCommand(new String[]{"song", "music"}, 1, .class);
         commandsNameDesc.add(levelCommandsCursor);
@@ -235,7 +236,7 @@ public class CommandsExecutor {
         addCommand("healmap", 2, HealMapCommand.class);
         addCommand("kill", 2, KillCommand.class);
         addCommand("dc", 2, DcCommand.class);
-        addCommand("song", 1, SongCommand.class);
+        addCommand("monsterdebug", 2, MonsterDebugCommand.class);
         //addCommand("", 2, Command.class);
         commandsNameDesc.add(levelCommandsCursor);
     }
