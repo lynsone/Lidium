@@ -408,7 +408,7 @@ public class DamageParse {
         if (hpMob > 0 && totDamageToOneMonster > 0) {
             player.afterAttack(attack.targets, attack.hits, attack.skill);
         }
-        if (attack.skill != 0 && (attack.targets > 0 || (attack.skill != 4331003 && attack.skill != 4341002)) && !GameConstants.isNoDelaySkill(attack.skill)) {
+        if ((attack.skill != 0) && ((attack.targets > 0) || ((attack.skill != 4331003) && (attack.skill != 4341002))) && attack.skill != 31121005 && (!GameConstants.isNoDelaySkill(attack.skill))) {
             effect.applyTo(player, attack.position);
         }
         if (totDamage > 1 && GameConstants.getAttackDelay(attack.skill, theSkill) >= 100) {

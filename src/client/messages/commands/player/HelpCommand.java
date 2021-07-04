@@ -17,6 +17,7 @@ public class HelpCommand extends Command{
         c.getPlayer().dropMessage(5, "@ranking < Use @ranking for more details >");
         c.getPlayer().dropMessage(5, "@checkdrops < Use @checkdrops for more details >");  
         c.getPlayer().dropMessage(5, "@enablepic < Toggle pic on/off >");  
+        c.getPlayer().dropMessage(5, "@uptime < Shows howlong the server has been up for >");
         //c.getPlayer().dropMessage(5, "@npc < Universal Town Warp / Event NPC>"); to be done
         //c.getPlayer().dropMessage(5, "@dcash < Universal Cash Item Dropper >");????  
     }   

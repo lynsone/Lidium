@@ -678,6 +678,8 @@ public class GameConstants {
             case 5221007:
                 return 99; //skip duh chek
             case 0: // Normal Attack, TODO delay for each weapon type
+            case 31001006: //Demon slayer normal attack
+            case 31001007: //Demon slayer normal attack 2    
                 return 570;
         }
         if (skill != null && skill.getSkillType() == 3) {

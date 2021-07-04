@@ -208,6 +208,7 @@ public class CommandsExecutor {
         addCommand("ranking", 0, RankingCommand.class);
         addCommand("togglesmega", 0, ToggleSmegaCommand.class);
         addCommand("fm", 0, FMCommand.class);
+        addCommand("uptime", 0, UpTimeCommand.class);
         //addCommand("", 0, Command.class);
         commandsNameDesc.add(levelCommandsCursor);
     }
@@ -225,6 +226,9 @@ public class CommandsExecutor {
         addCommand("online", 1, OnlineCommand.class);
         addCommand("reports", 1, ReportsCommand.class);
         addCommand("song", 1, SongCommand.class);
+        addCommand("jail", 1, JailCommand.class);
+        addCommand("say", 1, SayCommand.class);
+        addCommand("search", 1, SearchCommand.class);
         //addCommand("", 1, Command.class);
         //addCommand(new String[]{"song", "music"}, 1, .class);
         commandsNameDesc.add(levelCommandsCursor);
@@ -236,7 +240,9 @@ public class CommandsExecutor {
         addCommand("healmap", 2, HealMapCommand.class);
         addCommand("kill", 2, KillCommand.class);
         addCommand("dc", 2, DcCommand.class);
-        addCommand("monsterdebug", 2, MonsterDebugCommand.class);
+        addCommand("killall", 2, KillAllCommand.class);
+        addCommand("listallsquads", 2, ListAllSquadsCommand.class);
+        addCommand("warphere", 2, WarpHereCommand.class);
         //addCommand("", 2, Command.class);
         commandsNameDesc.add(levelCommandsCursor);
     }
@@ -252,6 +258,12 @@ public class CommandsExecutor {
     private void registerLv4Commands() {
         levelCommandsCursor = new Pair<>((List<String>) new ArrayList<String>(), (List<String>) new ArrayList<String>());
         addCommand("killalldrops", 4, KillAllDropsCommand.class);
+        addCommand("monsterdebug", 4, MonsterDebugCommand.class);
+        addCommand("looknpc", 4, LookNpcCommand.class);
+        addCommand("lookportal", 4, LookPortalCommand.class);
+        addCommand("lookreactor", 4, LookReactorCommand.class);
+        addCommand("mynpcpost", 4, MyNpcPosCommand.class);
+        addCommand("spawndebug", 4, SpawnDebugCommand.class);
         //addCommand("", 4, Command.class);
         commandsNameDesc.add(levelCommandsCursor);
     }
