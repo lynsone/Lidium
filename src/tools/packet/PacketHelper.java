@@ -719,10 +719,12 @@ public class PacketHelper {
         mplew.write(shop.getRanks().size() > 0 ? 1 : 0);
         if (shop.getRanks().size() > 0) {
             mplew.write(shop.getRanks().size());
-            for (Pair<Integer, String> s : shop.getRanks()) {
+            shop.getRanks().stream().map(s -> {
                 mplew.writeInt(s.left);
+                return s;
+            }).forEachOrdered(s -> {
                 mplew.writeMapleAsciiString(s.right);
-            }
+            });
         }
         mplew.writeShort(shop.getItems().size() + c.getPlayer().getRebuy().size()); // item count
         for (MapleShopItem item : shop.getItems()) {

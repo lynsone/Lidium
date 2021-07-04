@@ -130,7 +130,7 @@ public class PlayersHandler {
             return;
         }
         switch (chr.canGiveFame(target)) {
-            case OK:
+            case OK -> {
                 if (Math.abs(target.getFame() + famechange) <= 99999) {
                     target.addFame(famechange);
                     target.updateSingleStat(MapleStat.FAME, target.getFame());
@@ -140,13 +140,9 @@ public class PlayersHandler {
                 }
                 c.getSession().write(CWvsContext.OnFameResult(0, target.getName(), famechange == 1, target.getFame()));
                 target.getClient().getSession().write(CWvsContext.OnFameResult(5, chr.getName(), famechange == 1, 0));
-                break;
-            case NOT_TODAY:
-                c.getSession().write(CWvsContext.giveFameErrorResponse(3));
-                break;
-            case NOT_THIS_MONTH:
-                c.getSession().write(CWvsContext.giveFameErrorResponse(4));
-                break;
+            }
+            case NOT_TODAY -> c.getSession().write(CWvsContext.giveFameErrorResponse(3));
+            case NOT_THIS_MONTH -> c.getSession().write(CWvsContext.giveFameErrorResponse(4));
         }
     }
 
@@ -195,14 +191,14 @@ public class PlayersHandler {
             return;
         }
         switch (itemId) {
-            case 2212000:
+            case 2212000 -> {
                 final MapleCharacter search_chr = chr.getMap().getCharacterByName(target);
                 if (search_chr != null) {
                     MapleItemInformationProvider.getInstance().getItemEffect(2210023).applyTo(search_chr);
                     search_chr.dropMessage(6, chr.getName() + " has played a prank on you!");
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (short) 1, false);
                 }
-                break;
+            }
         }
     }
 
@@ -397,69 +393,75 @@ public class PlayersHandler {
 
     public static void RingAction(final LittleEndianAccessor slea, final MapleClient c) {
         final byte mode = slea.readByte();
-        if (mode == 0) {
-            DoRing(c, slea.readMapleAsciiString(), slea.readInt());
-            //1112300 + (itemid - 2240004)
-        } else if (mode == 1) {
-            c.getPlayer().setMarriageItemId(0);
-        } else if (mode == 2) { //accept/deny proposal
-            final boolean accepted = slea.readByte() > 0;
-            final String name = slea.readMapleAsciiString();
-            final int id = slea.readInt();
-            final MapleCharacter chr = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
-            if (c.getPlayer().getMarriageId() > 0 || chr == null || chr.getId() != id || chr.getMarriageItemId() <= 0 || !chr.haveItem(chr.getMarriageItemId(), 1) || chr.getMarriageId() > 0 || !chr.isAlive() || chr.getEventInstance() != null || !c.getPlayer().isAlive() || c.getPlayer().getEventInstance() != null) {
-                c.getSession().write(CWvsContext.sendEngagement((byte) 0x1D, 0, null, null));
-                c.getSession().write(CWvsContext.enableActions());
-                return;
-            }
-            if (accepted) {
-                final int itemid = chr.getMarriageItemId();
-                final int newItemId = itemid == 2240000 ? 1112803 : (itemid == 2240001 ? 1112806 : (itemid == 2240002 ? 1112807 : (itemid == 2240003 ? 1112809 : (1112300 + (itemid - 2240004)))));
-                if (!MapleInventoryManipulator.checkSpace(c, newItemId, 1, "") || !MapleInventoryManipulator.checkSpace(chr.getClient(), newItemId, 1, "")) {
-                    c.getSession().write(CWvsContext.sendEngagement((byte) 0x15, 0, null, null));
+        switch (mode) {
+            case 0:
+                DoRing(c, slea.readMapleAsciiString(), slea.readInt());
+                //1112300 + (itemid - 2240004)
+                break;
+            case 1:
+                c.getPlayer().setMarriageItemId(0);
+                break;
+            case 2:
+                //accept/deny proposal
+                final boolean accepted = slea.readByte() > 0;
+                final String name = slea.readMapleAsciiString();
+                final int id = slea.readInt();
+                final MapleCharacter chr = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
+                if (c.getPlayer().getMarriageId() > 0 || chr == null || chr.getId() != id || chr.getMarriageItemId() <= 0 || !chr.haveItem(chr.getMarriageItemId(), 1) || chr.getMarriageId() > 0 || !chr.isAlive() || chr.getEventInstance() != null || !c.getPlayer().isAlive() || c.getPlayer().getEventInstance() != null) {
+                    c.getSession().write(CWvsContext.sendEngagement((byte) 0x1D, 0, null, null));
                     c.getSession().write(CWvsContext.enableActions());
                     return;
-                }
-                try {
-                    final int[] ringID = MapleRing.makeRing(newItemId, c.getPlayer(), chr);
-                    Equip eq = (Equip) MapleItemInformationProvider.getInstance().getEquipById(newItemId, ringID[1]);
-                    MapleRing ring = MapleRing.loadFromDb(ringID[1]);
-                    if (ring != null) {
-                        eq.setRing(ring);
+                }   if (accepted) {
+                    final int itemid = chr.getMarriageItemId();
+                    final int newItemId = itemid == 2240000 ? 1112803 : (itemid == 2240001 ? 1112806 : (itemid == 2240002 ? 1112807 : (itemid == 2240003 ? 1112809 : (1112300 + (itemid - 2240004)))));
+                    if (!MapleInventoryManipulator.checkSpace(c, newItemId, 1, "") || !MapleInventoryManipulator.checkSpace(chr.getClient(), newItemId, 1, "")) {
+                        c.getSession().write(CWvsContext.sendEngagement((byte) 0x15, 0, null, null));
+                        c.getSession().write(CWvsContext.enableActions());
+                        return;
                     }
-                    MapleInventoryManipulator.addbyItem(c, eq);
-
-                    eq = (Equip) MapleItemInformationProvider.getInstance().getEquipById(newItemId, ringID[0]);
-                    ring = MapleRing.loadFromDb(ringID[0]);
-                    if (ring != null) {
-                        eq.setRing(ring);
+                    try {
+                        final int[] ringID = MapleRing.makeRing(newItemId, c.getPlayer(), chr);
+                        Equip eq = (Equip) MapleItemInformationProvider.getInstance().getEquipById(newItemId, ringID[1]);
+                        MapleRing ring = MapleRing.loadFromDb(ringID[1]);
+                        if (ring != null) {
+                            eq.setRing(ring);
+                        }
+                        MapleInventoryManipulator.addbyItem(c, eq);
+                        
+                        eq = (Equip) MapleItemInformationProvider.getInstance().getEquipById(newItemId, ringID[0]);
+                        ring = MapleRing.loadFromDb(ringID[0]);
+                        if (ring != null) {
+                            eq.setRing(ring);
+                        }
+                        MapleInventoryManipulator.addbyItem(chr.getClient(), eq);
+                        
+                        MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, chr.getMarriageItemId(), 1, false, false);
+                        
+                        chr.getClient().getSession().write(CWvsContext.sendEngagement((byte) 0x10, newItemId, chr, c.getPlayer()));
+                        chr.setMarriageId(c.getPlayer().getId());
+                        c.getPlayer().setMarriageId(chr.getId());
+                        
+                        chr.fakeRelog();
+                        c.getPlayer().fakeRelog();
+                    } catch (Exception e) {
+                        FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
                     }
-                    MapleInventoryManipulator.addbyItem(chr.getClient(), eq);
-
-                    MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, chr.getMarriageItemId(), 1, false, false);
-
-                    chr.getClient().getSession().write(CWvsContext.sendEngagement((byte) 0x10, newItemId, chr, c.getPlayer()));
-                    chr.setMarriageId(c.getPlayer().getId());
-                    c.getPlayer().setMarriageId(chr.getId());
-
-                    chr.fakeRelog();
-                    c.getPlayer().fakeRelog();
-                } catch (Exception e) {
-                    FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
-                }
-
-            } else {
-                chr.getClient().getSession().write(CWvsContext.sendEngagement((byte) 0x1E, 0, null, null));
-            }
-            c.getSession().write(CWvsContext.enableActions());
-            chr.setMarriageItemId(0);
-        } else if (mode == 3) { //drop, only works for ETC
-            final int itemId = slea.readInt();
-            final MapleInventoryType type = GameConstants.getInventoryType(itemId);
-            final Item item = c.getPlayer().getInventory(type).findById(itemId);
-            if (item != null && type == MapleInventoryType.ETC && itemId / 10000 == 421) {
-                MapleInventoryManipulator.drop(c, type, item.getPosition(), item.getQuantity());
-            }
+                    
+                } else {
+                    chr.getClient().getSession().write(CWvsContext.sendEngagement((byte) 0x1E, 0, null, null));
+                }   c.getSession().write(CWvsContext.enableActions());
+                chr.setMarriageItemId(0);
+                break;
+            case 3:
+                //drop, only works for ETC
+                final int itemId = slea.readInt();
+                final MapleInventoryType type = GameConstants.getInventoryType(itemId);
+                final Item item = c.getPlayer().getInventory(type).findById(itemId);
+                if (item != null && type == MapleInventoryType.ETC && itemId / 10000 == 421) {
+                    MapleInventoryManipulator.drop(c, type, item.getPosition(), item.getQuantity());
+                }   break;
+            default:
+                break;
         }
     }
 
@@ -910,7 +912,7 @@ public class PlayersHandler {
                     rawDamage += (rawDamage * chr.getDamageIncrease(attacked.getId()) / 100.0);
                     rawDamage = attacked.modifyDamageTaken(rawDamage, attacked).left;
                     final double min = (rawDamage * chr.getStat().trueMastery / 100.0);
-                    attacks = new ArrayList<Pair<Integer, Boolean>>(attackCount);
+                    attacks = new ArrayList<>(attackCount);
                     int totalMPLoss = 0, totalHPLoss = 0;
                     ThreadLock.lock();
                     try {

@@ -57,7 +57,6 @@ public class MonsterBook implements Serializable {
         this.cards = cards;
         calculateItem();
         calculateScore();
-
         MapleQuestStatus stat = chr.getQuestNoAdd(MapleQuest.getInstance(GameConstants.CURRENT_SET));
         if (stat != null && stat.getCustomData() != null) {
             currentSet = Integer.parseInt(stat.getCustomData());
@@ -95,11 +94,11 @@ public class MonsterBook implements Serializable {
         for (int i : cardItems) {
             //we need the card id but we store the mob id lol
             final Integer x = ii.getSetId(i);
-            if (x != null && x.intValue() > 0) {
+            if (x != null && x > 0) {
                 final Triple<Integer, List<Integer>, List<Integer>> set = ii.getMonsterBookInfo(x);
                 if (set != null) {
                     if (!sets.containsKey(x)) {
-                        sets.put(x, new Pair<Integer, Boolean>(1, Boolean.FALSE));
+                        sets.put(x, new Pair<>(1, Boolean.FALSE));
                     } else {
                         sets.get(x).left++;
                     }
@@ -132,17 +131,17 @@ public class MonsterBook implements Serializable {
 
     public void writeCharInfoPacket(MaplePacketLittleEndianWriter mplew) {
         //cid, then the character's level
-        List<Integer> cardSize = new ArrayList<Integer>(10); //0 = total, 1-9 = card types..
+        List<Integer> cardSize = new ArrayList<>(10); //0 = total, 1-9 = card types..
         for (int i = 0; i < 10; i++) {
             cardSize.add(0);
         }
-        for (int x : cardItems) {
+        cardItems.forEach(x -> {
             cardSize.set(0, cardSize.get(0) + 1);
             cardSize.set(((x / 1000) % 10) + 1, cardSize.get(((x / 1000) % 10) + 1) + 1);
-        }
-        for (int i : cardSize) {
+        });
+        cardSize.forEach(i -> {
             mplew.writeInt(i);
-        }
+        });
         mplew.writeInt(setScore);
         mplew.writeInt(currentSet);
         mplew.writeInt(finishedSets);
@@ -152,7 +151,7 @@ public class MonsterBook implements Serializable {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         mplew.write(1);
         mplew.writeShort(cardItems.size());
-        final List<Integer> mbList = new ArrayList<Integer>(ii.getMonsterBookList());
+        final List<Integer> mbList = new ArrayList<>(ii.getMonsterBookList());
         Collections.sort(mbList);
         final int fullCards = (mbList.size() / 8) + (mbList.size() % 8 > 0 ? 1 : 0);
         mplew.writeShort(fullCards); //which cards of all you have; more efficient than writing each card
@@ -189,16 +188,16 @@ public class MonsterBook implements Serializable {
 
     public void calculateItem() {
         cardItems.clear();
-        for (Entry<Integer, Integer> s : cards.entrySet()) {
+        cards.entrySet().forEach(s -> {
             addCardItem(s.getKey(), s.getValue());
-        }
+        });
     }
 
     public void addCardItem(int key, int value) {
         if (value >= 2) {
             Integer x = MapleItemInformationProvider.getInstance().getItemIdByMob(key);
-            if (x != null && x.intValue() > 0) {
-                cardItems.add(x.intValue());
+            if (x != null && x > 0) {
+                cardItems.add(x);
             }
         }
     }
@@ -216,18 +215,19 @@ public class MonsterBook implements Serializable {
         if (currentSet > -1) {
             final Triple<Integer, List<Integer>, List<Integer>> set = MapleItemInformationProvider.getInstance().getMonsterBookInfo(currentSet);
             if (set != null) {
+                OUTER:
                 for (int i = 0; i < set.right.size(); i++) {
-                    if (i == 0) {
-                        eq.setPotential1(set.right.get(i).intValue());
-                    } else if (i == 1) {
-                        eq.setPotential2(set.right.get(i).intValue());
-                    } else if (i == 2) {
-                        eq.setPotential3(set.right.get(i).intValue());
-                    } else if (i == 3) {
-                        eq.setPotential4(set.right.get(i).intValue());
-                    } else if (i == 4) {
-                        eq.setPotential5(set.right.get(i).intValue());
-                        break;
+                    switch (i) {
+                        case 0 -> eq.setPotential1(set.right.get(i));
+                        case 1 -> eq.setPotential2(set.right.get(i));
+                        case 2 -> eq.setPotential3(set.right.get(i));
+                        case 3 -> eq.setPotential4(set.right.get(i));
+                        case 4 -> {
+                            eq.setPotential5(set.right.get(i));
+                            break OUTER;
+                        }
+                        default -> {
+                        }
                     }
                 }
             } else {
@@ -270,11 +270,7 @@ public class MonsterBook implements Serializable {
 
     public final int getCaught() {
         int ret = 0;
-        for (int i : cards.values()) {
-            if (i >= 2) {
-                ret++;
-            }
-        }
+        ret = cards.values().stream().filter(i -> (i >= 2)).map(_item -> 1).reduce(ret, Integer::sum);
         return ret;
     }
 
@@ -283,17 +279,17 @@ public class MonsterBook implements Serializable {
     }
 
     public final static MonsterBook loadCards(final int charid, final MapleCharacter chr) throws SQLException {
-        final PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM monsterbook WHERE charid = ? ORDER BY cardid ASC");
-        ps.setInt(1, charid);
-        final ResultSet rs = ps.executeQuery();
-        Map<Integer, Integer> cards = new LinkedHashMap<Integer, Integer>();
-        int cardid, level;
-
-        while (rs.next()) {
-            cards.put(rs.getInt("cardid"), rs.getInt("level"));
+        Map<Integer, Integer> cards;
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM monsterbook WHERE charid = ? ORDER BY cardid ASC")) {
+            ps.setInt(1, charid);
+            try (ResultSet rs = ps.executeQuery()) {
+                cards = new LinkedHashMap<>();
+                int cardid, level;
+                while (rs.next()) {
+                    cards.put(rs.getInt("cardid"), rs.getInt("level"));
+                }
+            }
         }
-        rs.close();
-        ps.close();
         return new MonsterBook(cards, chr);
     }
 
