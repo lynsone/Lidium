@@ -2884,6 +2884,7 @@ public class CField {
         } else {
             mplew.writeInt(0);
         }
+        mplew.writeZeroBytes(30);
 
         return mplew.getPacket();
     }

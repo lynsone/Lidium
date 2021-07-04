@@ -1,4 +1,4 @@
-package client.messages.commands.intern;
+package client.messages.commands.gm;
 
 import client.MapleClient;
 import client.messages.Command;
@@ -8,8 +8,8 @@ import server.maps.MapleMap;
 import server.maps.MapleMapObject;
 import server.maps.MapleMapObjectType;
 
-public class MonsterDebugCommand extends Command {
-
+public class KillAllCommand extends Command{
+    
     @Override
     public void execute(MapleClient c, String[] splitted) {
         MapleMap map = c.getPlayer().getMap();
@@ -17,7 +17,7 @@ public class MonsterDebugCommand extends Command {
 
         if (splitted.length > 0) {
             int irange = Integer.parseInt(splitted[0]);
-            if (splitted.length <= 2) {
+            if (splitted.length <= 1) {
                 range = irange * irange;
             } else {
                 map = c.getChannelServer().getMapFactory().getMap(Integer.parseInt(splitted[1]));
@@ -30,7 +30,9 @@ public class MonsterDebugCommand extends Command {
         MapleMonster mob;
         for (MapleMapObject monstermo : map.getMapObjectsInRange(c.getPlayer().getPosition(), range, Arrays.asList(MapleMapObjectType.MONSTER))) {
             mob = (MapleMonster) monstermo;
-            c.getPlayer().dropMessage(6, "Monster " + mob.toString());
+            if (!mob.getStats().isBoss() || mob.getStats().isPartyBonus() || c.getPlayer().isGM()) {
+                map.killMonster(mob, c.getPlayer(), false, false, (byte) 1);
+            }
         }
     }
 }
