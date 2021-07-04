@@ -20,34 +20,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package server.life;
 
-import constants.GameConstants;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import client.inventory.MapleInventoryType;
+import constants.GameConstants;
 import database.DatabaseConnection;
-import java.io.File;
-import java.util.Map.Entry;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import server.MapleItemInformationProvider;
-import server.Start;
 import server.StructFamiliar;
+import server.ThreadManager;
 
 public class MapleMonsterInformationProvider {
 
     private static final MapleMonsterInformationProvider instance = new MapleMonsterInformationProvider();
     private final Map<Integer, ArrayList<MonsterDropEntry>> drops = new HashMap<Integer, ArrayList<MonsterDropEntry>>();
     private final List<MonsterGlobalDropEntry> globaldrops = new ArrayList<MonsterGlobalDropEntry>();
-    private static final MapleDataProvider stringDataWZ = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz"));
+    private static final MapleDataProvider stringDataWZ = MapleDataProviderFactory
+            .getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz"));
     private static final MapleData mobStringData = stringDataWZ.getData("MonsterBook.img");
 
     public static MapleMonsterInformationProvider getInstance() {
@@ -70,15 +71,9 @@ public class MapleMonsterInformationProvider {
             rs = ps.executeQuery();
 
             while (rs.next()) {
-                globaldrops.add(
-                        new MonsterGlobalDropEntry(
-                                rs.getInt("itemid"),
-                                rs.getInt("chance"),
-                                rs.getInt("continent"),
-                                rs.getByte("dropType"),
-                                rs.getInt("minimum_quantity"),
-                                rs.getInt("maximum_quantity"),
-                                rs.getInt("questid")));
+                globaldrops.add(new MonsterGlobalDropEntry(rs.getInt("itemid"), rs.getInt("chance"),
+                        rs.getInt("continent"), rs.getByte("dropType"), rs.getInt("minimum_quantity"),
+                        rs.getInt("maximum_quantity"), rs.getInt("questid")));
             }
             rs.close();
             ps.close();
@@ -88,7 +83,7 @@ public class MapleMonsterInformationProvider {
             rs = ps.executeQuery();
             while (rs.next()) {
                 if (!mobIds.contains(rs.getInt("dropperid"))) {
-                    loadDrop(rs.getInt("dropperid")); // this is in a thread.
+                    loadDrop(con, rs.getInt("dropperid")); // this is in a thread.
                     mobIds.add(rs.getInt("dropperid"));
                 }
             }
@@ -113,7 +108,7 @@ public class MapleMonsterInformationProvider {
         return drops.get(Integer.valueOf(monsterId));
     }
 
-    private void loadDrop(final int monsterId) {
+    private void loadDrop(Connection con, final int monsterId) {
 
         final ArrayList<MonsterDropEntry> ret = new ArrayList<MonsterDropEntry>();
 
@@ -124,7 +119,7 @@ public class MapleMonsterInformationProvider {
             if (mons == null) {
                 return;
             }
-            ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM drop_data WHERE dropperid = ?");
+            ps = con.prepareStatement("SELECT * FROM drop_data WHERE dropperid = ?");
             ps.setInt(1, monsterId);
             rs = ps.executeQuery();
             int itemid;
@@ -134,14 +129,10 @@ public class MapleMonsterInformationProvider {
                 itemid = rs.getInt("itemid");
                 chance = rs.getInt("chance");
                 if (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) {
-                    chance *= 10; //in GMS/SEA it was raised
+                    chance *= 10; // in GMS/SEA it was raised
                 }
-                ret.add(new MonsterDropEntry(
-                        itemid,
-                        chance,
-                        rs.getInt("minimum_quantity"),
-                        rs.getInt("maximum_quantity"),
-                        rs.getInt("questid")));
+                ret.add(new MonsterDropEntry(itemid, chance, rs.getInt("minimum_quantity"),
+                        rs.getInt("maximum_quantity"), rs.getInt("questid")));
                 if (itemid == 0) {
                     doneMesos = true;
                 }
@@ -169,7 +160,7 @@ public class MapleMonsterInformationProvider {
     }
 
     public void addExtra() {
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             long start = System.currentTimeMillis();
             final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
             for (Entry<Integer, ArrayList<MonsterDropEntry>> e : drops.entrySet()) {
@@ -211,8 +202,9 @@ public class MapleMonsterInformationProvider {
                     drops.put(f.mob, e);
                 }
             }
-            if (GameConstants.GMS) { //kinda costly, i advise against !reloaddrops often
-                for (Entry<Integer, ArrayList<MonsterDropEntry>> e : drops.entrySet()) { //yes, we're going through it twice
+            if (GameConstants.GMS) { // kinda costly, i advise against !reloaddrops often
+                for (Entry<Integer, ArrayList<MonsterDropEntry>> e : drops.entrySet()) { // yes, we're going through it
+                                                                                         // twice
                     if (e.getKey() == 100000 && mobStringData.getChildByPath(String.valueOf(e.getKey())) != null) {
                         for (MapleData d : mobStringData.getChildByPath(e.getKey() + "/reward")) {
                             final int toAdd = MapleDataTool.getInt(d, 0);
@@ -226,14 +218,18 @@ public class MapleMonsterInformationProvider {
             System.out.println("Extra Mob Info loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
         });
-        Start.threads.add(t);
+
     }
 
     public void addMeso(MapleMonsterStats mons, ArrayList<MonsterDropEntry> ret) {
-        final double divided = (mons.getLevel() < 100 ? (mons.getLevel() < 10 ? (double) mons.getLevel() : 10.0) : (mons.getLevel() / 10.0));
-        final int max = mons.isBoss() && !mons.isPartyBonus() ? (mons.getLevel() * mons.getLevel()) : (mons.getLevel() * (int) Math.ceil(mons.getLevel() / divided));
+        final double divided = (mons.getLevel() < 100 ? (mons.getLevel() < 10 ? (double) mons.getLevel() : 10.0)
+                : (mons.getLevel() / 10.0));
+        final int max = mons.isBoss() && !mons.isPartyBonus() ? (mons.getLevel() * mons.getLevel())
+                : (mons.getLevel() * (int) Math.ceil(mons.getLevel() / divided));
         for (int i = 0; i < mons.dropsMeso(); i++) {
-            ret.add(new MonsterDropEntry(0, mons.isBoss() && !mons.isPartyBonus() ? 1000000 : (mons.isPartyBonus() ? 100000 : 200000), (int) Math.floor(0.66 * max), max, 0));
+            ret.add(new MonsterDropEntry(0,
+                    mons.isBoss() && !mons.isPartyBonus() ? 1000000 : (mons.isPartyBonus() ? 100000 : 200000),
+                    (int) Math.floor(0.66 * max), max, 0));
         }
     }
 
@@ -253,10 +249,11 @@ public class MapleMonsterInformationProvider {
         return false;
     }
 
-    public int chanceLogic(int itemId) { //not much logic in here. most of the drops should already be there anyway.
+    public int chanceLogic(int itemId) { // not much logic in here. most of the drops should already be there anyway.
         if (GameConstants.getInventoryType(itemId) == MapleInventoryType.EQUIP) {
-            return 50000; //with *10
-        } else if (GameConstants.getInventoryType(itemId) == MapleInventoryType.SETUP || GameConstants.getInventoryType(itemId) == MapleInventoryType.CASH) {
+            return 50000; // with *10
+        } else if (GameConstants.getInventoryType(itemId) == MapleInventoryType.SETUP
+                || GameConstants.getInventoryType(itemId) == MapleInventoryType.CASH) {
             return 500;
         } else {
             switch (itemId / 10000) {
@@ -269,14 +266,17 @@ public class MapleMonsterInformationProvider {
                 case 402:
                     return 5000;
                 case 403:
-                    return 5000; //lol
+                    return 5000; // lol
             }
             return 20000;
         }
     }
-    //MESO DROP: level * (level / 10) = max, min = 0.66 * max
-    //explosive Reward = 7 meso drops
-    //boss, ffaloot = 2 meso drops
-    //boss = level * level = max
-    //no mesos if: mobid / 100000 == 97 or 95 or 93 or 91 or 90 or removeAfter > 0 or invincible or onlyNormalAttack or friendly or dropitemperiod > 0 or cp > 0 or point > 0 or fixeddamage > 0 or selfd > 0 or mobType != null and mobType.charat(0) == 7 or PDRate <= 0
+    // MESO DROP: level * (level / 10) = max, min = 0.66 * max
+    // explosive Reward = 7 meso drops
+    // boss, ffaloot = 2 meso drops
+    // boss = level * level = max
+    // no mesos if: mobid / 100000 == 97 or 95 or 93 or 91 or 90 or removeAfter > 0
+    // or invincible or onlyNormalAttack or friendly or dropitemperiod > 0 or cp > 0
+    // or point > 0 or fixeddamage > 0 or selfd > 0 or mobType != null and
+    // mobType.charat(0) == 7 or PDRate <= 0
 }

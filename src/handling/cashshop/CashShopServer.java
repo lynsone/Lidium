@@ -22,19 +22,19 @@ package handling.cashshop;
 
 import java.net.InetSocketAddress;
 
+import org.apache.mina.common.ByteBuffer;
+import org.apache.mina.common.IoAcceptor;
+import org.apache.mina.common.SimpleByteBufferAllocator;
+import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.transport.socket.nio.SocketAcceptor;
+import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
+
 import handling.MapleServerHandler;
 import handling.channel.PlayerStorage;
 import handling.mina.MapleCodecFactory;
-import org.apache.mina.common.ByteBuffer;
-import org.apache.mina.common.SimpleByteBufferAllocator;
-import org.apache.mina.common.IoAcceptor;
-
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
-import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import server.MTSStorage;
 import server.ServerProperties;
-import server.Start;
+import server.ThreadManager;
 
 public class CashShopServer {
 
@@ -46,7 +46,7 @@ public class CashShopServer {
     private static boolean finishedShutdown = false;
 
     public static final void run_startup_configurations() {
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             ip = ServerProperties.getProperty("net.sf.odinms.world.host") + ":" + PORT;
 
             ByteBuffer.setUseDirectBuffers(false);
@@ -71,7 +71,7 @@ public class CashShopServer {
             }
 
         });
-        Start.threads.add(t);
+     
     }
 
     public static final String getIP() {

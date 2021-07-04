@@ -20,12 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package tools.data;
 
-import constants.ServerConstants;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.ByteArrayOutputStream;
-
 import java.nio.charset.Charset;
+
 import server.logging.PacketLogging;
 import tools.HexTool;
 

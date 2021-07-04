@@ -20,24 +20,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling.login;
 
-import constants.GameConstants;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
+import org.apache.mina.common.ByteBuffer;
+import org.apache.mina.common.IoAcceptor;
+import org.apache.mina.common.SimpleByteBufferAllocator;
+import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.transport.socket.nio.SocketAcceptor;
+import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
+
+import constants.GameConstants;
 import handling.MapleServerHandler;
 import handling.mina.MapleCodecFactory;
-import java.util.HashSet;
-import org.apache.mina.common.ByteBuffer;
-import org.apache.mina.common.SimpleByteBufferAllocator;
-import org.apache.mina.common.IoAcceptor;
-
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
-import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import server.ServerProperties;
-import server.Start;
+import server.ThreadManager;
 import tools.Pair;
 
 public class LoginServer {
@@ -83,7 +83,7 @@ public class LoginServer {
     }
 
     public static final void run_startup_configurations() {
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             userLimit = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.login.userlimit"));
             serverName = ServerProperties.getProperty("net.sf.odinms.login.serverName");
             eventMessage = ServerProperties.getProperty("net.sf.odinms.login.eventMessage");
@@ -111,7 +111,7 @@ public class LoginServer {
             }
 
         });
-        Start.threads.add(t);
+      
     }
 
     public static final void shutdown() {

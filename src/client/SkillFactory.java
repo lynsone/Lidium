@@ -38,7 +38,7 @@ import provider.MapleDataProviderFactory;
 import provider.MapleDataDirectoryEntry;
 import provider.MapleDataTool;
 import server.Randomizer;
-import server.Start;
+import server.ThreadManager;
 import tools.StringUtil;
 import tools.Triple;
 
@@ -52,7 +52,7 @@ public class SkillFactory {
     private static final Map<Integer, SummonSkillEntry> SummonSkillInformation = new HashMap<Integer, SummonSkillEntry>();
 
     public static void load() {
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             long start = System.currentTimeMillis();
             final MapleData delayData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Character.wz")).getData("00002000.img");
             final MapleData stringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")).getData("Skill.img");
@@ -160,7 +160,7 @@ public class SkillFactory {
             }
             System.out.println("Skill Factory loaded in " + (System.currentTimeMillis() - start) + "ms.");
         });
-        Start.threads.add(t);
+      
     }
 
     public static List<Integer> getSkillsByJob(final int jobId) {

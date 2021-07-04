@@ -37,7 +37,7 @@ public class CashItemFactory {
     }
 
     public void initialize() {
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
 
             long start = System.currentTimeMillis();
             try {
@@ -171,7 +171,7 @@ public class CashItemFactory {
             System.out.println("Cash Item Factory loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
         });
-        Start.threads.add(t);
+      
     }
 
     public final CashItemInfo getSimpleItem(int sn) {

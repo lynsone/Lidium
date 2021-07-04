@@ -24,10 +24,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import client.MapleCharacter;
 import client.MapleCharacterUtil;
@@ -35,22 +44,12 @@ import client.MapleClient;
 import client.SkillFactory;
 import constants.GameConstants;
 import database.DatabaseConnection;
-
 import handling.world.World;
 import handling.world.guild.MapleBBSThread.MapleBBSReply;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import server.MapleStatEffect;
-import server.Start;
-import tools.packet.CField;
+import server.ThreadManager;
 import tools.data.MaplePacketLittleEndianWriter;
+import tools.packet.CField;
 import tools.packet.CWvsContext;
 import tools.packet.CWvsContext.AlliancePacket;
 import tools.packet.CWvsContext.GuildPacket;
@@ -234,7 +233,7 @@ public class MapleGuild implements java.io.Serializable {
     }
 
     public static final void loadAll() {
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             long start = System.currentTimeMillis();
             Map<Integer, Map<Integer, MapleBBSReply>> replies = new LinkedHashMap<Integer, Map<Integer, MapleBBSReply>>();
             try {
@@ -266,7 +265,7 @@ public class MapleGuild implements java.io.Serializable {
             System.out.println("Guilds loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
         });
-        Start.threads.add(t);
+       
     }
 
     public static final void loadAll(Object toNotify) {

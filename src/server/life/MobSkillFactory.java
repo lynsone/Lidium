@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import database.DatabaseConnection;
 import java.util.List;
 import server.Start;
+import server.ThreadManager;
 import tools.Pair;
 
 public class MobSkillFactory {
@@ -54,7 +55,7 @@ public class MobSkillFactory {
     }
 
     private void initialize() {
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             long start = System.currentTimeMillis();
             Connection con = DatabaseConnection.getConnection();
             try {
@@ -77,7 +78,7 @@ public class MobSkillFactory {
             }
             System.out.println("MOB SKILL Factory loaded in " + (System.currentTimeMillis() - start) + "ms.");
         });
-        Start.threads.add(t);
+       
     }
 
     private MobSkill get(ResultSet rs) throws SQLException {

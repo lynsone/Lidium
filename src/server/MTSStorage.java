@@ -71,7 +71,7 @@ public class MTSStorage {
     }
     
     public static final void load() {
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             long start = System.currentTimeMillis();
             if (instance == null) {
                 instance = new MTSStorage();
@@ -79,8 +79,7 @@ public class MTSStorage {
             }
             System.out.println("MTS Storage loaded in " + (System.currentTimeMillis() - start) + "ms.");
         });
-        Start.threads.add(t);
-        
+     
     }
     
     public final boolean check(final int packageid) {

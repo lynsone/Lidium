@@ -20,16 +20,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package server.life;
 
-import constants.GameConstants;
 import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
+import constants.GameConstants;
 import provider.MapleData;
 import provider.MapleDataDirectoryEntry;
 import provider.MapleDataFileEntry;
@@ -38,7 +38,7 @@ import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import provider.MapleDataType;
 import server.Randomizer;
-import server.Start;
+import server.ThreadManager;
 import tools.Pair;
 import tools.StringUtil;
 
@@ -77,7 +77,7 @@ public class MapleLifeFactory {
     }
 
     public static final void loadQuestCounts() {
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             long start = System.currentTimeMillis();
             if (questCount.size() > 0) {
                 return;
@@ -116,7 +116,6 @@ public class MapleLifeFactory {
             }
             System.out.println("Quest count loaded in " + (System.currentTimeMillis() - start) + "ms.");
         });
-        Start.threads.add(t);
     }
 
     public static final List<Integer> getQuestCount(final int id) {
