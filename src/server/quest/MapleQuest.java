@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import scripting.NPCScriptManager;
 import server.Start;
+import server.ThreadManager;
 import tools.Pair;
 import tools.packet.CField.EffectPacket;
 
@@ -137,7 +138,7 @@ public class MapleQuest implements Serializable {
     }
 
     public static void initQuests() {
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             long start = System.currentTimeMillis();
             try {
                 Connection con = DatabaseConnection.getConnection();
@@ -166,7 +167,7 @@ public class MapleQuest implements Serializable {
             System.out.println("Maple Quests loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
         });
-        Start.threads.add(t);
+      
     }
 
     public static MapleQuest getInstance(int id) {

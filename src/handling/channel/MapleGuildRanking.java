@@ -20,15 +20,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling.channel;
 
-import java.util.List;
-import java.util.LinkedList;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 import database.DatabaseConnection;
-import server.Start;
+import server.ThreadManager;
 
 public class MapleGuildRanking {
 
@@ -40,7 +40,7 @@ public class MapleGuildRanking {
     }
 
     public void load() {
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             long start = System.currentTimeMillis();
 
             if (ranks.isEmpty()) {
@@ -49,7 +49,7 @@ public class MapleGuildRanking {
             System.out.println("Guilds Ranking loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
         });
-        Start.threads.add(t);
+
     }
 
     public List<GuildRankingInfo> getRank() {
@@ -64,13 +64,8 @@ public class MapleGuildRanking {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                final GuildRankingInfo rank = new GuildRankingInfo(
-                        rs.getString("name"),
-                        rs.getInt("GP"),
-                        rs.getInt("logo"),
-                        rs.getInt("logoColor"),
-                        rs.getInt("logoBG"),
-                        rs.getInt("logoBGColor"));
+                final GuildRankingInfo rank = new GuildRankingInfo(rs.getString("name"), rs.getInt("GP"),
+                        rs.getInt("logo"), rs.getInt("logoColor"), rs.getInt("logoBG"), rs.getInt("logoBGColor"));
 
                 ranks.add(rank);
             }

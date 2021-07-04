@@ -40,6 +40,7 @@ import handling.world.MapleCharacterLook;
 import handling.world.World;
 import java.util.ArrayList;
 import server.Start;
+import server.ThreadManager;
 import server.maps.*;
 import tools.packet.CField.NPCPacket;
 import tools.packet.CWvsContext;
@@ -98,7 +99,7 @@ public class PlayerNPC extends MapleNPC implements MapleCharacterLook {
     }
 
     public static void loadAll() {
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             long start = System.currentTimeMillis();
 
             List<PlayerNPC> toAdd = new ArrayList<PlayerNPC>();
@@ -120,7 +121,7 @@ public class PlayerNPC extends MapleNPC implements MapleCharacterLook {
             System.out.println("Player NPCs loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
         });
-        Start.threads.add(t);
+       
     }
 
     public static void updateByCharId(MapleCharacter chr) {

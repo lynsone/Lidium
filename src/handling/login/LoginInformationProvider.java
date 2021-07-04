@@ -20,18 +20,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling.login;
 
-import constants.GameConstants;
 import java.io.File;
-import java.util.List;
 import java.util.ArrayList;
-
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import constants.GameConstants;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
-import server.Start;
+import server.ThreadManager;
 import tools.Triple;
 
 public class LoginInformationProvider {
@@ -94,7 +94,7 @@ public class LoginInformationProvider {
     }
 
     protected LoginInformationProvider() {
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             long start = System.currentTimeMillis();
             final MapleDataProvider prov = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Etc.wz"));
             MapleData nameData = prov.getData("ForbiddenName.img");
@@ -171,7 +171,7 @@ public class LoginInformationProvider {
             System.out.println("Login Information Provider loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
         });
-        Start.threads.add(t);
+       
     }
 
     public final boolean isForbiddenName(final String in) {

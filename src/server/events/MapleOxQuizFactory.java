@@ -21,17 +21,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package server.events;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import database.DatabaseConnection;
-import java.util.Map.Entry;
 import server.Randomizer;
-import server.Start;
+import server.ThreadManager;
 import tools.Pair;
 
 public class MapleOxQuizFactory {
@@ -59,7 +59,7 @@ public class MapleOxQuizFactory {
     }
 
     private void initialize() {
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             long start = System.currentTimeMillis();
             try {
                 Connection con = DatabaseConnection.getConnection();
@@ -76,8 +76,7 @@ public class MapleOxQuizFactory {
             System.out.println("Maple Ox Quiz Factory loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
         });
-        Start.threads.add(t);
-
+      
     }
 
     private MapleOxQuizEntry get(ResultSet rs) throws SQLException {

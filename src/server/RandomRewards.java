@@ -13,7 +13,7 @@ public class RandomRewards {
             compiledDrops = null, compiledDropsB = null, compiledDropsA = null, tenPercent = null;
 
     static {
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             long start = System.currentTimeMillis();
 
             // Gold Box
@@ -98,7 +98,7 @@ public class RandomRewards {
             System.out.println("Random Rewards loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
         });
-        Start.threads.add(t);
+      
     }
 
     private static void processRewards(final List<Integer> returnArray, final int[] list) {

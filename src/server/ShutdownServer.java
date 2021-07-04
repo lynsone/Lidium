@@ -1,16 +1,15 @@
 package server;
 
-import java.sql.SQLException;
+import java.lang.management.ManagementFactory;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 import database.DatabaseConnection;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
 import handling.login.LoginServer;
 import handling.world.World;
-import java.lang.management.ManagementFactory;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-
 import tools.packet.CWvsContext;
 
 public class ShutdownServer implements ShutdownServerMBean {
@@ -18,7 +17,7 @@ public class ShutdownServer implements ShutdownServerMBean {
     public static ShutdownServer instance;
 
     public static void registerMBean() {
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
             try {
                 instance = new ShutdownServer();
@@ -29,7 +28,7 @@ public class ShutdownServer implements ShutdownServerMBean {
             }
 
         });
-        Start.threads.add(t);
+
     }
 
     public static ShutdownServer getInstance() {

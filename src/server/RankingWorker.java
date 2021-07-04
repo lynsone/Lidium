@@ -51,7 +51,7 @@ public class RankingWorker {
 
     public final static void run() {
 
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             long startTime = System.currentTimeMillis();
             loadJobCommands();
             try {
@@ -66,8 +66,7 @@ public class RankingWorker {
             System.out.println("Ranking Worker loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
 
         });
-        Start.threads.add(t);
-
+       
     }
 
     private static void updateRanking(Connection con) throws Exception {

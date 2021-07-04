@@ -1,22 +1,22 @@
 package server;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import client.SkillFactory;
 import client.inventory.MapleInventoryIdentifier;
 import constants.ServerConstants;
+import database.DatabaseConnection;
 import handling.MapleServerHandler;
+import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
 import handling.channel.MapleGuildRanking;
-import handling.login.LoginServer;
 import handling.login.LoginInformationProvider;
+import handling.login.LoginServer;
 import handling.world.World;
-import java.sql.SQLException;
-import database.DatabaseConnection;
-import handling.cashshop.CashShopServer;
 import handling.world.family.MapleFamily;
 import handling.world.guild.MapleGuild;
-import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.List;
 import server.events.MapleOxQuizFactory;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonsterInformationProvider;
@@ -24,14 +24,12 @@ import server.life.MobSkillFactory;
 import server.life.PlayerNPC;
 import server.maps.MapleMap;
 import server.quest.MapleQuest;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Start {
 
     public static long startTime = System.currentTimeMillis();
     public static final Start instance = new Start();
     public static AtomicInteger CompletedLoadingThreads = new AtomicInteger(0);
-    public static List<Thread> threads = new ArrayList<>();
 
     public void run() throws InterruptedException {
         System.setProperty("net.sf.odinms.wzpath", "wz");
@@ -76,7 +74,6 @@ public class Start {
 
         start = System.currentTimeMillis();
         System.out.print("Loading Timers... ");
-       
 
         System.out.println("loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
@@ -93,12 +90,11 @@ public class Start {
         MTSStorage.load();
 
         // Updating Inventory Identifier -> made here bc just a line... ._.
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             final long startx = System.currentTimeMillis();
             MapleInventoryIdentifier.getInstance();
             System.out.println("Guilds Ranking loaded in " + (System.currentTimeMillis() - startx) + "ms.");
         });
-        threads.add(t);
 
         // Loading Guild Ranking -> gonna show its own message. ok
         MapleGuildRanking.getInstance().load();
@@ -115,7 +111,7 @@ public class Start {
         // Maple Quest count -> gonna show its own message. ok
         MapleLifeFactory.loadQuestCounts();
 
-        Thread t2 = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
 
             // Load ETC -> gonna show its own message.
             MapleItemInformationProvider.getInstance().runEtc();
@@ -127,7 +123,6 @@ public class Start {
             MapleItemInformationProvider.getInstance().runItems();
 
         });
-        threads.add(t2);
 
         // Loading Login information -> ... ok
         LoginInformationProvider.getInstance();
@@ -150,8 +145,7 @@ public class Start {
 
         // Load Cash Shop Server -> ...
         CashShopServer.run_startup_configurations();
-
-        Thread t3 = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             // Loading Cheat Timer - alredy in a thread
             TimerManager.getInstance().register(AutobanManager.getInstance(), 60000);
 
@@ -161,7 +155,6 @@ public class Start {
             // Loading respawn - Already in its own thread by channel
             World.registerRespawn();
         });
-        threads.add(t3);
 
         // ChannelServer.getInstance(1).getMapFactory().getMap(910000000).spawnRandDrop();
         // //start it off
@@ -172,11 +165,29 @@ public class Start {
         MapleMonsterInformationProvider.getInstance().addExtra();
         LoginServer.setOn(); // now or later
         RankingWorker.run();
-        Thread tdc = new Thread(new DiseaseChecker());
-        threads.add(tdc);
-        threads.parallelStream().forEach(tx -> {
-            tx.start();
-        });
+
+        TimerManager.getInstance().register(() -> {
+            // System.out.println("Checking diseases");
+            ChannelServer.getAllInstances().parallelStream().forEach((chs) -> {
+                chs.getPlayerStorage().getAllCharacters().parallelStream().forEach((chr) -> {
+                    MapleMap map = chr.getMap();
+                    if (map != null) {
+                        if (chr.getDiseaseSize() > 0) {
+                            chr.getAllDiseases().parallelStream().forEach((m) -> {
+                                // System.out.print(">removing " + m.disease);
+                                chr.dispelDebuff(m.disease);
+                            });
+                        }
+                    }
+                });
+
+            });
+        }, 2000);
+
+        // Free memory usage every 5 minutes ( 1 min = 60000)
+        TimerManager.getInstance().register(() -> {
+            System.gc();
+        }, 60000 * 5);
     }
 
     public static class Shutdown implements Runnable {
@@ -192,35 +203,4 @@ public class Start {
         instance.run();
     }
 
-    public static class DiseaseChecker implements Runnable {
-
-        @Override
-        public void run() {
-            System.out.println("Starting Diseases checker thread...");
-            try {
-                while (true) {
-                    // Remove parallelStream(). if the processor suffers xD
-                    // System.out.println("Checking diseases...");
-                    ChannelServer.getAllInstances().parallelStream().forEach((chs) -> {
-                        chs.getPlayerStorage().getAllCharacters().parallelStream().forEach((chr) -> {
-                            MapleMap map = chr.getMap();
-                            if (map != null) {
-                                if (chr.getDiseaseSize() > 0) {
-                                    chr.getAllDiseases().parallelStream().forEach((m) -> {
-                                        // System.out.print(">removing " + m.disease);
-                                        chr.dispelDebuff(m.disease);
-                                    });
-                                }
-                            }
-                        });
-
-                    });
-
-                    Thread.sleep(2000);
-                }
-            } catch (Exception e) {
-            }
-
-        }
-    }
 }

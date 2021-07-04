@@ -20,51 +20,73 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling;
 
-import constants.ServerConstants;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.List;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+
+import org.apache.mina.common.IdleStatus;
+import org.apache.mina.common.IoHandlerAdapter;
+import org.apache.mina.common.IoSession;
 
 import client.MapleClient;
 import client.inventory.MaplePet;
 import client.inventory.PetDataFactory;
 import constants.GameConstants;
+import constants.ServerConstants;
 import handling.cashshop.CashShopServer;
+import handling.cashshop.handler.CashShopOperation;
+import handling.cashshop.handler.MTSOperation;
 import handling.channel.ChannelServer;
-import handling.cashshop.handler.*;
-import handling.channel.handler.*;
+import handling.channel.handler.AllianceHandler;
+import handling.channel.handler.BBSHandler;
+import handling.channel.handler.BuddyListHandler;
+import handling.channel.handler.ChatHandler;
+import handling.channel.handler.DueyHandler;
+import handling.channel.handler.FamilyHandler;
+import handling.channel.handler.GuildHandler;
+import handling.channel.handler.HiredMerchantHandler;
+import handling.channel.handler.InterServerHandler;
+import handling.channel.handler.InventoryHandler;
+import handling.channel.handler.ItemMakerHandler;
+import handling.channel.handler.MobHandler;
+import handling.channel.handler.MonsterCarnivalHandler;
+import handling.channel.handler.NPCHandler;
+import handling.channel.handler.PartyHandler;
+import handling.channel.handler.PetHandler;
+import handling.channel.handler.PlayerHandler;
+import handling.channel.handler.PlayerInteractionHandler;
+import handling.channel.handler.PlayersHandler;
+import handling.channel.handler.StatsHandling;
+import handling.channel.handler.SummonHandler;
+import handling.channel.handler.UserInterfaceHandler;
 import handling.login.LoginServer;
-import handling.login.handler.*;
+import handling.login.handler.CharLoginHandler;
 import handling.mina.MaplePacketDecoder;
-import java.io.File;
-import java.io.FileWriter;
-import java.lang.management.ManagementFactory;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Scanner;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import server.Randomizer;
-import tools.MapleAESOFB;
-import tools.packet.LoginPacket;
-import tools.data.ByteArrayByteStream;
-import tools.data.LittleEndianAccessor;
-import tools.Pair;
-
-import org.apache.mina.common.IoHandlerAdapter;
-import org.apache.mina.common.IdleStatus;
-import org.apache.mina.common.IoSession;
 import scripting.NPCScriptManager;
 import server.MTSStorage;
-import server.Start;
+import server.Randomizer;
+import server.ThreadManager;
 import server.logging.PacketLogging;
 import tools.FileoutputUtil;
 import tools.HexTool;
-import tools.packet.CField;
+import tools.MapleAESOFB;
+import tools.Pair;
+import tools.data.ByteArrayByteStream;
+import tools.data.LittleEndianAccessor;
+import tools.packet.LoginPacket;
 import tools.packet.MTSCSPacket;
 
 public class MapleServerHandler extends IoHandlerAdapter implements MapleServerHandlerMBean {
@@ -255,7 +277,7 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
     }
 
     public static final void initiate() {
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             long start = System.currentTimeMillis();
             reloadLoggedIPs();
             RecvPacketOpcode[] block = new RecvPacketOpcode[]{RecvPacketOpcode.NPC_ACTION, RecvPacketOpcode.MOVE_PLAYER, RecvPacketOpcode.PONG, RecvPacketOpcode.MOVE_PET, RecvPacketOpcode.MOVE_SUMMON, RecvPacketOpcode.MOVE_DRAGON, RecvPacketOpcode.MOVE_LIFE, RecvPacketOpcode.MOVE_ANDROID, RecvPacketOpcode.HEAL_OVER_TIME, RecvPacketOpcode.STRANGE_DATA, RecvPacketOpcode.AUTO_AGGRO, RecvPacketOpcode.CANCEL_DEBUFF, RecvPacketOpcode.MOVE_FAMILIAR};
@@ -278,8 +300,7 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
             System.out.println("Maple Server loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
         });
-        Start.threads.add(t);
-
+      
     }
 
     public MapleServerHandler() {

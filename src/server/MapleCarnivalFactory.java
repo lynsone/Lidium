@@ -28,7 +28,7 @@ public class MapleCarnivalFactory {
     }
 
     private void initialize() {
-        Thread t = new Thread(() -> {
+        ThreadManager.getInstance().newTask(() -> {
             long start = System.currentTimeMillis();
             if (!skills.isEmpty()) {
                 return;
@@ -44,7 +44,7 @@ public class MapleCarnivalFactory {
 
             System.out.println("Maple Carnival loaded in " + (System.currentTimeMillis() - start) + "ms.");
         });
-        Start.threads.add(t);
+       
     }
 
     public MCSkill getSkill(final int id) {
