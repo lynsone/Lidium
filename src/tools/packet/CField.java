@@ -93,7 +93,8 @@ public class CField {
                 mplew.write(Integer.parseInt(s));
             }
         } else {
-            mplew.write(ServerConstants.Gateway_IP);
+            //mplew.write(ServerConstants.Gateway_IP);
+            mplew.write(ServerConstants.getServerIP());
         }
         mplew.writeShort(port);
         mplew.writeInt(clientId);
