@@ -77,7 +77,7 @@ public class ShutdownServer implements ShutdownServerMBean {
                 }
                 LoginServer.shutdown();
                 CashShopServer.shutdown();
-                DatabaseConnection.closeAll();
+                //DatabaseConnection.closeAll();
             } catch (Exception e) {
                 System.err.println(e);
             }
