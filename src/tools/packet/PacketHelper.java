@@ -748,7 +748,7 @@ public class PacketHelper {
         mplew.writeInt(0); // 1?
         if (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId())) {
 			mplew.writeShort(1); // stacksize 
-			mplew.writeSHort(9999); // temp fix
+			mplew.writeShort(9999); // temp fix
             //mplew.writeShort(item.getBuyable());
             
         } else {
