@@ -264,6 +264,7 @@ public class CommandsExecutor {
         addCommand("lookreactor", 4, LookReactorCommand.class);
         addCommand("mynpcpost", 4, MyNpcPosCommand.class);
         addCommand("spawndebug", 4, SpawnDebugCommand.class);
+        addCommand("jobperson", 4, JobPersonCommand.class);
         //addCommand("", 4, Command.class);
         commandsNameDesc.add(levelCommandsCursor);
     }
