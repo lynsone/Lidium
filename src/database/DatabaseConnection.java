@@ -11,8 +11,17 @@ import server.ServerProperties;
  */
 public class DatabaseConnection {
 
-    public static Connection getConnection() {
+    private static final DatabaseConnection dbc = new DatabaseConnection();
 
+    public static DatabaseConnection getInstance() {
+        return dbc;
+    }
+
+    public static Connection getConnection() {
+        return getInstance().getInternalConnection();
+    }
+
+    private Connection getInternalConnection() {
         int denies = 0;
         while (true) { // There is no way it can pass with a null out of here?
             try {
@@ -36,7 +45,7 @@ public class DatabaseConnection {
 
     public DatabaseConnection() {
         try {
-            Class.forName("com.mysql.jdbc.Driver"); // touch the mysql driver
+            Class.forName("com.mysql.cj.jdbc.Driver"); // touch the mysql driver
         } catch (ClassNotFoundException e) {
             System.out.println("[SEVERE] SQL Driver Not Found. Consider death by clams.");
             e.printStackTrace();
