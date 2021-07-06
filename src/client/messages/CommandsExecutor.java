@@ -265,6 +265,8 @@ public class CommandsExecutor {
         addCommand("mynpcpost", 4, MyNpcPosCommand.class);
         addCommand("spawndebug", 4, SpawnDebugCommand.class);
         addCommand("jobperson", 4, JobPersonCommand.class);
+        addCommand("drop", 4, DropCommand.class);
+        addCommand("multidrop", 4, MultiDropCommand.class);
         //addCommand("", 4, Command.class);
         commandsNameDesc.add(levelCommandsCursor);
     }
