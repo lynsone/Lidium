@@ -43,7 +43,7 @@ function end(mode, type, selection) {
             qm.sendNext("You have proven yourself to be worthy, I shall mold your body into a #bSpearman#k.");       
         }else if (status == 2){
             qm.gainItem(4031013, -30);
-	    qm.changeJob(120);
+	    qm.changeJob(130);
 	    qm.sendOk("You are now a #bSpearman#k");
 	    qm.forceCompleteQuest(); 
 	    qm.dispose();
