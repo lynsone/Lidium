@@ -747,12 +747,15 @@ public class PacketHelper {
         mplew.write(0); // boolean
         mplew.writeInt(0); // 1?
         if (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId())) {
-            mplew.writeShort(item.getBuyable());
-            mplew.writeShort(1); // stacksize 
+			mplew.writeShort(1); // stacksize 
+			mplew.writeSHort(9999); // temp fix
+            //mplew.writeShort(item.getBuyable());
+            
         } else {
             mplew.writeZeroBytes(6);
             mplew.writeShort(BitTools.doubleToShortBits(ii.getPrice(item.getItemId())));
-            mplew.writeShort(item.getBuyable() > 0 ? item.getBuyable() : ii.getSlotMax(item.getItemId())); // priority to official shops, then we take from wz if don't have.
+            //mplew.writeShort(item.getBuyable() > 0 ? item.getBuyable() : ii.getSlotMax(item.getItemId())); // priority to official shops, then we take from wz if don't have.
+			mplew.writeShort(9999 > 0 ? 9999 : ii.getSlotMax(item.getItemId())); // temp fix
         }
         mplew.write(i == null ? 0 : 1);
         if (i != null) {
