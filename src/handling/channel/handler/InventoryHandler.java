@@ -101,15 +101,15 @@ import tools.packet.PlayerShopPacket;
 public class InventoryHandler {
 
     public static final void ItemMove(final LittleEndianAccessor slea, final MapleClient c) {
-        if (c.getPlayer().hasBlockedInventory()) { //hack
+        if (c.getPlayer().hasBlockedInventory()) { // hack
             return;
         }
         c.getPlayer().setScrolledPosition((short) 0);
         c.getPlayer().updateTick(slea.readInt());
-        final MapleInventoryType type = MapleInventoryType.getByType(slea.readByte()); //04
-        final short src = slea.readShort();                                            //01 00
-        final short dst = slea.readShort();                                            //00 00
-        final short quantity = slea.readShort();                                       //53 01
+        final MapleInventoryType type = MapleInventoryType.getByType(slea.readByte()); // 04
+        final short src = slea.readShort(); // 01 00
+        final short dst = slea.readShort(); // 00 00
+        final short quantity = slea.readShort(); // 53 01
 
         if (src < 0 && dst > 0) {
             MapleInventoryManipulator.unequip(c, src, dst);
@@ -123,13 +123,13 @@ public class InventoryHandler {
     }
 
     public static final void SwitchBag(final LittleEndianAccessor slea, final MapleClient c) {
-        if (c.getPlayer().hasBlockedInventory()) { //hack
+        if (c.getPlayer().hasBlockedInventory()) { // hack
             return;
         }
         c.getPlayer().setScrolledPosition((short) 0);
         c.getPlayer().updateTick(slea.readInt());
-        final short src = (short) slea.readInt();                                       //01 00
-        final short dst = (short) slea.readInt();                                            //00 00
+        final short src = (short) slea.readInt(); // 01 00
+        final short dst = (short) slea.readInt(); // 00 00
         if (src < 100 || dst < 100) {
             return;
         }
@@ -137,18 +137,18 @@ public class InventoryHandler {
     }
 
     public static final void MoveBag(final LittleEndianAccessor slea, final MapleClient c) {
-        if (c.getPlayer().hasBlockedInventory()) { //hack
+        if (c.getPlayer().hasBlockedInventory()) { // hack
             return;
         }
         c.getPlayer().setScrolledPosition((short) 0);
         c.getPlayer().updateTick(slea.readInt());
         final boolean srcFirst = slea.readInt() > 0;
-        short dst = (short) slea.readInt();                                       //01 00
-        if (slea.readByte() != 4) { //must be etc) {
+        short dst = (short) slea.readInt(); // 01 00
+        if (slea.readByte() != 4) { // must be etc) {
             c.getSession().write(CWvsContext.enableActions());
             return;
         }
-        short src = slea.readShort();                                            //00 00
+        short src = slea.readShort(); // 00 00
         MapleInventoryManipulator.move(c, MapleInventoryType.ETC, srcFirst ? dst : src, srcFirst ? src : dst);
     }
 
@@ -160,7 +160,8 @@ public class InventoryHandler {
             c.getSession().write(CWvsContext.enableActions());
             return;
         }
-        final MapleInventory pInv = c.getPlayer().getInventory(pInvType); //Mode should correspond with MapleInventoryType
+        final MapleInventory pInv = c.getPlayer().getInventory(pInvType); // Mode should correspond with
+                                                                          // MapleInventoryType
         boolean sorted = false;
 
         while (!sorted) {
@@ -202,10 +203,11 @@ public class InventoryHandler {
 
         final List<Item> itemMap = new LinkedList<>();
         Inv.list().forEach(item -> {
-            itemMap.add(item.copy()); // clone all  items T___T.
+            itemMap.add(item.copy()); // clone all items T___T.
         });
         itemMap.forEach(itemStats -> {
-            MapleInventoryManipulator.removeFromSlot(c, invType, itemStats.getPosition(), itemStats.getQuantity(), true, false);
+            MapleInventoryManipulator.removeFromSlot(c, invType, itemStats.getPosition(), itemStats.getQuantity(), true,
+                    false);
         });
 
         final List<Item> sortedItems = sortItems(itemMap);
@@ -239,11 +241,15 @@ public class InventoryHandler {
         return sortedList;
     }
 
-    public static final boolean UseRewardItem(final byte slot, final int itemId, final MapleClient c, final MapleCharacter chr) {
+    public static final boolean UseRewardItem(final byte slot, final int itemId, final MapleClient c,
+            final MapleCharacter chr) {
         final Item toUse = c.getPlayer().getInventory(GameConstants.getInventoryType(itemId)).getItem(slot);
         c.getSession().write(CWvsContext.enableActions());
         if (toUse != null && toUse.getQuantity() >= 1 && toUse.getItemId() == itemId && !chr.hasBlockedInventory()) {
-            if (chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot() > -1 && chr.getInventory(MapleInventoryType.USE).getNextFreeSlot() > -1 && chr.getInventory(MapleInventoryType.SETUP).getNextFreeSlot() > -1 && chr.getInventory(MapleInventoryType.ETC).getNextFreeSlot() > -1) {
+            if (chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot() > -1
+                    && chr.getInventory(MapleInventoryType.USE).getNextFreeSlot() > -1
+                    && chr.getInventory(MapleInventoryType.SETUP).getNextFreeSlot() > -1
+                    && chr.getInventory(MapleInventoryType.ETC).getNextFreeSlot() > -1) {
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 final Pair<Integer, List<StructRewardItem>> rewards = ii.getRewardItem(itemId);
 
@@ -256,15 +262,21 @@ public class InventoryHandler {
                                     if (reward.period > 0) {
                                         item.setExpiration(System.currentTimeMillis() + (reward.period * 60 * 60 * 10));
                                     }
-                                    item.setGMLog("Reward item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date());
+                                    item.setGMLog(
+                                            "Reward item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date());
                                     MapleInventoryManipulator.addbyItem(c, item);
                                 } else {
-                                    MapleInventoryManipulator.addById(c, reward.itemid, reward.quantity, "Reward item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date());
+                                    MapleInventoryManipulator.addById(c, reward.itemid, reward.quantity,
+                                            "Reward item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date());
                                 }
-                                MapleInventoryManipulator.removeById(c, GameConstants.getInventoryType(itemId), itemId, 1, false, false);
+                                MapleInventoryManipulator.removeById(c, GameConstants.getInventoryType(itemId), itemId,
+                                        1, false, false);
 
-                                c.getSession().write(EffectPacket.showRewardItemAnimation(reward.itemid, reward.effect));
-                                chr.getMap().broadcastMessage(chr, EffectPacket.showRewardItemAnimation(reward.itemid, reward.effect, chr.getId()), false);
+                                c.getSession()
+                                        .write(EffectPacket.showRewardItemAnimation(reward.itemid, reward.effect));
+                                chr.getMap().broadcastMessage(chr,
+                                        EffectPacket.showRewardItemAnimation(reward.itemid, reward.effect, chr.getId()),
+                                        false);
                                 return true;
                             }
                         }
@@ -280,7 +292,8 @@ public class InventoryHandler {
     }
 
     public static final void UseItem(final LittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        if (chr == null || !chr.isAlive() || chr.getMapId() == 749040100 || chr.getMap() == null || chr.hasDisease(MapleDisease.POTION) || chr.hasBlockedInventory() || chr.inPVP()) {
+        if (chr == null || !chr.isAlive() || chr.getMapId() == 749040100 || chr.getMap() == null
+                || chr.hasDisease(MapleDisease.POTION) || chr.hasBlockedInventory() || chr.inPVP()) {
             c.getSession().write(CWvsContext.enableActions());
             return;
         }
@@ -299,7 +312,7 @@ public class InventoryHandler {
             c.getSession().write(CWvsContext.enableActions());
             return;
         }
-        if (!FieldLimitType.PotionUse.check(chr.getMap().getFieldLimit())) { //cwk quick hack
+        if (!FieldLimitType.PotionUse.check(chr.getMap().getFieldLimit())) { // cwk quick hack
             if (MapleItemInformationProvider.getInstance().getItemEffect(toUse.getItemId()).applyTo(chr)) {
                 MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (short) 1, false);
                 if (chr.getMap().getConsumeItemCoolTime() > 0) {
@@ -312,7 +325,8 @@ public class InventoryHandler {
         }
     }
 
-    public static final void UseCosmetic(final LittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
+    public static final void UseCosmetic(final LittleEndianAccessor slea, final MapleClient c,
+            final MapleCharacter chr) {
         if (chr == null || !chr.isAlive() || chr.getMap() == null || chr.hasBlockedInventory() || chr.inPVP()) {
             c.getSession().write(CWvsContext.enableActions());
             return;
@@ -321,7 +335,8 @@ public class InventoryHandler {
         final int itemId = slea.readInt();
         final Item toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
 
-        if (toUse == null || toUse.getQuantity() < 1 || toUse.getItemId() != itemId || itemId / 10000 != 254 || (itemId / 1000) % 10 != chr.getGender()) {
+        if (toUse == null || toUse.getQuantity() < 1 || toUse.getItemId() != itemId || itemId / 10000 != 254
+                || (itemId / 1000) % 10 != chr.getGender()) {
             c.getSession().write(CWvsContext.enableActions());
             return;
         }
@@ -330,8 +345,10 @@ public class InventoryHandler {
         }
     }
 
-    public static final void UseReturnScroll(final LittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        if (!chr.isAlive() || chr.getMapId() == 749040100 || chr.hasBlockedInventory() || chr.isInBlockedMap() || chr.inPVP()) {
+    public static final void UseReturnScroll(final LittleEndianAccessor slea, final MapleClient c,
+            final MapleCharacter chr) {
+        if (!chr.isAlive() || chr.getMapId() == 749040100 || chr.hasBlockedInventory() || chr.isInBlockedMap()
+                || chr.inPVP()) {
             c.getSession().write(CWvsContext.enableActions());
             return;
         }
@@ -344,6 +361,9 @@ public class InventoryHandler {
             c.getSession().write(CWvsContext.enableActions());
             return;
         }
+        
+
+       
         if (!FieldLimitType.PotionUse.check(chr.getMap().getFieldLimit())) {
             if (MapleItemInformationProvider.getInstance().getItemEffect(toUse.getItemId()).applyReturnScroll(chr)) {
                 MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (short) 1, false);
@@ -361,7 +381,8 @@ public class InventoryHandler {
         final Item alienSocket = c.getPlayer().getInventory(MapleInventoryType.USE).getItem((byte) slea.readShort());
         final int alienSocketId = slea.readInt();
         final Item toMount = c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem((byte) slea.readShort());
-        if (alienSocket == null || alienSocketId != alienSocket.getItemId() || toMount == null || c.getPlayer().hasBlockedInventory()) {
+        if (alienSocket == null || alienSocketId != alienSocket.getItemId() || toMount == null
+                || c.getPlayer().hasBlockedInventory()) {
             c.getSession().write(InventoryPacket.getInventoryFull());
             return;
         }
@@ -371,7 +392,8 @@ public class InventoryHandler {
             c.getPlayer().dropMessage(1, "This item already has a socket.");
         } else {
             eqq.setSocket1(0); // First socket, GMS removed the other 2
-            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, alienSocket.getPosition(), (short) 1, false);
+            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, alienSocket.getPosition(), (short) 1,
+                    false);
             c.getPlayer().forceReAddItem(toMount, MapleInventoryType.EQUIP);
         }
         c.getSession().write(MTSCSPacket.useAlienSocket(true));
@@ -383,24 +405,28 @@ public class InventoryHandler {
         final Item nebulite = c.getPlayer().getInventory(MapleInventoryType.SETUP).getItem((byte) slea.readShort());
         final int nebuliteId = slea.readInt();
         final Item toMount = c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem((byte) slea.readShort());
-        if (nebulite == null || nebuliteId != nebulite.getItemId() || toMount == null || c.getPlayer().hasBlockedInventory()) {
+        if (nebulite == null || nebuliteId != nebulite.getItemId() || toMount == null
+                || c.getPlayer().hasBlockedInventory()) {
             c.getSession().write(InventoryPacket.getInventoryFull());
             return;
         }
         final Equip eqq = (Equip) toMount;
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         boolean success = false;
-        if (eqq.getSocket1() == 0/* || eqq.getSocket2() == 0 || eqq.getSocket3() == 0*/) { // GMS removed 2nd and 3rd sockets, we can put into npc.
+        if (eqq.getSocket1() == 0/* || eqq.getSocket2() == 0 || eqq.getSocket3() == 0 */) { // GMS removed 2nd and 3rd
+                                                                                            // sockets, we can put into
+                                                                                            // npc.
             final StructItemOption pot = ii.getSocketInfo(nebuliteId);
             if (pot != null && GameConstants.optionTypeFits(pot.optionType, eqq.getItemId())) {
-                //if (eqq.getSocket1() == 0) { // priority comes first
+                // if (eqq.getSocket1() == 0) { // priority comes first
                 eqq.setSocket1(pot.opID);
-                //}// else if (eqq.getSocket2() == 0) {
-                //    eqq.setSocket2(pot.opID);
-                //} else if (eqq.getSocket3() == 0) {
-                //    eqq.setSocket3(pot.opID);
-                //}
-                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.SETUP, nebulite.getPosition(), (short) 1, false);
+                // }// else if (eqq.getSocket2() == 0) {
+                // eqq.setSocket2(pot.opID);
+                // } else if (eqq.getSocket3() == 0) {
+                // eqq.setSocket3(pot.opID);
+                // }
+                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.SETUP, nebulite.getPosition(), (short) 1,
+                        false);
                 c.getPlayer().forceReAddItem(toMount, MapleInventoryType.EQUIP);
                 success = true;
             }
@@ -418,7 +444,10 @@ public class InventoryHandler {
         final Item nebulite2 = c.getPlayer().getInventory(MapleInventoryType.SETUP).getItem((byte) slea.readShort());
         final int mesos = slea.readInt();
         final int premiumQuantity = slea.readInt();
-        if (nebulite1 == null || nebulite2 == null || nebuliteId1 != nebulite1.getItemId() || nebuliteId2 != nebulite2.getItemId() || (mesos == 0 && premiumQuantity == 0) || (mesos != 0 && premiumQuantity != 0) || mesos < 0 || premiumQuantity < 0 || c.getPlayer().hasBlockedInventory()) {
+        if (nebulite1 == null || nebulite2 == null || nebuliteId1 != nebulite1.getItemId()
+                || nebuliteId2 != nebulite2.getItemId() || (mesos == 0 && premiumQuantity == 0)
+                || (mesos != 0 && premiumQuantity != 0) || mesos < 0 || premiumQuantity < 0
+                || c.getPlayer().hasBlockedInventory()) {
             c.getPlayer().dropMessage(1, "Failed to fuse Nebulite.");
             c.getSession().write(InventoryPacket.getInventoryFull());
             return;
@@ -426,16 +455,25 @@ public class InventoryHandler {
         final int grade1 = GameConstants.getNebuliteGrade(nebuliteId1);
         final int grade2 = GameConstants.getNebuliteGrade(nebuliteId2);
         final int highestRank = grade1 > grade2 ? grade1 : grade2;
-        if (grade1 == -1 || grade2 == -1 || (highestRank == 3 && premiumQuantity != 2) || (highestRank == 2 && premiumQuantity != 1)
-                || (highestRank == 1 && mesos != 5000) || (highestRank == 0 && mesos != 3000) || (mesos > 0 && c.getPlayer().getMeso() < mesos)
-                || (premiumQuantity > 0 && c.getPlayer().getItemQuantity(4420000, false) < premiumQuantity) || grade1 >= 4 || grade2 >= 4
-                || (c.getPlayer().getInventory(MapleInventoryType.SETUP).getNumFreeSlot() < 1)) { // 4000 + = S, 3000 + = A, 2000 + = B, 1000 + = C, else = D
+        if (grade1 == -1 || grade2 == -1 || (highestRank == 3 && premiumQuantity != 2)
+                || (highestRank == 2 && premiumQuantity != 1) || (highestRank == 1 && mesos != 5000)
+                || (highestRank == 0 && mesos != 3000) || (mesos > 0 && c.getPlayer().getMeso() < mesos)
+                || (premiumQuantity > 0 && c.getPlayer().getItemQuantity(4420000, false) < premiumQuantity)
+                || grade1 >= 4 || grade2 >= 4
+                || (c.getPlayer().getInventory(MapleInventoryType.SETUP).getNumFreeSlot() < 1)) { // 4000 + = S, 3000 +
+                                                                                                  // = A, 2000 + = B,
+                                                                                                  // 1000 + = C, else =
+                                                                                                  // D
             c.getSession().write(CField.useNebuliteFusion(c.getPlayer().getId(), 0, false));
-            return; // Most of them were done in client, so we just send the unsuccessfull packet, as it is only here when they packet edit.
+            return; // Most of them were done in client, so we just send the unsuccessfull packet,
+                    // as it is only here when they packet edit.
         }
         final int avg = (grade1 + grade2) / 2; // have to revise more about grades.
-        final int rank = Randomizer.nextInt(100) < 4 ? (Randomizer.nextInt(100) < 70 ? (avg != 3 ? (avg + 1) : avg) : (avg != 0 ? (avg - 1) : 0)) : avg;
-        // 4 % chance to up/down 1 grade, (70% to up, 30% to down), cannot up to S grade. =)
+        final int rank = Randomizer.nextInt(100) < 4
+                ? (Randomizer.nextInt(100) < 70 ? (avg != 3 ? (avg + 1) : avg) : (avg != 0 ? (avg - 1) : 0))
+                : avg;
+        // 4 % chance to up/down 1 grade, (70% to up, 30% to down), cannot up to S
+        // grade. =)
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         final List<StructItemOption> pots = new LinkedList<>(ii.getAllSocketInfo(rank).values());
         int newId = 0;
@@ -450,9 +488,12 @@ public class InventoryHandler {
         } else if (premiumQuantity > 0) {
             MapleInventoryManipulator.removeById(c, MapleInventoryType.ETC, 4420000, premiumQuantity, false, false);
         }
-        MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.SETUP, nebulite1.getPosition(), (short) 1, false);
-        MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.SETUP, nebulite2.getPosition(), (short) 1, false);
-        MapleInventoryManipulator.addById(c, newId, (short) 1, "Fused from " + nebuliteId1 + " and " + nebuliteId2 + " on " + FileoutputUtil.CurrentReadable_Date());
+        MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.SETUP, nebulite1.getPosition(), (short) 1,
+                false);
+        MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.SETUP, nebulite2.getPosition(), (short) 1,
+                false);
+        MapleInventoryManipulator.addById(c, newId, (short) 1,
+                "Fused from " + nebuliteId1 + " and " + nebuliteId2 + " on " + FileoutputUtil.CurrentReadable_Date());
         c.getSession().write(CField.useNebuliteFusion(c.getPlayer().getId(), newId, true));
     }
 
@@ -470,7 +511,10 @@ public class InventoryHandler {
         final Equip eqq = (Equip) toReveal;
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         final int reqLevel = ii.getReqLevel(eqq.getItemId()) / 10;
-        if (eqq.getState() == 1 && (insight || magnify.getItemId() == 2460003 || (magnify.getItemId() == 2460002 && reqLevel <= 12) || (magnify.getItemId() == 2460001 && reqLevel <= 7) || (magnify.getItemId() == 2460000 && reqLevel <= 3))) {
+        if (eqq.getState() == 1
+                && (insight || magnify.getItemId() == 2460003 || (magnify.getItemId() == 2460002 && reqLevel <= 12)
+                        || (magnify.getItemId() == 2460001 && reqLevel <= 7)
+                        || (magnify.getItemId() == 2460000 && reqLevel <= 3))) {
             final List<List<StructItemOption>> pots = new LinkedList<>(ii.getAllPotentialInfo().values());
             int new_state = Math.abs(eqq.getPotential1());
             if (new_state > 20 || new_state < 17) { // incase overflow
@@ -487,13 +531,16 @@ public class InventoryHandler {
                 lines++;
             }
             while (eqq.getState() != new_state) {
-                //31001 = haste, 31002 = door, 31003 = se, 31004 = hb, 41005 = combat orders, 41006 = advanced blessing, 41007 = speed infusion
+                // 31001 = haste, 31002 = door, 31003 = se, 31004 = hb, 41005 = combat orders,
+                // 41006 = advanced blessing, 41007 = speed infusion
                 for (int i = 0; i < lines; i++) { // minimum 2 lines, max 5
                     boolean rewarded = false;
                     while (!rewarded) {
                         StructItemOption pot = pots.get(Randomizer.nextInt(pots.size())).get(reqLevel);
-                        if (pot != null && pot.reqLevel / 10 <= reqLevel && GameConstants.optionTypeFits(pot.optionType, eqq.getItemId()) && GameConstants.potentialIDFits(pot.opID, new_state, i)) { //optionType
-                            //have to research optionType before making this truely official-like
+                        if (pot != null && pot.reqLevel / 10 <= reqLevel
+                                && GameConstants.optionTypeFits(pot.optionType, eqq.getItemId())
+                                && GameConstants.potentialIDFits(pot.opID, new_state, i)) { // optionType
+                            // have to research optionType before making this truely official-like
                             switch (i) {
                                 case 0 -> eqq.setPotential1(pot.opID);
                                 case 1 -> eqq.setPotential2(pot.opID);
@@ -508,11 +555,14 @@ public class InventoryHandler {
                     }
                 }
             }
-            c.getPlayer().getTrait(MapleTraitType.insight).addExp((insight ? 10 : ((magnify.getItemId() + 2) - 2460000)) * 2, c.getPlayer());
-            c.getPlayer().getMap().broadcastMessage(CField.showMagnifyingEffect(c.getPlayer().getId(), eqq.getPosition()));
+            c.getPlayer().getTrait(MapleTraitType.insight)
+                    .addExp((insight ? 10 : ((magnify.getItemId() + 2) - 2460000)) * 2, c.getPlayer());
+            c.getPlayer().getMap()
+                    .broadcastMessage(CField.showMagnifyingEffect(c.getPlayer().getId(), eqq.getPosition()));
             if (!insight) {
                 c.getSession().write(InventoryPacket.scrolledItem(magnify, toReveal, false, true));
-                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, magnify.getPosition(), (short) 1, false);
+                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, magnify.getPosition(), (short) 1,
+                        false);
             } else {
                 c.getPlayer().forceReAddItem(toReveal, MapleInventoryType.EQUIP);
             }
@@ -522,9 +572,11 @@ public class InventoryHandler {
         }
     }
 
-    public static final void addToScrollLog(int accountID, int charID, int scrollID, int itemID, byte oldSlots, byte newSlots, byte viciousHammer, String result, boolean ws, boolean ls, int vega) {
+    public static final void addToScrollLog(int accountID, int charID, int scrollID, int itemID, byte oldSlots,
+            byte newSlots, byte viciousHammer, String result, boolean ws, boolean ls, int vega) {
         try {
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO scroll_log VALUES(DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+            try (PreparedStatement ps = DatabaseConnection.getConnection()
+                    .prepareStatement("INSERT INTO scroll_log VALUES(DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                 ps.setInt(1, accountID);
                 ps.setInt(2, charID);
                 ps.setInt(3, scrollID);
@@ -543,11 +595,13 @@ public class InventoryHandler {
         }
     }
 
-    public static final boolean UseUpgradeScroll(final short slot, final short dst, final short ws, final MapleClient c, final MapleCharacter chr, final boolean legendarySpirit) {
+    public static final boolean UseUpgradeScroll(final short slot, final short dst, final short ws, final MapleClient c,
+            final MapleCharacter chr, final boolean legendarySpirit) {
         return UseUpgradeScroll(slot, dst, ws, c, chr, 0, legendarySpirit);
     }
 
-    public static final boolean UseUpgradeScroll(final short slot, final short dst, final short ws, final MapleClient c, final MapleCharacter chr, final int vegas, final boolean legendarySpirit) {
+    public static final boolean UseUpgradeScroll(final short slot, final short dst, final short ws, final MapleClient c,
+            final MapleCharacter chr, final int vegas, final boolean legendarySpirit) {
         boolean whiteScroll = false; // white scroll being used?
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         chr.setScrolledPosition((short) 0);
@@ -579,21 +633,27 @@ public class InventoryHandler {
                 return false;
             }
         }
-        if (!GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId())) {
+        if (!GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId())
+                && !GameConstants.isEquipScroll(scroll.getItemId())
+                && !GameConstants.isPotentialScroll(scroll.getItemId())) {
             if (toScroll.getUpgradeSlots() < 1) {
                 c.getSession().write(InventoryPacket.getInventoryFull());
                 c.getSession().write(CWvsContext.enableActions());
                 return false;
             }
         } else if (GameConstants.isEquipScroll(scroll.getItemId())) {
-            if (toScroll.getUpgradeSlots() >= 1 || toScroll.getEnhance() >= 100 || vegas > 0 || ii.isCash(toScroll.getItemId())) {
+            if (toScroll.getUpgradeSlots() >= 1 || toScroll.getEnhance() >= 100 || vegas > 0
+                    || ii.isCash(toScroll.getItemId())) {
                 c.getSession().write(InventoryPacket.getInventoryFull());
                 c.getSession().write(CWvsContext.enableActions());
                 return false;
             }
         } else if (GameConstants.isPotentialScroll(scroll.getItemId())) {
             final boolean isEpic = scroll.getItemId() / 100 == 20497;
-            if ((!isEpic && toScroll.getState() >= 1) || (isEpic && toScroll.getState() >= 18) || (toScroll.getLevel() == 0 && toScroll.getUpgradeSlots() == 0 && toScroll.getItemId() / 10000 != 135 && !isEpic) || vegas > 0 || ii.isCash(toScroll.getItemId())) {
+            if ((!isEpic && toScroll.getState() >= 1) || (isEpic && toScroll.getState() >= 18)
+                    || (toScroll.getLevel() == 0 && toScroll.getUpgradeSlots() == 0
+                            && toScroll.getItemId() / 10000 != 135 && !isEpic)
+                    || vegas > 0 || ii.isCash(toScroll.getItemId())) {
                 c.getSession().write(InventoryPacket.getInventoryFull());
                 c.getSession().write(CWvsContext.enableActions());
                 return false;
@@ -610,16 +670,21 @@ public class InventoryHandler {
             c.getSession().write(CWvsContext.enableActions());
             return false;
         }
-        if ((GameConstants.isCleanSlate(scroll.getItemId()) || GameConstants.isTablet(scroll.getItemId()) || GameConstants.isGeneralScroll(scroll.getItemId()) || GameConstants.isChaosScroll(scroll.getItemId())) && (vegas > 0 || ii.isCash(toScroll.getItemId()))) {
+        if ((GameConstants.isCleanSlate(scroll.getItemId()) || GameConstants.isTablet(scroll.getItemId())
+                || GameConstants.isGeneralScroll(scroll.getItemId()) || GameConstants.isChaosScroll(scroll.getItemId()))
+                && (vegas > 0 || ii.isCash(toScroll.getItemId()))) {
             c.getSession().write(InventoryPacket.getInventoryFull());
             c.getSession().write(CWvsContext.enableActions());
             return false;
         }
-        if (GameConstants.isTablet(scroll.getItemId()) && toScroll.getDurability() < 0) { //not a durability item
+        if (GameConstants.isTablet(scroll.getItemId()) && toScroll.getDurability() < 0) { // not a durability item
             c.getSession().write(InventoryPacket.getInventoryFull());
             c.getSession().write(CWvsContext.enableActions());
             return false;
-        } else if ((!GameConstants.isTablet(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isChaosScroll(scroll.getItemId())) && toScroll.getDurability() >= 0) {
+        } else if ((!GameConstants.isTablet(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId())
+                && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId())
+                && !GameConstants.isSpecialScroll(scroll.getItemId())
+                && !GameConstants.isChaosScroll(scroll.getItemId())) && toScroll.getDurability() >= 0) {
             c.getSession().write(InventoryPacket.getInventoryFull());
             c.getSession().write(CWvsContext.enableActions());
             return false;
@@ -642,32 +707,40 @@ public class InventoryHandler {
         }
         if (GameConstants.isTablet(scroll.getItemId()) || GameConstants.isGeneralScroll(scroll.getItemId())) {
             switch (scroll.getItemId() % 1000 / 100) {
-                case 0: //1h
-                    if (GameConstants.isTwoHanded(toScroll.getItemId()) || !GameConstants.isWeapon(toScroll.getItemId())) {
+                case 0: // 1h
+                    if (GameConstants.isTwoHanded(toScroll.getItemId())
+                            || !GameConstants.isWeapon(toScroll.getItemId())) {
                         c.getSession().write(CWvsContext.enableActions());
                         return false;
                     }
                     break;
-                case 1: //2h
-                    if (!GameConstants.isTwoHanded(toScroll.getItemId()) || !GameConstants.isWeapon(toScroll.getItemId())) {
+                case 1: // 2h
+                    if (!GameConstants.isTwoHanded(toScroll.getItemId())
+                            || !GameConstants.isWeapon(toScroll.getItemId())) {
                         c.getSession().write(CWvsContext.enableActions());
                         return false;
                     }
                     break;
-                case 2: //armor
-                    if (GameConstants.isAccessory(toScroll.getItemId()) || GameConstants.isWeapon(toScroll.getItemId())) {
+                case 2: // armor
+                    if (GameConstants.isAccessory(toScroll.getItemId())
+                            || GameConstants.isWeapon(toScroll.getItemId())) {
                         c.getSession().write(CWvsContext.enableActions());
                         return false;
                     }
                     break;
-                case 3: //accessory
-                    if (!GameConstants.isAccessory(toScroll.getItemId()) || GameConstants.isWeapon(toScroll.getItemId())) {
+                case 3: // accessory
+                    if (!GameConstants.isAccessory(toScroll.getItemId())
+                            || GameConstants.isWeapon(toScroll.getItemId())) {
                         c.getSession().write(CWvsContext.enableActions());
                         return false;
                     }
                     break;
             }
-        } else if (!GameConstants.isAccessoryScroll(scroll.getItemId()) && !GameConstants.isChaosScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId()) && !GameConstants.isSpecialScroll(scroll.getItemId())) {
+        } else if (!GameConstants.isAccessoryScroll(scroll.getItemId())
+                && !GameConstants.isChaosScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId())
+                && !GameConstants.isEquipScroll(scroll.getItemId())
+                && !GameConstants.isPotentialScroll(scroll.getItemId())
+                && !GameConstants.isSpecialScroll(scroll.getItemId())) {
             if (!ii.canScroll(scroll.getItemId(), toScroll.getItemId())) {
                 c.getSession().write(CWvsContext.enableActions());
                 return false;
@@ -700,7 +773,9 @@ public class InventoryHandler {
             } else {
                 scrollSuccess = Equip.ScrollResult.CURSE;
             }
-        } else if ((scroll.getItemId() / 100 == 20497 && scrolled.getState() == 1) || scrolled.getLevel() > oldLevel || scrolled.getEnhance() > oldEnhance || scrolled.getState() > oldState || scrolled.getFlag() > oldFlag) {
+        } else if ((scroll.getItemId() / 100 == 20497 && scrolled.getState() == 1) || scrolled.getLevel() > oldLevel
+                || scrolled.getEnhance() > oldEnhance || scrolled.getState() > oldState
+                || scrolled.getFlag() > oldFlag) {
             scrollSuccess = Equip.ScrollResult.SUCCESS;
         } else if ((GameConstants.isCleanSlate(scroll.getItemId()) && scrolled.getUpgradeSlots() > oldSlots)) {
             scrollSuccess = Equip.ScrollResult.SUCCESS;
@@ -708,10 +783,13 @@ public class InventoryHandler {
             scrollSuccess = Equip.ScrollResult.FAIL;
         }
         // Update
-        chr.getInventory(GameConstants.getInventoryType(scroll.getItemId())).removeItem(scroll.getPosition(), (short) 1, false);
+        chr.getInventory(GameConstants.getInventoryType(scroll.getItemId())).removeItem(scroll.getPosition(), (short) 1,
+                false);
         if (whiteScroll) {
-            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, wscroll.getPosition(), (short) 1, false, false);
-        } else if (scrollSuccess == Equip.ScrollResult.FAIL && scrolled.getUpgradeSlots() < oldSlots && c.getPlayer().getInventory(MapleInventoryType.CASH).findById(5640000) != null) {
+            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, wscroll.getPosition(), (short) 1, false,
+                    false);
+        } else if (scrollSuccess == Equip.ScrollResult.FAIL && scrolled.getUpgradeSlots() < oldSlots
+                && c.getPlayer().getInventory(MapleInventoryType.CASH).findById(5640000) != null) {
             chr.setScrolledPosition(scrolled.getPosition());
             if (vegas == 0) {
                 c.getSession().write(CWvsContext.pamSongUI());
@@ -729,22 +807,28 @@ public class InventoryHandler {
             c.getSession().write(InventoryPacket.scrolledItem(scroll, scrolled, false, false));
         }
 
-        chr.getMap().broadcastMessage(chr, CField.getScrollEffect(c.getPlayer().getId(), scrollSuccess, legendarySpirit, whiteScroll), vegas == 0);
-        //addToScrollLog(chr.getAccountID(), chr.getId(), scroll.getItemId(), itemID, oldSlots, (byte)(scrolled == null ? -1 : scrolled.getUpgradeSlots()), oldVH, scrollSuccess.name(), whiteScroll, legendarySpirit, vegas);
+        chr.getMap().broadcastMessage(chr,
+                CField.getScrollEffect(c.getPlayer().getId(), scrollSuccess, legendarySpirit, whiteScroll), vegas == 0);
+        // addToScrollLog(chr.getAccountID(), chr.getId(), scroll.getItemId(), itemID,
+        // oldSlots, (byte)(scrolled == null ? -1 : scrolled.getUpgradeSlots()), oldVH,
+        // scrollSuccess.name(), whiteScroll, legendarySpirit, vegas);
         // equipped item was scrolled and changed
-        if (dst < 0 && (scrollSuccess == Equip.ScrollResult.SUCCESS || scrollSuccess == Equip.ScrollResult.CURSE) && vegas == 0) {
+        if (dst < 0 && (scrollSuccess == Equip.ScrollResult.SUCCESS || scrollSuccess == Equip.ScrollResult.CURSE)
+                && vegas == 0) {
             chr.equipChanged();
         }
         return true;
     }
 
-    public static final boolean UseSkillBook(final byte slot, final int itemId, final MapleClient c, final MapleCharacter chr) {
+    public static final boolean UseSkillBook(final byte slot, final int itemId, final MapleClient c,
+            final MapleCharacter chr) {
         final Item toUse = chr.getInventory(GameConstants.getInventoryType(itemId)).getItem(slot);
 
         if (toUse == null || toUse.getQuantity() < 1 || toUse.getItemId() != itemId || chr.hasBlockedInventory()) {
             return false;
         }
-        final Map<String, Integer> skilldata = MapleItemInformationProvider.getInstance().getEquipStats(toUse.getItemId());
+        final Map<String, Integer> skilldata = MapleItemInformationProvider.getInstance()
+                .getEquipStats(toUse.getItemId());
         if (skilldata == null) { // Hacking or used an unknown item
             return false;
         }
@@ -764,15 +848,19 @@ public class InventoryHandler {
                 break; // End of data
             }
             final Skill CurrSkillData = SkillFactory.getSkill(CurrentLoopedSkillId);
-            if (CurrSkillData != null && CurrSkillData.canBeLearnedBy(chr.getJob()) && (ReqSkillLevel == null || chr.getSkillLevel(CurrSkillData) >= ReqSkillLevel) && chr.getMasterLevel(CurrSkillData) < MasterLevel) {
+            if (CurrSkillData != null && CurrSkillData.canBeLearnedBy(chr.getJob())
+                    && (ReqSkillLevel == null || chr.getSkillLevel(CurrSkillData) >= ReqSkillLevel)
+                    && chr.getMasterLevel(CurrSkillData) < MasterLevel) {
                 canuse = true;
                 if (SuccessRate == null || Randomizer.nextInt(100) <= SuccessRate) {
                     success = true;
-                    chr.changeSingleSkillLevel(CurrSkillData, chr.getSkillLevel(CurrSkillData), (byte) (int) MasterLevel);
+                    chr.changeSingleSkillLevel(CurrSkillData, chr.getSkillLevel(CurrSkillData),
+                            (byte) (int) MasterLevel);
                 } else {
                     success = false;
                 }
-                MapleInventoryManipulator.removeFromSlot(c, GameConstants.getInventoryType(itemId), slot, (short) 1, false);
+                MapleInventoryManipulator.removeFromSlot(c, GameConstants.getInventoryType(itemId), slot, (short) 1,
+                        false);
                 break;
             }
         }
@@ -781,7 +869,8 @@ public class InventoryHandler {
         return canuse;
     }
 
-    public static final void UseCatchItem(final LittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
+    public static final void UseCatchItem(final LittleEndianAccessor slea, final MapleClient c,
+            final MapleCharacter chr) {
         c.getPlayer().updateTick(slea.readInt());
         c.getPlayer().setScrolledPosition((short) 0);
         final byte slot = (byte) slea.readShort();
@@ -790,13 +879,16 @@ public class InventoryHandler {
         final Item toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
         final MapleMap map = chr.getMap();
 
-        if (toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == itemid && mob != null && !chr.hasBlockedInventory() && itemid / 10000 == 227 && MapleItemInformationProvider.getInstance().getCardMobId(itemid) == mob.getId()) {
+        if (toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == itemid && mob != null
+                && !chr.hasBlockedInventory() && itemid / 10000 == 227
+                && MapleItemInformationProvider.getInstance().getCardMobId(itemid) == mob.getId()) {
             if (!MapleItemInformationProvider.getInstance().isMobHP(itemid) || mob.getHp() <= mob.getMobMaxHp() / 2) {
                 map.broadcastMessage(MobPacket.catchMonster(mob.getObjectId(), itemid, (byte) 1));
                 map.killMonster(mob, chr, true, false, (byte) 1);
                 MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (short) 1, false, false);
                 if (MapleItemInformationProvider.getInstance().getCreateId(itemid) > 0) {
-                    MapleInventoryManipulator.addById(c, MapleItemInformationProvider.getInstance().getCreateId(itemid), (short) 1, "Catch item " + itemid + " on " + FileoutputUtil.CurrentReadable_Date());
+                    MapleInventoryManipulator.addById(c, MapleItemInformationProvider.getInstance().getCreateId(itemid),
+                            (short) 1, "Catch item " + itemid + " on " + FileoutputUtil.CurrentReadable_Date());
                 }
             } else {
                 map.broadcastMessage(MobPacket.catchMonster(mob.getObjectId(), itemid, (byte) 0));
@@ -806,14 +898,16 @@ public class InventoryHandler {
         c.getSession().write(CWvsContext.enableActions());
     }
 
-    public static final void UseMountFood(final LittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
+    public static final void UseMountFood(final LittleEndianAccessor slea, final MapleClient c,
+            final MapleCharacter chr) {
         c.getPlayer().updateTick(slea.readInt());
         final byte slot = (byte) slea.readShort();
-        final int itemid = slea.readInt(); //2260000 usually
+        final int itemid = slea.readInt(); // 2260000 usually
         final Item toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
         final MapleMount mount = chr.getMount();
 
-        if (itemid / 10000 == 226 && toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == itemid && mount != null && !c.getPlayer().hasBlockedInventory()) {
+        if (itemid / 10000 == 226 && toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == itemid
+                && mount != null && !c.getPlayer().hasBlockedInventory()) {
             final int fatigue = mount.getFatigue();
 
             boolean levelup = false;
@@ -833,7 +927,8 @@ public class InventoryHandler {
         c.getSession().write(CWvsContext.enableActions());
     }
 
-    public static final void UseScriptedNPCItem(final LittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
+    public static final void UseScriptedNPCItem(final LittleEndianAccessor slea, final MapleClient c,
+            final MapleCharacter chr) {
         c.getPlayer().updateTick(slea.readInt());
         final byte slot = (byte) slea.readShort();
         final int itemId = slea.readInt();
@@ -841,9 +936,10 @@ public class InventoryHandler {
         long expiration_days = 0;
         int mountid = 0;
 
-        if (toUse != null && toUse.getQuantity() >= 1 && toUse.getItemId() == itemId && !chr.hasBlockedInventory() && !chr.inPVP()) {
+        if (toUse != null && toUse.getQuantity() >= 1 && toUse.getItemId() == itemId && !chr.hasBlockedInventory()
+                && !chr.inPVP()) {
             switch (toUse.getItemId()) {
-                case 2430007 ->  { // Blank Compass
+                case 2430007 -> { // Blank Compass
                     final MapleInventory inventory = chr.getInventory(MapleInventoryType.SETUP);
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
 
@@ -851,17 +947,21 @@ public class InventoryHandler {
                             && inventory.countById(3994103) >= 20 // Compass Letter "South"
                             && inventory.countById(3994104) >= 20 // Compass Letter "East"
                             && inventory.countById(3994105) >= 20) { // Compass Letter "West"
-                        MapleInventoryManipulator.addById(c, 2430008, (short) 1, "Scripted item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date()); // Gold Compass
+                        MapleInventoryManipulator.addById(c, 2430008, (short) 1,
+                                "Scripted item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date()); // Gold
+                                                                                                              // Compass
                         MapleInventoryManipulator.removeById(c, MapleInventoryType.SETUP, 3994102, 20, false, false);
                         MapleInventoryManipulator.removeById(c, MapleInventoryType.SETUP, 3994103, 20, false, false);
                         MapleInventoryManipulator.removeById(c, MapleInventoryType.SETUP, 3994104, 20, false, false);
                         MapleInventoryManipulator.removeById(c, MapleInventoryType.SETUP, 3994105, 20, false, false);
                     } else {
-                        MapleInventoryManipulator.addById(c, 2430007, (short) 1, "Scripted item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date()); // Blank Compass
+                        MapleInventoryManipulator.addById(c, 2430007, (short) 1,
+                                "Scripted item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date()); // Blank
+                                                                                                              // Compass
                     }
                     NPCScriptManager.getInstance().start(c, 2084001);
                 }
-                case 2430008 ->  { // Gold Compass
+                case 2430008 -> { // Gold Compass
                     chr.saveLocation(SavedLocationType.RICHIE);
                     MapleMap map;
                     boolean warped = false;
@@ -882,44 +982,54 @@ public class InventoryHandler {
                     }
                 }
                 case 2430112 -> {
-                    //miracle cube fragment
+                    // miracle cube fragment
                     if (c.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() >= 1) {
                         if (c.getPlayer().getInventory(MapleInventoryType.USE).countById(2430112) >= 25) {
-                            if (MapleInventoryManipulator.checkSpace(c, 2049400, 1, "") && MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, toUse.getItemId(), 25, true, false)) {
-                                MapleInventoryManipulator.addById(c, 2049400, (short) 1, "Scripted item: " + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
+                            if (MapleInventoryManipulator.checkSpace(c, 2049400, 1, "") && MapleInventoryManipulator
+                                    .removeById(c, MapleInventoryType.USE, toUse.getItemId(), 25, true, false)) {
+                                MapleInventoryManipulator.addById(c, 2049400, (short) 1, "Scripted item: "
+                                        + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
                             } else {
                                 c.getPlayer().dropMessage(5, "Please make some space.");
                             }
                         } else if (c.getPlayer().getInventory(MapleInventoryType.USE).countById(2430112) >= 10) {
-                            if (MapleInventoryManipulator.checkSpace(c, 2049400, 1, "") && MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, toUse.getItemId(), 10, true, false)) {
-                                MapleInventoryManipulator.addById(c, 2049401, (short) 1, "Scripted item: " + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
+                            if (MapleInventoryManipulator.checkSpace(c, 2049400, 1, "") && MapleInventoryManipulator
+                                    .removeById(c, MapleInventoryType.USE, toUse.getItemId(), 10, true, false)) {
+                                MapleInventoryManipulator.addById(c, 2049401, (short) 1, "Scripted item: "
+                                        + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
                             } else {
                                 c.getPlayer().dropMessage(5, "Please make some space.");
                             }
                         } else {
-                            c.getPlayer().dropMessage(5, "There needs to be 10 Fragments for a Potential Scroll, 25 for Advanced Potential Scroll.");
+                            c.getPlayer().dropMessage(5,
+                                    "There needs to be 10 Fragments for a Potential Scroll, 25 for Advanced Potential Scroll.");
                         }
                     } else {
                         c.getPlayer().dropMessage(5, "Please make some space.");
                     }
                 }
                 case 2430481 -> {
-                    //super miracle cube fragment
+                    // super miracle cube fragment
                     if (c.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() >= 1) {
                         if (c.getPlayer().getInventory(MapleInventoryType.USE).countById(2430481) >= 30) {
-                            if (MapleInventoryManipulator.checkSpace(c, 2049701, 1, "") && MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, toUse.getItemId(), 30, true, false)) {
-                                MapleInventoryManipulator.addById(c, 2049701, (short) 1, "Scripted item: " + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
+                            if (MapleInventoryManipulator.checkSpace(c, 2049701, 1, "") && MapleInventoryManipulator
+                                    .removeById(c, MapleInventoryType.USE, toUse.getItemId(), 30, true, false)) {
+                                MapleInventoryManipulator.addById(c, 2049701, (short) 1, "Scripted item: "
+                                        + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
                             } else {
                                 c.getPlayer().dropMessage(5, "Please make some space.");
                             }
                         } else if (c.getPlayer().getInventory(MapleInventoryType.USE).countById(2430481) >= 20) {
-                            if (MapleInventoryManipulator.checkSpace(c, 2049300, 1, "") && MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, toUse.getItemId(), 20, true, false)) {
-                                MapleInventoryManipulator.addById(c, 2049300, (short) 1, "Scripted item: " + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
+                            if (MapleInventoryManipulator.checkSpace(c, 2049300, 1, "") && MapleInventoryManipulator
+                                    .removeById(c, MapleInventoryType.USE, toUse.getItemId(), 20, true, false)) {
+                                MapleInventoryManipulator.addById(c, 2049300, (short) 1, "Scripted item: "
+                                        + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
                             } else {
                                 c.getPlayer().dropMessage(5, "Please make some space.");
                             }
                         } else {
-                            c.getPlayer().dropMessage(5, "There needs to be 20 Fragments for a Advanced Equip Enhancement Scroll, 30 for Epic Potential Scroll 80%.");
+                            c.getPlayer().dropMessage(5,
+                                    "There needs to be 20 Fragments for a Advanced Equip Enhancement Scroll, 30 for Epic Potential Scroll 80%.");
                         }
                     } else {
                         c.getPlayer().dropMessage(5, "Please make some space.");
@@ -929,8 +1039,10 @@ public class InventoryHandler {
                     // nebulite diffuser fragment
                     if (c.getPlayer().getInventory(MapleInventoryType.CASH).getNumFreeSlot() >= 1) {
                         if (c.getPlayer().getInventory(MapleInventoryType.USE).countById(2430691) >= 10) {
-                            if (MapleInventoryManipulator.checkSpace(c, 5750001, 1, "") && MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, toUse.getItemId(), 10, true, false)) {
-                                MapleInventoryManipulator.addById(c, 5750001, (short) 1, "Scripted item: " + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
+                            if (MapleInventoryManipulator.checkSpace(c, 5750001, 1, "") && MapleInventoryManipulator
+                                    .removeById(c, MapleInventoryType.USE, toUse.getItemId(), 10, true, false)) {
+                                MapleInventoryManipulator.addById(c, 5750001, (short) 1, "Scripted item: "
+                                        + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
                             } else {
                                 c.getPlayer().dropMessage(5, "Please make some space.");
                             }
@@ -945,8 +1057,10 @@ public class InventoryHandler {
                     // premium fusion ticket
                     if (c.getPlayer().getInventory(MapleInventoryType.ETC).getNumFreeSlot() >= 1) {
                         if (c.getPlayer().getInventory(MapleInventoryType.USE).countById(2430748) >= 20) {
-                            if (MapleInventoryManipulator.checkSpace(c, 4420000, 1, "") && MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, toUse.getItemId(), 20, true, false)) {
-                                MapleInventoryManipulator.addById(c, 4420000, (short) 1, "Scripted item: " + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
+                            if (MapleInventoryManipulator.checkSpace(c, 4420000, 1, "") && MapleInventoryManipulator
+                                    .removeById(c, MapleInventoryType.USE, toUse.getItemId(), 20, true, false)) {
+                                MapleInventoryManipulator.addById(c, 4420000, (short) 1, "Scripted item: "
+                                        + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
                             } else {
                                 c.getPlayer().dropMessage(5, "Please make some space.");
                             }
@@ -971,8 +1085,10 @@ public class InventoryHandler {
                                     newId = pot.opID;
                                 }
                             }
-                            if (MapleInventoryManipulator.checkSpace(c, newId, 1, "") && MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, toUse.getItemId(), 1, true, false)) {
-                                MapleInventoryManipulator.addById(c, newId, (short) 1, "Scripted item: " + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
+                            if (MapleInventoryManipulator.checkSpace(c, newId, 1, "") && MapleInventoryManipulator
+                                    .removeById(c, MapleInventoryType.USE, toUse.getItemId(), 1, true, false)) {
+                                MapleInventoryManipulator.addById(c, newId, (short) 1, "Scripted item: "
+                                        + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
                                 c.getSession().write(InfoPacket.getShowItemGain(newId, (short) 1, true));
                             } else {
                                 c.getPlayer().dropMessage(5, "Please make some space.");
@@ -984,26 +1100,27 @@ public class InventoryHandler {
                         c.getPlayer().dropMessage(5, "Please make some space.");
                     }
                 }
-                case 5680019 ->  {//starling hair 
-                    //if (c.getPlayer().getGender() == 1) {
+                case 5680019 -> {// starling hair
+                    // if (c.getPlayer().getGender() == 1) {
                     int hair = 32150 + (c.getPlayer().getHair() % 10);
                     c.getPlayer().setHair(hair);
                     c.getPlayer().updateSingleStat(MapleStat.HAIR, hair);
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (byte) 1, false);
-                    //}
+                    // }
                 }
-                case 5680020 ->  {//starling hair 
-                    //if (c.getPlayer().getGender() == 0) {
+                case 5680020 -> {// starling hair
+                    // if (c.getPlayer().getGender() == 0) {
                     int hair = 32160 + (c.getPlayer().getHair() % 10);
                     c.getPlayer().setHair(hair);
                     c.getPlayer().updateSingleStat(MapleStat.HAIR, hair);
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (byte) 1, false);
-                    //}
+                    // }
                 }
                 case 3994225 -> c.getPlayer().dropMessage(5, "Please bring this item to the NPC.");
                 case 2430212 -> {
-                    //energy drink
-                    MapleQuestStatus marr = c.getPlayer().getQuestNAdd(MapleQuest.getInstance(GameConstants.ENERGY_DRINK));
+                    // energy drink
+                    MapleQuestStatus marr = c.getPlayer()
+                            .getQuestNAdd(MapleQuest.getInstance(GameConstants.ENERGY_DRINK));
                     if (marr.getCustomData() == null) {
                         marr.setCustomData("0");
                     }
@@ -1016,8 +1133,9 @@ public class InventoryHandler {
                     }
                 }
                 case 2430213 -> {
-                    //energy drink
-                    MapleQuestStatus marr = c.getPlayer().getQuestNAdd(MapleQuest.getInstance(GameConstants.ENERGY_DRINK));
+                    // energy drink
+                    MapleQuestStatus marr = c.getPlayer()
+                            .getQuestNAdd(MapleQuest.getInstance(GameConstants.ENERGY_DRINK));
                     if (marr.getCustomData() == null) {
                         marr.setCustomData("0");
                     }
@@ -1029,24 +1147,25 @@ public class InventoryHandler {
                         c.getPlayer().setFatigue(c.getPlayer().getFatigue() - 10);
                     }
                 }
-                case 2430220, 2430214 -> //energy drink
+                case 2430220, 2430214 -> // energy drink
                 {
-                    //energy drink
+                    // energy drink
                     if (c.getPlayer().getFatigue() > 0) {
                         MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
                         c.getPlayer().setFatigue(c.getPlayer().getFatigue() - 30);
                     }
                 }
                 case 2430227 -> {
-                    //energy drink
+                    // energy drink
                     if (c.getPlayer().getFatigue() > 0) {
                         MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
                         c.getPlayer().setFatigue(c.getPlayer().getFatigue() - 50);
                     }
                 }
                 case 2430231 -> {
-                    //energy drink
-                    MapleQuestStatus marr = c.getPlayer().getQuestNAdd(MapleQuest.getInstance(GameConstants.ENERGY_DRINK));
+                    // energy drink
+                    MapleQuestStatus marr = c.getPlayer()
+                            .getQuestNAdd(MapleQuest.getInstance(GameConstants.ENERGY_DRINK));
                     if (marr.getCustomData() == null) {
                         marr.setCustomData("0");
                     }
@@ -1059,36 +1178,45 @@ public class InventoryHandler {
                     }
                 }
                 case 2430144 -> {
-                    //smb
+                    // smb
                     final int itemid = Randomizer.nextInt(373) + 2290000;
-                    if (MapleItemInformationProvider.getInstance().itemExists(itemid) && !MapleItemInformationProvider.getInstance().getName(itemid).contains("Special") && !MapleItemInformationProvider.getInstance().getName(itemid).contains("Event")) {
-                        MapleInventoryManipulator.addById(c, itemid, (short) 1, "Reward item: " + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
+                    if (MapleItemInformationProvider.getInstance().itemExists(itemid)
+                            && !MapleItemInformationProvider.getInstance().getName(itemid).contains("Special")
+                            && !MapleItemInformationProvider.getInstance().getName(itemid).contains("Event")) {
+                        MapleInventoryManipulator.addById(c, itemid, (short) 1,
+                                "Reward item: " + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
                         MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
                     }
                 }
                 case 2430370 -> {
                     if (MapleInventoryManipulator.checkSpace(c, 2028062, (short) 1, "")) {
-                        MapleInventoryManipulator.addById(c, 2028062, (short) 1, "Reward item: " + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
+                        MapleInventoryManipulator.addById(c, 2028062, (short) 1,
+                                "Reward item: " + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
                         MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
                     }
                 }
                 case 2430158 -> {
-                    //lion king
+                    // lion king
                     if (c.getPlayer().getInventory(MapleInventoryType.ETC).getNumFreeSlot() >= 1) {
                         if (c.getPlayer().getInventory(MapleInventoryType.ETC).countById(4000630) >= 100) {
-                            if (MapleInventoryManipulator.checkSpace(c, 4310010, 1, "") && MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, toUse.getItemId(), 1, true, false)) {
-                                MapleInventoryManipulator.addById(c, 4310010, (short) 1, "Scripted item: " + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
+                            if (MapleInventoryManipulator.checkSpace(c, 4310010, 1, "") && MapleInventoryManipulator
+                                    .removeById(c, MapleInventoryType.USE, toUse.getItemId(), 1, true, false)) {
+                                MapleInventoryManipulator.addById(c, 4310010, (short) 1, "Scripted item: "
+                                        + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
                             } else {
                                 c.getPlayer().dropMessage(5, "Please make some space.");
                             }
                         } else if (c.getPlayer().getInventory(MapleInventoryType.ETC).countById(4000630) >= 50) {
-                            if (MapleInventoryManipulator.checkSpace(c, 4310009, 1, "") && MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, toUse.getItemId(), 1, true, false)) {
-                                MapleInventoryManipulator.addById(c, 4310009, (short) 1, "Scripted item: " + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
+                            if (MapleInventoryManipulator.checkSpace(c, 4310009, 1, "") && MapleInventoryManipulator
+                                    .removeById(c, MapleInventoryType.USE, toUse.getItemId(), 1, true, false)) {
+                                MapleInventoryManipulator.addById(c, 4310009, (short) 1, "Scripted item: "
+                                        + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
                             } else {
                                 c.getPlayer().dropMessage(5, "Please make some space.");
                             }
                         } else {
-                            c.getPlayer().dropMessage(5, "There needs to be 50 Purification Totems for a Noble Lion King Medal, 100 for Royal Lion King Medal.");
+                            c.getPlayer().dropMessage(5,
+                                    "There needs to be 50 Purification Totems for a Noble Lion King Medal, 100 for Royal Lion King Medal.");
                         }
                     } else {
                         c.getPlayer().dropMessage(5, "Please make some space.");
@@ -1099,14 +1227,28 @@ public class InventoryHandler {
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
                 }
                 case 2430200 -> {
-                    //thunder stone
+                    // thunder stone
                     if (c.getPlayer().getQuestStatus(31152) != 2) {
                         c.getPlayer().dropMessage(5, "You have no idea how to use it.");
                     } else {
                         if (c.getPlayer().getInventory(MapleInventoryType.ETC).getNumFreeSlot() >= 1) {
-                            if (c.getPlayer().getInventory(MapleInventoryType.ETC).countById(4000660) >= 1 && c.getPlayer().getInventory(MapleInventoryType.ETC).countById(4000661) >= 1 && c.getPlayer().getInventory(MapleInventoryType.ETC).countById(4000662) >= 1 && c.getPlayer().getInventory(MapleInventoryType.ETC).countById(4000663) >= 1) {
-                                if (MapleInventoryManipulator.checkSpace(c, 4032923, 1, "") && MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, toUse.getItemId(), 1, true, false) && MapleInventoryManipulator.removeById(c, MapleInventoryType.ETC, 4000660, 1, true, false) && MapleInventoryManipulator.removeById(c, MapleInventoryType.ETC, 4000661, 1, true, false) && MapleInventoryManipulator.removeById(c, MapleInventoryType.ETC, 4000662, 1, true, false) && MapleInventoryManipulator.removeById(c, MapleInventoryType.ETC, 4000663, 1, true, false)) {
-                                    MapleInventoryManipulator.addById(c, 4032923, (short) 1, "Scripted item: " + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
+                            if (c.getPlayer().getInventory(MapleInventoryType.ETC).countById(4000660) >= 1
+                                    && c.getPlayer().getInventory(MapleInventoryType.ETC).countById(4000661) >= 1
+                                    && c.getPlayer().getInventory(MapleInventoryType.ETC).countById(4000662) >= 1
+                                    && c.getPlayer().getInventory(MapleInventoryType.ETC).countById(4000663) >= 1) {
+                                if (MapleInventoryManipulator.checkSpace(c, 4032923, 1, "")
+                                        && MapleInventoryManipulator.removeById(c, MapleInventoryType.USE,
+                                                toUse.getItemId(), 1, true, false)
+                                        && MapleInventoryManipulator.removeById(c, MapleInventoryType.ETC, 4000660, 1,
+                                                true, false)
+                                        && MapleInventoryManipulator.removeById(c, MapleInventoryType.ETC, 4000661, 1,
+                                                true, false)
+                                        && MapleInventoryManipulator.removeById(c, MapleInventoryType.ETC, 4000662, 1,
+                                                true, false)
+                                        && MapleInventoryManipulator.removeById(c, MapleInventoryType.ETC, 4000663, 1,
+                                                true, false)) {
+                                    MapleInventoryManipulator.addById(c, 4032923, (short) 1, "Scripted item: "
+                                            + toUse.getItemId() + " on " + FileoutputUtil.CurrentReadable_Date());
                                 } else {
                                     c.getPlayer().dropMessage(5, "Please make some space.");
                                 }
@@ -1119,10 +1261,12 @@ public class InventoryHandler {
                     }
                 }
                 case 2430130, 2430131 -> {
-                    //energy charge
+                    // energy charge
                     if (GameConstants.isResist(c.getPlayer().getJob())) {
                         MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
-                        c.getPlayer().gainExp(Math.round(20000 + (c.getPlayer().getLevel() * 50 * c.getChannelServer().getExpRate())), true, true, false);
+                        c.getPlayer().gainExp(
+                                Math.round(20000 + (c.getPlayer().getLevel() * 50 * c.getChannelServer().getExpRate())),
+                                true, true, false);
                     } else {
                         c.getPlayer().dropMessage(5, "You may not use this item.");
                     }
@@ -1134,22 +1278,28 @@ public class InventoryHandler {
                             case 3210:
                             case 3211:
                             case 3212:
-                                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
-                                MapleInventoryManipulator.addById(c, 1382101, (short) 1, "Scripted item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date());
+                                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1,
+                                        false);
+                                MapleInventoryManipulator.addById(c, 1382101, (short) 1,
+                                        "Scripted item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date());
                                 break;
                             case 3300:
                             case 3310:
                             case 3311:
                             case 3312:
-                                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
-                                MapleInventoryManipulator.addById(c, 1462093, (short) 1, "Scripted item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date());
+                                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1,
+                                        false);
+                                MapleInventoryManipulator.addById(c, 1462093, (short) 1,
+                                        "Scripted item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date());
                                 break;
                             case 3500:
                             case 3510:
                             case 3511:
                             case 3512:
-                                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
-                                MapleInventoryManipulator.addById(c, 1492080, (short) 1, "Scripted item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date());
+                                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1,
+                                        false);
+                                MapleInventoryManipulator.addById(c, 1492080, (short) 1,
+                                        "Scripted item: " + itemId + " on " + FileoutputUtil.CurrentReadable_Date());
                                 break;
                             default:
                                 c.getPlayer().dropMessage(5, "You may not use this item.");
@@ -1160,93 +1310,93 @@ public class InventoryHandler {
                     }
                 }
                 case 2430036 -> {
-                    //croco 1 day
+                    // croco 1 day
                     mountid = 1027;
                     expiration_days = 1;
                 }
                 case 2430170 -> {
-                    //croco 7 day
+                    // croco 7 day
                     mountid = 1027;
                     expiration_days = 7;
                 }
                 case 2430037 -> {
-                    //black scooter 1 day
+                    // black scooter 1 day
                     mountid = 1028;
                     expiration_days = 1;
                 }
-                case 2430038 -> //resistance box
+                case 2430038 -> // resistance box
                 {
-                    //pink scooter 1 day
+                    // pink scooter 1 day
                     mountid = 1029;
                     expiration_days = 1;
                 }
                 case 2430039 -> {
-                    //clouds 1 day
+                    // clouds 1 day
                     mountid = 1030;
                     expiration_days = 1;
                 }
                 case 2430040 -> {
-                    //balrog 1 day
+                    // balrog 1 day
                     mountid = 1031;
                     expiration_days = 1;
                 }
                 case 2430223 -> {
-                    //balrog 1 day
+                    // balrog 1 day
                     mountid = 1031;
                     expiration_days = 15;
                 }
                 case 2430259 -> {
-                    //balrog 1 day
+                    // balrog 1 day
                     mountid = 1031;
                     expiration_days = 3;
                 }
                 case 2430242 -> {
-                    //motorcycle
+                    // motorcycle
                     mountid = 80001018;
                     expiration_days = 10;
                 }
                 case 2430243 -> {
-                    //power suit
+                    // power suit
                     mountid = 80001019;
                     expiration_days = 10;
                 }
                 case 2430261 -> {
-                    //power suit
+                    // power suit
                     mountid = 80001019;
                     expiration_days = 3;
                 }
                 case 2430249 -> {
-                    //motorcycle
+                    // motorcycle
                     mountid = 80001027;
                     expiration_days = 3;
                 }
                 case 2430225 -> {
-                    //balrog 1 day
+                    // balrog 1 day
                     mountid = 1031;
                     expiration_days = 10;
                 }
                 case 2430053 -> {
-                    //croco 30 day
+                    // croco 30 day
                     mountid = 1027;
                     expiration_days = 1;
                 }
                 case 2430054 -> {
-                    //black scooter 30 day
+                    // black scooter 30 day
                     mountid = 1028;
                     expiration_days = 30;
                 }
                 case 2430055 -> {
-                    //pink scooter 30 day
+                    // pink scooter 30 day
                     mountid = 1029;
                     expiration_days = 30;
                 }
                 case 2430257 -> {
-                    //pink
+                    // pink
                     mountid = 1029;
                     expiration_days = 7;
                 }
                 case 2430056 -> {
-                    //mist rog 30 day
+                    // mist rog 30 day
                     mountid = 1035;
                     expiration_days = 30;
                 }
@@ -1255,669 +1405,669 @@ public class InventoryHandler {
                     expiration_days = 30;
                 }
                 case 2430072 -> {
-                    //ZD tiger 7 day
+                    // ZD tiger 7 day
                     mountid = 1034;
                     expiration_days = 7;
                 }
                 case 2430073 -> {
-                    //lion 15 day
+                    // lion 15 day
                     mountid = 1036;
                     expiration_days = 15;
                 }
                 case 2430074 -> {
-                    //unicorn 15 day
+                    // unicorn 15 day
                     mountid = 1037;
                     expiration_days = 15;
                 }
                 case 2430272 -> {
-                    //low rider 15 day
+                    // low rider 15 day
                     mountid = 1038;
                     expiration_days = 3;
                 }
                 case 2430275 -> {
-                    //spiegelmann
+                    // spiegelmann
                     mountid = 80001033;
                     expiration_days = 7;
                 }
                 case 2430075 -> {
-                    //low rider 15 day
+                    // low rider 15 day
                     mountid = 1038;
                     expiration_days = 15;
                 }
                 case 2430076 -> {
-                    //red truck 15 day
+                    // red truck 15 day
                     mountid = 1039;
                     expiration_days = 15;
                 }
                 case 2430077 -> {
-                    //gargoyle 15 day
+                    // gargoyle 15 day
                     mountid = 1040;
                     expiration_days = 15;
                 }
                 case 2430080 -> {
-                    //shinjo 20 day
+                    // shinjo 20 day
                     mountid = 1042;
                     expiration_days = 20;
                 }
                 case 2430082 -> {
-                    //orange mush 7 day
+                    // orange mush 7 day
                     mountid = 1044;
                     expiration_days = 7;
                 }
                 case 2430260 -> {
-                    //orange mush 7 day
+                    // orange mush 7 day
                     mountid = 1044;
                     expiration_days = 3;
                 }
                 case 2430091 -> {
-                    //nightmare 10 day
+                    // nightmare 10 day
                     mountid = 1049;
                     expiration_days = 10;
                 }
                 case 2430092 -> {
-                    //yeti 10 day
+                    // yeti 10 day
                     mountid = 1050;
                     expiration_days = 10;
                 }
                 case 2430263 -> {
-                    //yeti 10 day
+                    // yeti 10 day
                     mountid = 1050;
                     expiration_days = 3;
                 }
                 case 2430093 -> {
-                    //ostrich 10 day
+                    // ostrich 10 day
                     mountid = 1051;
                     expiration_days = 10;
                 }
                 case 2430101 -> {
-                    //pink bear 10 day
+                    // pink bear 10 day
                     mountid = 1052;
                     expiration_days = 10;
                 }
                 case 2430102 -> {
-                    //transformation robo 10 day
+                    // transformation robo 10 day
                     mountid = 1053;
                     expiration_days = 10;
                 }
                 case 2430103 -> {
-                    //chicken 30 day
+                    // chicken 30 day
                     mountid = 1054;
                     expiration_days = 30;
                 }
                 case 2430266 -> {
-                    //chicken 30 day
+                    // chicken 30 day
                     mountid = 1054;
                     expiration_days = 3;
                 }
                 case 2430265 -> {
-                    //chariot
+                    // chariot
                     mountid = 1151;
                     expiration_days = 3;
                 }
                 case 2430258 -> {
-                    //law officer
+                    // law officer
                     mountid = 1115;
                     expiration_days = 365;
                 }
                 case 2430117 -> {
-                    //lion 1 year
+                    // lion 1 year
                     mountid = 1036;
                     expiration_days = 365;
                 }
                 case 2430118 -> {
-                    //red truck 1 year
+                    // red truck 1 year
                     mountid = 1039;
                     expiration_days = 365;
                 }
                 case 2430119 -> {
-                    //gargoyle 1 year
+                    // gargoyle 1 year
                     mountid = 1040;
                     expiration_days = 365;
                 }
                 case 2430120 -> {
-                    //unicorn 1 year
+                    // unicorn 1 year
                     mountid = 1037;
                     expiration_days = 365;
                 }
                 case 2430271 -> {
-                    //owl 30 day
+                    // owl 30 day
                     mountid = 1069;
                     expiration_days = 3;
                 }
                 case 2430136 -> {
-                    //owl 30 day
+                    // owl 30 day
                     mountid = 1069;
                     expiration_days = 30;
                 }
                 case 2430137 -> {
-                    //owl 1 year
+                    // owl 1 year
                     mountid = 1069;
                     expiration_days = 365;
                 }
                 case 2430145 -> {
-                    //mothership
+                    // mothership
                     mountid = 1070;
                     expiration_days = 30;
                 }
                 case 2430146 -> {
-                    //mothership
+                    // mothership
                     mountid = 1070;
                     expiration_days = 365;
                 }
                 case 2430147 -> {
-                    //mothership
+                    // mothership
                     mountid = 1071;
                     expiration_days = 30;
                 }
                 case 2430148 -> {
-                    //mothership
+                    // mothership
                     mountid = 1071;
                     expiration_days = 365;
                 }
                 case 2430135 -> {
-                    //os4
+                    // os4
                     mountid = 1065;
                     expiration_days = 15;
                 }
                 case 2430149 -> {
-                    //leonardo 30 day
+                    // leonardo 30 day
                     mountid = 1072;
                     expiration_days = 30;
                 }
                 case 2430262 -> {
-                    //leonardo 30 day
+                    // leonardo 30 day
                     mountid = 1072;
                     expiration_days = 3;
                 }
                 case 2430179 -> {
-                    //witch 15 day
+                    // witch 15 day
                     mountid = 1081;
                     expiration_days = 15;
                 }
                 case 2430264 -> {
-                    //witch 15 day
+                    // witch 15 day
                     mountid = 1081;
                     expiration_days = 3;
                 }
                 case 2430201 -> {
-                    //giant bunny 60 day
+                    // giant bunny 60 day
                     mountid = 1096;
                     expiration_days = 60;
                 }
                 case 2430228 -> {
-                    //tiny bunny 60 day
+                    // tiny bunny 60 day
                     mountid = 1101;
                     expiration_days = 60;
                 }
                 case 2430276 -> {
-                    //tiny bunny 60 day
+                    // tiny bunny 60 day
                     mountid = 1101;
                     expiration_days = 15;
                 }
                 case 2430277 -> {
-                    //tiny bunny 60 day
+                    // tiny bunny 60 day
                     mountid = 1101;
                     expiration_days = 365;
                 }
                 case 2430283 -> {
-                    //trojan
+                    // trojan
                     mountid = 1025;
                     expiration_days = 10;
                 }
                 case 2430291 -> {
-                    //hot air
+                    // hot air
                     mountid = 1145;
                     expiration_days = -1;
                 }
                 case 2430293 -> {
-                    //nadeshiko
+                    // nadeshiko
                     mountid = 1146;
                     expiration_days = -1;
                 }
                 case 2430295 -> {
-                    //pegasus
+                    // pegasus
                     mountid = 1147;
                     expiration_days = -1;
                 }
                 case 2430297 -> {
-                    //dragon
+                    // dragon
                     mountid = 1148;
                     expiration_days = -1;
                 }
                 case 2430299 -> {
-                    //broom
+                    // broom
                     mountid = 1149;
                     expiration_days = -1;
                 }
                 case 2430301 -> {
-                    //cloud
+                    // cloud
                     mountid = 1150;
                     expiration_days = -1;
                 }
                 case 2430303 -> {
-                    //chariot
+                    // chariot
                     mountid = 1151;
                     expiration_days = -1;
                 }
                 case 2430305 -> {
-                    //nightmare
+                    // nightmare
                     mountid = 1152;
                     expiration_days = -1;
                 }
                 case 2430307 -> {
-                    //rog
+                    // rog
                     mountid = 1153;
                     expiration_days = -1;
                 }
                 case 2430309 -> {
-                    //mist rog
+                    // mist rog
                     mountid = 1154;
                     expiration_days = -1;
                 }
                 case 2430311 -> {
-                    //owl
+                    // owl
                     mountid = 1156;
                     expiration_days = -1;
                 }
                 case 2430313 -> {
-                    //helicopter
+                    // helicopter
                     mountid = 1156;
                     expiration_days = -1;
                 }
                 case 2430315 -> {
-                    //pentacle
+                    // pentacle
                     mountid = 1118;
                     expiration_days = -1;
                 }
                 case 2430317 -> {
-                    //frog
+                    // frog
                     mountid = 1121;
                     expiration_days = -1;
                 }
                 case 2430319 -> {
-                    //turtle
+                    // turtle
                     mountid = 1122;
                     expiration_days = -1;
                 }
                 case 2430321 -> {
-                    //buffalo
+                    // buffalo
                     mountid = 1123;
                     expiration_days = -1;
                 }
                 case 2430323 -> {
-                    //tank
+                    // tank
                     mountid = 1124;
                     expiration_days = -1;
                 }
                 case 2430325 -> {
-                    //viking
+                    // viking
                     mountid = 1129;
                     expiration_days = -1;
                 }
                 case 2430327 -> {
-                    //pachinko
+                    // pachinko
                     mountid = 1130;
                     expiration_days = -1;
                 }
                 case 2430329 -> {
-                    //kurenai
+                    // kurenai
                     mountid = 1063;
                     expiration_days = -1;
                 }
                 case 2430331 -> {
-                    //horse
+                    // horse
                     mountid = 1025;
                     expiration_days = -1;
                 }
                 case 2430333 -> {
-                    //tiger
+                    // tiger
                     mountid = 1034;
                     expiration_days = -1;
                 }
                 case 2430335 -> {
-                    //hyena
+                    // hyena
                     mountid = 1136;
                     expiration_days = -1;
                 }
                 case 2430337 -> {
-                    //ostrich
+                    // ostrich
                     mountid = 1051;
                     expiration_days = -1;
                 }
                 case 2430339 -> {
-                    //low rider
+                    // low rider
                     mountid = 1138;
                     expiration_days = -1;
                 }
                 case 2430341 -> {
-                    //napoleon
+                    // napoleon
                     mountid = 1139;
                     expiration_days = -1;
                 }
                 case 2430343 -> {
-                    //croking
+                    // croking
                     mountid = 1027;
                     expiration_days = -1;
                 }
                 case 2430346 -> {
-                    //lovely
+                    // lovely
                     mountid = 1029;
                     expiration_days = -1;
                 }
                 case 2430348 -> {
-                    //retro
+                    // retro
                     mountid = 1028;
                     expiration_days = -1;
                 }
                 case 2430350 -> {
-                    //f1
+                    // f1
                     mountid = 1033;
                     expiration_days = -1;
                 }
                 case 2430352 -> {
-                    //power suit
+                    // power suit
                     mountid = 1064;
                     expiration_days = -1;
                 }
                 case 2430354 -> {
-                    //giant rabbit
+                    // giant rabbit
                     mountid = 1096;
                     expiration_days = -1;
                 }
                 case 2430356 -> {
-                    //small rabit
+                    // small rabit
                     mountid = 1101;
                     expiration_days = -1;
                 }
                 case 2430358 -> {
-                    //rabbit rickshaw
+                    // rabbit rickshaw
                     mountid = 1102;
                     expiration_days = -1;
                 }
                 case 2430360 -> {
-                    //chicken
+                    // chicken
                     mountid = 1054;
                     expiration_days = -1;
                 }
                 case 2430362 -> {
-                    //transformer
+                    // transformer
                     mountid = 1053;
                     expiration_days = -1;
                 }
                 case 2430292 -> {
-                    //hot air
+                    // hot air
                     mountid = 1145;
                     expiration_days = 90;
                 }
                 case 2430294 -> {
-                    //nadeshiko
+                    // nadeshiko
                     mountid = 1146;
                     expiration_days = 90;
                 }
                 case 2430296 -> {
-                    //pegasus
+                    // pegasus
                     mountid = 1147;
                     expiration_days = 90;
                 }
                 case 2430298 -> {
-                    //dragon
+                    // dragon
                     mountid = 1148;
                     expiration_days = 90;
                 }
                 case 2430300 -> {
-                    //broom
+                    // broom
                     mountid = 1149;
                     expiration_days = 90;
                 }
                 case 2430302 -> {
-                    //cloud
+                    // cloud
                     mountid = 1150;
                     expiration_days = 90;
                 }
                 case 2430304 -> {
-                    //chariot
+                    // chariot
                     mountid = 1151;
                     expiration_days = 90;
                 }
                 case 2430306 -> {
-                    //nightmare
+                    // nightmare
                     mountid = 1152;
                     expiration_days = 90;
                 }
                 case 2430308 -> {
-                    //rog
+                    // rog
                     mountid = 1153;
                     expiration_days = 90;
                 }
                 case 2430310 -> {
-                    //mist rog
+                    // mist rog
                     mountid = 1154;
                     expiration_days = 90;
                 }
                 case 2430312 -> {
-                    //owl
+                    // owl
                     mountid = 1156;
                     expiration_days = 90;
                 }
                 case 2430314 -> {
-                    //helicopter
+                    // helicopter
                     mountid = 1156;
                     expiration_days = 90;
                 }
                 case 2430316 -> {
-                    //pentacle
+                    // pentacle
                     mountid = 1118;
                     expiration_days = 90;
                 }
                 case 2430318 -> {
-                    //frog
+                    // frog
                     mountid = 1121;
                     expiration_days = 90;
                 }
                 case 2430320 -> {
-                    //turtle
+                    // turtle
                     mountid = 1122;
                     expiration_days = 90;
                 }
                 case 2430322 -> {
-                    //buffalo
+                    // buffalo
                     mountid = 1123;
                     expiration_days = 90;
                 }
                 case 2430326 -> {
-                    //viking
+                    // viking
                     mountid = 1129;
                     expiration_days = 90;
                 }
                 case 2430328 -> {
-                    //pachinko
+                    // pachinko
                     mountid = 1130;
                     expiration_days = 90;
                 }
                 case 2430330 -> {
-                    //kurenai
+                    // kurenai
                     mountid = 1063;
                     expiration_days = 90;
                 }
                 case 2430332 -> {
-                    //horse
+                    // horse
                     mountid = 1025;
                     expiration_days = 90;
                 }
                 case 2430334 -> {
-                    //tiger
+                    // tiger
                     mountid = 1034;
                     expiration_days = 90;
                 }
                 case 2430336 -> {
-                    //hyena
+                    // hyena
                     mountid = 1136;
                     expiration_days = 90;
                 }
                 case 2430338 -> {
-                    //ostrich
+                    // ostrich
                     mountid = 1051;
                     expiration_days = 90;
                 }
                 case 2430340 -> {
-                    //low rider
+                    // low rider
                     mountid = 1138;
                     expiration_days = 90;
                 }
                 case 2430342 -> {
-                    //napoleon
+                    // napoleon
                     mountid = 1139;
                     expiration_days = 90;
                 }
                 case 2430344 -> {
-                    //croking
+                    // croking
                     mountid = 1027;
                     expiration_days = 90;
                 }
                 case 2430347 -> {
-                    //lovely
+                    // lovely
                     mountid = 1029;
                     expiration_days = 90;
                 }
                 case 2430349 -> {
-                    //retro
+                    // retro
                     mountid = 1028;
                     expiration_days = 90;
                 }
                 case 2430351 -> {
-                    //f1
+                    // f1
                     mountid = 1033;
                     expiration_days = 90;
                 }
                 case 2430353 -> {
-                    //power suit
+                    // power suit
                     mountid = 1064;
                     expiration_days = 90;
                 }
                 case 2430355 -> {
-                    //giant rabbit
+                    // giant rabbit
                     mountid = 1096;
                     expiration_days = 90;
                 }
                 case 2430357 -> {
-                    //small rabit
+                    // small rabit
                     mountid = 1101;
                     expiration_days = 90;
                 }
                 case 2430359 -> {
-                    //rabbit rickshaw
+                    // rabbit rickshaw
                     mountid = 1102;
                     expiration_days = 90;
                 }
                 case 2430361 -> {
-                    //chicken
+                    // chicken
                     mountid = 1054;
                     expiration_days = 90;
                 }
                 case 2430363 -> {
-                    //transformer
+                    // transformer
                     mountid = 1053;
                     expiration_days = 90;
                 }
                 case 2430324 -> {
-                    //high way
+                    // high way
                     mountid = 1158;
                     expiration_days = -1;
                 }
                 case 2430345 -> {
-                    //high way
+                    // high way
                     mountid = 1158;
                     expiration_days = 90;
                 }
                 case 2430367 -> {
-                    //law off
+                    // law off
                     mountid = 1115;
                     expiration_days = 3;
                 }
                 case 2430365 -> {
-                    //pony
+                    // pony
                     mountid = 1025;
                     expiration_days = 365;
                 }
                 case 2430366 -> {
-                    //pony
+                    // pony
                     mountid = 1025;
                     expiration_days = 15;
                 }
                 case 2430369 -> {
-                    //nightmare
+                    // nightmare
                     mountid = 1049;
                     expiration_days = 10;
                 }
                 case 2430392 -> {
-                    //speedy
+                    // speedy
                     mountid = 80001038;
                     expiration_days = 90;
                 }
                 case 2430476 -> {
-                    //red truck? but name is pegasus?
+                    // red truck? but name is pegasus?
                     mountid = 1039;
                     expiration_days = 15;
                 }
                 case 2430477 -> {
-                    //red truck? but name is pegasus?
+                    // red truck? but name is pegasus?
                     mountid = 1039;
                     expiration_days = 365;
                 }
                 case 2430232 -> {
-                    //fortune
+                    // fortune
                     mountid = 1106;
                     expiration_days = 10;
                 }
                 case 2430511 -> {
-                    //spiegel
+                    // spiegel
                     mountid = 80001033;
                     expiration_days = 15;
                 }
                 case 2430512 -> {
-                    //rspiegel
+                    // rspiegel
                     mountid = 80001033;
                     expiration_days = 365;
                 }
                 case 2430536 -> {
-                    //buddy buggy
+                    // buddy buggy
                     mountid = 80001114;
                     expiration_days = 365;
                 }
                 case 2430537 -> {
-                    //buddy buggy
+                    // buddy buggy
                     mountid = 80001114;
                     expiration_days = 15;
                 }
                 case 2430229 -> {
-                    //bunny rickshaw 60 day
+                    // bunny rickshaw 60 day
                     mountid = 1102;
                     expiration_days = 60;
                 }
                 case 2430199 -> {
-                    //santa sled
+                    // santa sled
                     mountid = 1102;
                     expiration_days = 60;
                 }
                 case 2430206 -> {
-                    //race
+                    // race
                     mountid = 1089;
                     expiration_days = 7;
                 }
                 case 2430211 -> {
-                    //race
+                    // race
                     mountid = 80001009;
                     expiration_days = 30;
                 }
                 default -> System.out.println("New scripted item : " + toUse.getItemId());
             }
-            //energy drink
-            //resistance box
-                    }
+            // energy drink
+            // resistance box
+        }
         if (mountid > 0) {
             mountid = PlayerStats.getSkillByJob(mountid, c.getPlayer().getJob());
             final int fk = GameConstants.getMountItem(mountid, c.getPlayer());
-            if (GameConstants.GMS && fk > 0 && mountid < 80001000) { //TODO JUMP
+            if (GameConstants.GMS && fk > 0 && mountid < 80001000) { // TODO JUMP
                 for (int i = 80001001; i < 80001999; i++) {
                     final Skill skill = SkillFactory.getSkill(i);
                     if (skill != null && GameConstants.getMountItem(skill.getId(), c.getPlayer()) == fk) {
@@ -1928,18 +2078,21 @@ public class InventoryHandler {
             }
             if (c.getPlayer().getSkillLevel(mountid) > 0) {
                 c.getPlayer().dropMessage(5, "You already have this skill.");
-            } else if (SkillFactory.getSkill(mountid) == null || GameConstants.getMountItem(mountid, c.getPlayer()) == 0) {
+            } else if (SkillFactory.getSkill(mountid) == null
+                    || GameConstants.getMountItem(mountid, c.getPlayer()) == 0) {
                 c.getPlayer().dropMessage(5, "The skill could not be gained.");
             } else if (expiration_days > 0) {
                 MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
-                c.getPlayer().changeSingleSkillLevel(SkillFactory.getSkill(mountid), (byte) 1, (byte) 1, System.currentTimeMillis() + (long) (expiration_days * 24 * 60 * 60 * 1000));
+                c.getPlayer().changeSingleSkillLevel(SkillFactory.getSkill(mountid), (byte) 1, (byte) 1,
+                        System.currentTimeMillis() + (long) (expiration_days * 24 * 60 * 60 * 1000));
                 c.getPlayer().dropMessage(5, "The skill has been attained.");
             }
         }
         c.getSession().write(CWvsContext.enableActions());
     }
 
-    public static final void UseSummonBag(final LittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
+    public static final void UseSummonBag(final LittleEndianAccessor slea, final MapleClient c,
+            final MapleCharacter chr) {
         if (!chr.isAlive() || chr.hasBlockedInventory() || chr.inPVP()) {
             c.getSession().write(CWvsContext.enableActions());
             return;
@@ -1949,7 +2102,8 @@ public class InventoryHandler {
         final int itemId = slea.readInt();
         final Item toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
 
-        if (toUse != null && toUse.getQuantity() >= 1 && toUse.getItemId() == itemId && (c.getPlayer().getMapId() < 910000000 || c.getPlayer().getMapId() > 910000022)) {
+        if (toUse != null && toUse.getQuantity() >= 1 && toUse.getItemId() == itemId
+                && (c.getPlayer().getMapId() < 910000000 || c.getPlayer().getMapId() > 910000022)) {
             final Map<String, Integer> toSpawn = MapleItemInformationProvider.getInstance().getEquipStats(itemId);
 
             if (toSpawn == null) {
@@ -1974,7 +2128,8 @@ public class InventoryHandler {
         c.getSession().write(CWvsContext.enableActions());
     }
 
-    public static final void UseTreasureChest(final LittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
+    public static final void UseTreasureChest(final LittleEndianAccessor slea, final MapleClient c,
+            final MapleCharacter chr) {
         final short slot = slea.readShort();
         final int itemid = slea.readInt();
 
@@ -2020,7 +2175,8 @@ public class InventoryHandler {
             final Item item = MapleInventoryManipulator.addbyId_Gachapon(c, reward, (short) amount);
 
             if (item == null) {
-                chr.dropMessage(5, "Please check your item inventory and see if you have a Master Key, or if the inventory is full.");
+                chr.dropMessage(5,
+                        "Please check your item inventory and see if you have a Master Key, or if the inventory is full.");
                 c.getSession().write(CWvsContext.enableActions());
                 return;
             }
@@ -2029,10 +2185,12 @@ public class InventoryHandler {
             c.getSession().write(InfoPacket.getShowItemGain(reward, (short) amount, true));
 
             if (GameConstants.gachaponRareItem(item.getItemId()) > 0) {
-                World.Broadcast.broadcastSmega(CWvsContext.getGachaponMega(c.getPlayer().getName(), " : got a(n)", item, (byte) 2, "[" + box + " Chest]"));
+                World.Broadcast.broadcastSmega(CWvsContext.getGachaponMega(c.getPlayer().getName(), " : got a(n)", item,
+                        (byte) 2, "[" + box + " Chest]"));
             }
         } else {
-            chr.dropMessage(5, "Please check your item inventory and see if you have a Master Key, or if the inventory is full.");
+            chr.dropMessage(5,
+                    "Please check your item inventory and see if you have a Master Key, or if the inventory is full.");
             c.getSession().write(CWvsContext.enableActions());
         }
     }
@@ -2048,7 +2206,8 @@ public class InventoryHandler {
         final int itemId = slea.readInt();
 
         final Item toUse = c.getPlayer().getInventory(MapleInventoryType.CASH).getItem(slot);
-        if (toUse == null || toUse.getItemId() != itemId || toUse.getQuantity() < 1 || c.getPlayer().hasBlockedInventory()) {
+        if (toUse == null || toUse.getItemId() != itemId || toUse.getQuantity() < 1
+                || c.getPlayer().hasBlockedInventory()) {
             c.getSession().write(CWvsContext.enableActions());
             return;
         }
@@ -2067,7 +2226,10 @@ public class InventoryHandler {
                     final int mapId = MapleLifeFactory.getNPCLocation(npcid);
                     if (mapId != -1) {
                         final MapleMap map = c.getChannelServer().getMapFactory().getMap(mapId);
-                        if (map.containsNPC(npcid) && !FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) && !FieldLimitType.VipRock.check(map.getFieldLimit()) && !c.getPlayer().isInBlockedMap()) {
+                        if (map.containsNPC(npcid)
+                                && !FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit())
+                                && !FieldLimitType.VipRock.check(map.getFieldLimit())
+                                && !c.getPlayer().isInBlockedMap()) {
                             c.getPlayer().changeMap(map, map.getPortal(0));
                         }
                         used = true;
@@ -2076,7 +2238,7 @@ public class InventoryHandler {
                     }
                 }
             }
-            case 5041001, 5040004, 5040003, 5040002, 2320000, 5041000, 5040000, 5040001 ->  { // Teleport Coke
+            case 5041001, 5040004, 5040003, 5040002, 2320000, 5041000, 5040000, 5040001 -> { // Teleport Coke
                 used = UseTeleRock(slea, c, itemId);
             }
             case 5450005 -> {
@@ -2129,19 +2291,24 @@ public class InventoryHandler {
                 switch (apfrom) { // AP to
                     case 64 -> {
                         // str
-                        if (playerst.getStr() <= 4 || (c.getPlayer().getJob() % 1000 / 100 == 1 && playerst.getStr() <= 35)) {
+                        if (playerst.getStr() <= 4
+                                || (c.getPlayer().getJob() % 1000 / 100 == 1 && playerst.getStr() <= 35)) {
                             used = false;
                         }
                     }
                     case 128 -> {
                         // dex
-                        if (playerst.getDex() <= 4 || (c.getPlayer().getJob() % 1000 / 100 == 3 && playerst.getDex() <= 25) || (c.getPlayer().getJob() % 1000 / 100 == 4 && playerst.getDex() <= 25) || (c.getPlayer().getJob() % 1000 / 100 == 5 && playerst.getDex() <= 20)) {
+                        if (playerst.getDex() <= 4
+                                || (c.getPlayer().getJob() % 1000 / 100 == 3 && playerst.getDex() <= 25)
+                                || (c.getPlayer().getJob() % 1000 / 100 == 4 && playerst.getDex() <= 25)
+                                || (c.getPlayer().getJob() % 1000 / 100 == 5 && playerst.getDex() <= 20)) {
                             used = false;
                         }
                     }
                     case 256 -> {
                         // int
-                        if (playerst.getInt() <= 4 || (c.getPlayer().getJob() % 1000 / 100 == 2 && playerst.getInt() <= 20)) {
+                        if (playerst.getInt() <= 4
+                                || (c.getPlayer().getJob() % 1000 / 100 == 2 && playerst.getInt() <= 20)) {
                             used = false;
                         }
                     }
@@ -2153,14 +2320,16 @@ public class InventoryHandler {
                     }
                     case 2048 -> {
                         // hp
-                        if (/*playerst.getMaxMp() < ((c.getPlayer().getLevel() * 14) + 134) || */c.getPlayer().getHpApUsed() <= 0 || c.getPlayer().getHpApUsed() >= 10000) {
+                        if (/* playerst.getMaxMp() < ((c.getPlayer().getLevel() * 14) + 134) || */c.getPlayer()
+                                .getHpApUsed() <= 0 || c.getPlayer().getHpApUsed() >= 10000) {
                             used = false;
                             c.getPlayer().dropMessage(1, "You need points in HP or MP in order to take points out.");
                         }
                     }
                     case 8192 -> {
                         // mp
-                        if (/*playerst.getMaxMp() < ((c.getPlayer().getLevel() * 14) + 134) || */c.getPlayer().getHpApUsed() <= 0 || c.getPlayer().getHpApUsed() >= 10000) {
+                        if (/* playerst.getMaxMp() < ((c.getPlayer().getLevel() * 14) + 134) || */c.getPlayer()
+                                .getHpApUsed() <= 0 || c.getPlayer().getHpApUsed() >= 10000) {
                             used = false;
                             c.getPlayer().dropMessage(1, "You need points in HP or MP in order to take points out.");
                         }
@@ -2169,22 +2338,22 @@ public class InventoryHandler {
                 // AP to
                 if (used) {
                     switch (apto) { // AP to
-                        case 64 ->  { // str
+                        case 64 -> { // str
                             final int toSet = playerst.getStr() + 1;
                             playerst.setStr((short) toSet, c.getPlayer());
                             statupdate.put(MapleStat.STR, toSet);
                         }
-                        case 128 ->  { // dex
+                        case 128 -> { // dex
                             final int toSet = playerst.getDex() + 1;
                             playerst.setDex((short) toSet, c.getPlayer());
                             statupdate.put(MapleStat.DEX, toSet);
                         }
-                        case 256 ->  { // int
+                        case 256 -> { // int
                             final int toSet = playerst.getInt() + 1;
                             playerst.setInt((short) toSet, c.getPlayer());
                             statupdate.put(MapleStat.INT, toSet);
                         }
-                        case 512 ->  { // luk
+                        case 512 -> { // luk
                             final int toSet = playerst.getLuk() + 1;
                             playerst.setLuk((short) toSet, c.getPlayer());
                             statupdate.put(MapleStat.LUK, toSet);
@@ -2194,11 +2363,15 @@ public class InventoryHandler {
                             int maxhp = playerst.getMaxHp();
                             if (GameConstants.isBeginnerJob(job)) { // Beginner
                                 maxhp += Randomizer.rand(4, 8);
-                            } else if ((job >= 100 && job <= 132) || (job >= 3200 && job <= 3212) || (job >= 1100 && job <= 1112) || (job >= 3100 && job <= 3112)) { // Warrior
+                            } else if ((job >= 100 && job <= 132) || (job >= 3200 && job <= 3212)
+                                    || (job >= 1100 && job <= 1112) || (job >= 3100 && job <= 3112)) { // Warrior
                                 maxhp += Randomizer.rand(36, 42);
-                            } else if ((job >= 200 && job <= 232) || (GameConstants.isEvan(job)) || (job >= 1200 && job <= 1212)) { // Magician
+                            } else if ((job >= 200 && job <= 232) || (GameConstants.isEvan(job))
+                                    || (job >= 1200 && job <= 1212)) { // Magician
                                 maxhp += Randomizer.rand(10, 12);
-                            } else if ((job >= 300 && job <= 322) || (job >= 400 && job <= 434) || (job >= 1300 && job <= 1312) || (job >= 1400 && job <= 1412) || (job >= 3300 && job <= 3312) || (job >= 2300 && job <= 2312)) { // Bowman
+                            } else if ((job >= 300 && job <= 322) || (job >= 400 && job <= 434)
+                                    || (job >= 1300 && job <= 1312) || (job >= 1400 && job <= 1412)
+                                    || (job >= 3300 && job <= 3312) || (job >= 2300 && job <= 2312)) { // Bowman
                                 maxhp += Randomizer.rand(14, 18);
                             } else if ((job >= 510 && job <= 512) || (job >= 1510 && job <= 1512)) {
                                 maxhp += Randomizer.rand(24, 28);
@@ -2223,11 +2396,17 @@ public class InventoryHandler {
                                 maxmp += Randomizer.rand(6, 8);
                             } else if (job >= 3100 && job <= 3112) {
                                 break;
-                            } else if ((job >= 100 && job <= 132) || (job >= 1100 && job <= 1112) || (job >= 2000 && job <= 2112)) { // Warrior
+                            } else if ((job >= 100 && job <= 132) || (job >= 1100 && job <= 1112)
+                                    || (job >= 2000 && job <= 2112)) { // Warrior
                                 maxmp += Randomizer.rand(4, 9);
-                            } else if ((job >= 200 && job <= 232) || (GameConstants.isEvan(job)) || (job >= 3200 && job <= 3212) || (job >= 1200 && job <= 1212)) { // Magician
+                            } else if ((job >= 200 && job <= 232) || (GameConstants.isEvan(job))
+                                    || (job >= 3200 && job <= 3212) || (job >= 1200 && job <= 1212)) { // Magician
                                 maxmp += Randomizer.rand(32, 36);
-                            } else if ((job >= 300 && job <= 322) || (job >= 400 && job <= 434) || (job >= 500 && job <= 532) || (job >= 3200 && job <= 3212) || (job >= 3500 && job <= 3512) || (job >= 1300 && job <= 1312) || (job >= 1400 && job <= 1412) || (job >= 1500 && job <= 1512) || (job >= 2300 && job <= 2312)) { // Bowman
+                            } else if ((job >= 300 && job <= 322) || (job >= 400 && job <= 434)
+                                    || (job >= 500 && job <= 532) || (job >= 3200 && job <= 3212)
+                                    || (job >= 3500 && job <= 3512) || (job >= 1300 && job <= 1312)
+                                    || (job >= 1400 && job <= 1412) || (job >= 1500 && job <= 1512)
+                                    || (job >= 2300 && job <= 2312)) { // Bowman
                                 maxmp += Randomizer.rand(8, 10);
                             } else { // GameMaster
                                 maxmp += Randomizer.rand(50, 100);
@@ -2270,11 +2449,15 @@ public class InventoryHandler {
                                 maxhp -= 12;
                             } else if ((job >= 200 && job <= 232) || (job >= 1200 && job <= 1212)) { // Magician
                                 maxhp -= 10;
-                            } else if ((job >= 300 && job <= 322) || (job >= 400 && job <= 434) || (job >= 1300 && job <= 1312) || (job >= 1400 && job <= 1412) || (job >= 3300 && job <= 3312) || (job >= 3500 && job <= 3512) || (job >= 2300 && job <= 2312)) { // Bowman, Thief
+                            } else if ((job >= 300 && job <= 322) || (job >= 400 && job <= 434)
+                                    || (job >= 1300 && job <= 1312) || (job >= 1400 && job <= 1412)
+                                    || (job >= 3300 && job <= 3312) || (job >= 3500 && job <= 3512)
+                                    || (job >= 2300 && job <= 2312)) { // Bowman, Thief
                                 maxhp -= 15;
                             } else if ((job >= 500 && job <= 532) || (job >= 1500 && job <= 1512)) { // Pirate
                                 maxhp -= 22;
-                            } else if (((job >= 100 && job <= 132) || job >= 1100 && job <= 1112) || (job >= 3100 && job <= 3112)) { // Soul Master
+                            } else if (((job >= 100 && job <= 132) || job >= 1100 && job <= 1112)
+                                    || (job >= 3100 && job <= 3112)) { // Soul Master
                                 maxhp -= 32;
                             } else if ((job >= 2000 && job <= 2112) || (job >= 3200 && job <= 3212)) { // Aran
                                 maxhp -= 40;
@@ -2295,7 +2478,11 @@ public class InventoryHandler {
                                 maxmp -= 4;
                             } else if ((job >= 200 && job <= 232) || (job >= 1200 && job <= 1212)) { // Magician
                                 maxmp -= 30;
-                            } else if ((job >= 500 && job <= 532) || (job >= 300 && job <= 322) || (job >= 400 && job <= 434) || (job >= 1300 && job <= 1312) || (job >= 1400 && job <= 1412) || (job >= 1500 && job <= 1512) || (job >= 3300 && job <= 3312) || (job >= 3500 && job <= 3512) || (job >= 2300 && job <= 2312)) { // Pirate, Bowman. Thief
+                            } else if ((job >= 500 && job <= 532) || (job >= 300 && job <= 322)
+                                    || (job >= 400 && job <= 434) || (job >= 1300 && job <= 1312)
+                                    || (job >= 1400 && job <= 1412) || (job >= 1500 && job <= 1512)
+                                    || (job >= 3300 && job <= 3312) || (job >= 3500 && job <= 3512)
+                                    || (job >= 2300 && job <= 2312)) { // Pirate, Bowman. Thief
                                 maxmp -= 10;
                             } else if (job >= 2000 && job <= 2112) { // Aran
                                 maxmp -= 5;
@@ -2311,28 +2498,33 @@ public class InventoryHandler {
                 }
             }
             case 5220083 -> {
-                //starter pack
+                // starter pack
                 used = true;
-                MapleItemInformationProvider.getInstance().getFamiliars().entrySet().stream().filter(f -> (f.getValue().itemid == 2870055 || f.getValue().itemid == 2871002 || f.getValue().itemid == 2870235 || f.getValue().itemid == 2870019)).map(f -> {
-                    MonsterFamiliar mf = c.getPlayer().getFamiliars().get(f.getKey());
-                    if (mf != null) {
-                        if (mf.getVitality() >= 3) {
-                            mf.setExpiry((long) Math.min(System.currentTimeMillis() + 90 * 24 * 60 * 60000L, mf.getExpiry() + 30 * 24 * 60 * 60000L));
-                        } else {
-                            mf.setVitality(mf.getVitality() + 1);
-                            mf.setExpiry((long) (mf.getExpiry() + 30 * 24 * 60 * 60000L));
-                        }
-                    } else {
-                        mf = new MonsterFamiliar(c.getPlayer().getId(), f.getKey(), (long) (System.currentTimeMillis() + 30 * 24 * 60 * 60000L));
-                        c.getPlayer().getFamiliars().put(f.getKey(), mf);
-                    }
-                    return mf;
-                }).forEachOrdered(mf -> {
-                    c.getSession().write(CField.registerFamiliar(mf));
-                });
+                MapleItemInformationProvider.getInstance().getFamiliars().entrySet().stream()
+                        .filter(f -> (f.getValue().itemid == 2870055 || f.getValue().itemid == 2871002
+                                || f.getValue().itemid == 2870235 || f.getValue().itemid == 2870019))
+                        .map(f -> {
+                            MonsterFamiliar mf = c.getPlayer().getFamiliars().get(f.getKey());
+                            if (mf != null) {
+                                if (mf.getVitality() >= 3) {
+                                    mf.setExpiry((long) Math.min(System.currentTimeMillis() + 90 * 24 * 60 * 60000L,
+                                            mf.getExpiry() + 30 * 24 * 60 * 60000L));
+                                } else {
+                                    mf.setVitality(mf.getVitality() + 1);
+                                    mf.setExpiry((long) (mf.getExpiry() + 30 * 24 * 60 * 60000L));
+                                }
+                            } else {
+                                mf = new MonsterFamiliar(c.getPlayer().getId(), f.getKey(),
+                                        (long) (System.currentTimeMillis() + 30 * 24 * 60 * 60000L));
+                                c.getPlayer().getFamiliars().put(f.getKey(), mf);
+                            }
+                            return mf;
+                        }).forEachOrdered(mf -> {
+                            c.getSession().write(CField.registerFamiliar(mf));
+                        });
             }
             case 5220084 -> {
-                //booster pack
+                // booster pack
                 if (c.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() < 3) {
                     c.getPlayer().dropMessage(5, "Make 3 USE space.");
                 }
@@ -2343,10 +2535,13 @@ public class InventoryHandler {
                         if (familiars[i] > 0) {
                             continue;
                         }
-                        for (Map.Entry<Integer, StructFamiliar> f : MapleItemInformationProvider.getInstance().getFamiliars().entrySet()) {
-                            if (Randomizer.nextInt(500) == 0 && ((i < 2 && f.getValue().grade == 0 || (i == 2 && f.getValue().grade != 0)))) {
+                        for (Map.Entry<Integer, StructFamiliar> f : MapleItemInformationProvider.getInstance()
+                                .getFamiliars().entrySet()) {
+                            if (Randomizer.nextInt(500) == 0
+                                    && ((i < 2 && f.getValue().grade == 0 || (i == 2 && f.getValue().grade != 0)))) {
                                 MapleInventoryManipulator.addById(c, f.getValue().itemid, (short) 1, "Booster Pack");
-                                //c.getSession().write(CField.getBoosterFamiliar(c.getPlayer().getId(), f.getKey(), 0));
+                                // c.getSession().write(CField.getBoosterFamiliar(c.getPlayer().getId(),
+                                // f.getKey(), 0));
                                 familiars[i] = f.getValue().itemid;
                                 break;
                             }
@@ -2364,10 +2559,10 @@ public class InventoryHandler {
             {
                 if (itemId >= 5050005 && !GameConstants.isEvan(c.getPlayer().getJob())) {
                     c.getPlayer().dropMessage(1, "This reset is only for Evans.");
-                } //well i dont really care other than this o.o
+                } // well i dont really care other than this o.o
                 if (itemId < 5050005 && GameConstants.isEvan(c.getPlayer().getJob())) {
                     c.getPlayer().dropMessage(1, "This reset is only for non-Evans.");
-                } //well i dont really care other than this o.o
+                } // well i dont really care other than this o.o
                 int skill1 = slea.readInt();
                 int skill2 = slea.readInt();
                 for (int i : GameConstants.blockedSkills) {
@@ -2382,19 +2577,25 @@ public class InventoryHandler {
                     c.getPlayer().dropMessage(1, "You may not add beginner skills.");
                 }
                 if (GameConstants.getSkillBookForSkill(skill1) != GameConstants.getSkillBookForSkill(skill2)) {
-                    //resistance evan
+                    // resistance evan
                     c.getPlayer().dropMessage(1, "You may not add different job skills.");
                 }
-                //if (GameConstants.getJobNumber(skill1 / 10000) > GameConstants.getJobNumber(skill2 / 10000)) { //putting 3rd job skillpoints into 4th job for example
-                //    c.getPlayer().dropMessage(1, "You may not add skillpoints to a higher job.");
-                //    break;
-                //}
-                if ((c.getPlayer().getSkillLevel(skillSPTo) + 1 <= skillSPTo.getMaxLevel()) && c.getPlayer().getSkillLevel(skillSPFrom) > 0 && skillSPTo.canBeLearnedBy(c.getPlayer().getJob())) {
-                    if (skillSPTo.isFourthJob() && (c.getPlayer().getSkillLevel(skillSPTo) + 1 > c.getPlayer().getMasterLevel(skillSPTo))) {
+                // if (GameConstants.getJobNumber(skill1 / 10000) >
+                // GameConstants.getJobNumber(skill2 / 10000)) { //putting 3rd job skillpoints
+                // into 4th job for example
+                // c.getPlayer().dropMessage(1, "You may not add skillpoints to a higher job.");
+                // break;
+                // }
+                if ((c.getPlayer().getSkillLevel(skillSPTo) + 1 <= skillSPTo.getMaxLevel())
+                        && c.getPlayer().getSkillLevel(skillSPFrom) > 0
+                        && skillSPTo.canBeLearnedBy(c.getPlayer().getJob())) {
+                    if (skillSPTo.isFourthJob()
+                            && (c.getPlayer().getSkillLevel(skillSPTo) + 1 > c.getPlayer().getMasterLevel(skillSPTo))) {
                         c.getPlayer().dropMessage(1, "You will exceed the master level.");
                     }
                     if (itemId >= 5050005) {
-                        if (GameConstants.getSkillBookForSkill(skill1) != (itemId - 5050005) * 2 && GameConstants.getSkillBookForSkill(skill1) != (itemId - 5050005) * 2 + 1) {
+                        if (GameConstants.getSkillBookForSkill(skill1) != (itemId - 5050005) * 2
+                                && GameConstants.getSkillBookForSkill(skill1) != (itemId - 5050005) * 2 + 1) {
                             c.getPlayer().dropMessage(1, "You may not add this job SP using this reset.");
                         }
                     } else {
@@ -2406,13 +2607,16 @@ public class InventoryHandler {
                             case 434 -> theJob = 4;
                         }
                         if (theJob != itemId - 5050000) {
-                            //you may only subtract from the skill if the ID matches Sp reset
-                            c.getPlayer().dropMessage(1, "You may not subtract from this skill. Use the appropriate SP reset.");
+                            // you may only subtract from the skill if the ID matches Sp reset
+                            c.getPlayer().dropMessage(1,
+                                    "You may not subtract from this skill. Use the appropriate SP reset.");
                         }
                     }
                     final Map<Skill, SkillEntry> sa = new HashMap<>();
-                    sa.put(skillSPFrom, new SkillEntry((byte) (c.getPlayer().getSkillLevel(skillSPFrom) - 1), c.getPlayer().getMasterLevel(skillSPFrom), SkillFactory.getDefaultSExpiry(skillSPFrom)));
-                    sa.put(skillSPTo, new SkillEntry((byte) (c.getPlayer().getSkillLevel(skillSPTo) + 1), c.getPlayer().getMasterLevel(skillSPTo), SkillFactory.getDefaultSExpiry(skillSPTo)));
+                    sa.put(skillSPFrom, new SkillEntry((byte) (c.getPlayer().getSkillLevel(skillSPFrom) - 1),
+                            c.getPlayer().getMasterLevel(skillSPFrom), SkillFactory.getDefaultSExpiry(skillSPFrom)));
+                    sa.put(skillSPTo, new SkillEntry((byte) (c.getPlayer().getSkillLevel(skillSPTo) + 1),
+                            c.getPlayer().getMasterLevel(skillSPTo), SkillFactory.getDefaultSExpiry(skillSPTo)));
                     c.getPlayer().changeSkillsLevel(sa);
                     used = true;
                 }
@@ -2423,7 +2627,9 @@ public class InventoryHandler {
                 final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(slea.readShort());
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 final int days = 1;
-                if (item != null && !GameConstants.isAccessory(item.getItemId()) && item.getExpiration() > -1 && !ii.isCash(item.getItemId()) && System.currentTimeMillis() + (100 * 24 * 60 * 60 * 1000L) > item.getExpiration() + (days * 24 * 60 * 60 * 1000L)) {
+                if (item != null && !GameConstants.isAccessory(item.getItemId()) && item.getExpiration() > -1
+                        && !ii.isCash(item.getItemId()) && System.currentTimeMillis()
+                                + (100 * 24 * 60 * 60 * 1000L) > item.getExpiration() + (days * 24 * 60 * 60 * 1000L)) {
                     boolean change = true;
                     for (String z : GameConstants.RESERVED) {
                         if (c.getPlayer().getName().indexOf(z) != -1 || item.getOwner().indexOf(z) != -1) {
@@ -2445,7 +2651,9 @@ public class InventoryHandler {
                 final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(slea.readShort());
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 final int days = 7;
-                if (item != null && !GameConstants.isAccessory(item.getItemId()) && item.getExpiration() > -1 && !ii.isCash(item.getItemId()) && System.currentTimeMillis() + (100 * 24 * 60 * 60 * 1000L) > item.getExpiration() + (days * 24 * 60 * 60 * 1000L)) {
+                if (item != null && !GameConstants.isAccessory(item.getItemId()) && item.getExpiration() > -1
+                        && !ii.isCash(item.getItemId()) && System.currentTimeMillis()
+                                + (100 * 24 * 60 * 60 * 1000L) > item.getExpiration() + (days * 24 * 60 * 60 * 1000L)) {
                     boolean change = true;
                     for (String z : GameConstants.RESERVED) {
                         if (c.getPlayer().getName().indexOf(z) != -1 || item.getOwner().indexOf(z) != -1) {
@@ -2461,11 +2669,13 @@ public class InventoryHandler {
                     }
                 }
             }
-            case 5500002 ->  { // Magic Hourglass 20 day
+            case 5500002 -> { // Magic Hourglass 20 day
                 final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(slea.readShort());
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 final int days = 20;
-                if (item != null && !GameConstants.isAccessory(item.getItemId()) && item.getExpiration() > -1 && !ii.isCash(item.getItemId()) && System.currentTimeMillis() + (100 * 24 * 60 * 60 * 1000L) > item.getExpiration() + (days * 24 * 60 * 60 * 1000L)) {
+                if (item != null && !GameConstants.isAccessory(item.getItemId()) && item.getExpiration() > -1
+                        && !ii.isCash(item.getItemId()) && System.currentTimeMillis()
+                                + (100 * 24 * 60 * 60 * 1000L) > item.getExpiration() + (days * 24 * 60 * 60 * 1000L)) {
                     boolean change = true;
                     for (String z : GameConstants.RESERVED) {
                         if (c.getPlayer().getName().indexOf(z) != -1 || item.getOwner().indexOf(z) != -1) {
@@ -2481,12 +2691,14 @@ public class InventoryHandler {
                     }
                 }
             }
-            case 5500005 ->  {
+            case 5500005 -> {
                 // Magic Hourglass 50 day
                 final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(slea.readShort());
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 final int days = 50;
-                if (item != null && !GameConstants.isAccessory(item.getItemId()) && item.getExpiration() > -1 && !ii.isCash(item.getItemId()) && System.currentTimeMillis() + (100 * 24 * 60 * 60 * 1000L) > item.getExpiration() + (days * 24 * 60 * 60 * 1000L)) {
+                if (item != null && !GameConstants.isAccessory(item.getItemId()) && item.getExpiration() > -1
+                        && !ii.isCash(item.getItemId()) && System.currentTimeMillis()
+                                + (100 * 24 * 60 * 60 * 1000L) > item.getExpiration() + (days * 24 * 60 * 60 * 1000L)) {
                     boolean change = true;
                     for (String z : GameConstants.RESERVED) {
                         if (c.getPlayer().getName().contains(z) || item.getOwner().contains(z)) {
@@ -2502,11 +2714,13 @@ public class InventoryHandler {
                     }
                 }
             }
-            case 5500006 ->  { // Magic Hourglass 99 day
+            case 5500006 -> { // Magic Hourglass 99 day
                 final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(slea.readShort());
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 final int days = 99;
-                if (item != null && !GameConstants.isAccessory(item.getItemId()) && item.getExpiration() > -1 && !ii.isCash(item.getItemId()) && System.currentTimeMillis() + (100 * 24 * 60 * 60 * 1000L) > item.getExpiration() + (days * 24 * 60 * 60 * 1000L)) {
+                if (item != null && !GameConstants.isAccessory(item.getItemId()) && item.getExpiration() > -1
+                        && !ii.isCash(item.getItemId()) && System.currentTimeMillis()
+                                + (100 * 24 * 60 * 60 * 1000L) > item.getExpiration() + (days * 24 * 60 * 60 * 1000L)) {
                     boolean change = true;
                     for (String z : GameConstants.RESERVED) {
                         if (c.getPlayer().getName().contains(z) || item.getOwner().contains(z)) {
@@ -2522,7 +2736,7 @@ public class InventoryHandler {
                     }
                 }
             }
-            case 5060000 ->  {// Item Tag
+            case 5060000 -> {// Item Tag
                 final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(slea.readShort());
                 if (item != null && item.getOwner().equals("")) {
                     boolean change = true;
@@ -2538,20 +2752,22 @@ public class InventoryHandler {
                     }
                 }
             }
-            case 5680015 ->  {if (c.getPlayer().getFatigue() > 0) {
-                c.getPlayer().setFatigue(0);
-                used = true;
-            }
+            case 5680015 -> {
+                if (c.getPlayer().getFatigue() > 0) {
+                    c.getPlayer().setFatigue(0);
+                    used = true;
+                }
             }
             case 5534000 -> // SP Reset (1st job)
             {
-                //tims lab
+                // tims lab
                 final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem((byte) slea.readInt());
                 if (item != null) {
                     final Equip eq = (Equip) item;
                     if (eq.getState() == 0) {
                         eq.resetPotential();
-                        c.getPlayer().getMap().broadcastMessage(CField.showPotentialReset(false, c.getPlayer().getId(), true, itemId));
+                        c.getPlayer().getMap().broadcastMessage(
+                                CField.showPotentialReset(false, c.getPlayer().getId(), true, itemId));
                         c.getSession().write(InventoryPacket.scrolledItem(toUse, item, false, true));
                         c.getPlayer().forceReAddItem_NoUpdate(item, MapleInventoryType.EQUIP);
                         used = true;
@@ -2559,92 +2775,109 @@ public class InventoryHandler {
                         c.getPlayer().dropMessage(5, "This item's Potential cannot be reset.");
                     }
                 } else {
-                    c.getPlayer().getMap().broadcastMessage(CField.showPotentialReset(false, c.getPlayer().getId(), false, itemId));
+                    c.getPlayer().getMap()
+                            .broadcastMessage(CField.showPotentialReset(false, c.getPlayer().getId(), false, itemId));
                 }
             }
             case 5062000 -> // SP Reset (2nd job)
             {
-                //miracle cube
+                // miracle cube
                 if (c.getPlayer().getLevel() < 50) {
                     c.getPlayer().dropMessage(1, "You may not use this until level 50.");
                 } else {
-                    final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem((byte) slea.readInt());
+                    final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIP)
+                            .getItem((byte) slea.readInt());
                     if (item != null && c.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() >= 1) {
                         final Equip eq = (Equip) item;
                         if (eq.getState() >= 17 && eq.getState() != 20) {
                             eq.renewPotential(0);
-                            c.getPlayer().getMap().broadcastMessage(CField.showPotentialReset(false, c.getPlayer().getId(), true, itemId));
+                            c.getPlayer().getMap().broadcastMessage(
+                                    CField.showPotentialReset(false, c.getPlayer().getId(), true, itemId));
                             c.getSession().write(InventoryPacket.scrolledItem(toUse, item, false, true));
                             c.getPlayer().forceReAddItem_NoUpdate(item, MapleInventoryType.EQUIP);
-                            MapleInventoryManipulator.addById(c, 2430112, (short) 1, "Cube" + " on " + FileoutputUtil.CurrentReadable_Date());
+                            MapleInventoryManipulator.addById(c, 2430112, (short) 1,
+                                    "Cube" + " on " + FileoutputUtil.CurrentReadable_Date());
                             used = true;
                         } else {
                             c.getPlayer().dropMessage(5, "This item's Potential cannot be reset.");
                         }
                     } else {
-                        c.getPlayer().getMap().broadcastMessage(CField.showPotentialReset(false, c.getPlayer().getId(), false, itemId));
+                        c.getPlayer().getMap().broadcastMessage(
+                                CField.showPotentialReset(false, c.getPlayer().getId(), false, itemId));
                     }
                 }
             }
             case 5062100, 5062001 -> // SP Reset (3rd job)
             {
-                //premium cube
+                // premium cube
                 if (c.getPlayer().getLevel() < 70) {
                     c.getPlayer().dropMessage(1, "You may not use this until level 70.");
                 } else {
-                    final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem((byte) slea.readInt());
+                    final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIP)
+                            .getItem((byte) slea.readInt());
                     if (item != null && c.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() >= 1) {
                         final Equip eq = (Equip) item;
                         if (eq.getState() >= 17 && eq.getState() != 20) {
                             eq.renewPotential(1);
-                            c.getPlayer().getMap().broadcastMessage(CField.showPotentialReset(false, c.getPlayer().getId(), true, itemId));
+                            c.getPlayer().getMap().broadcastMessage(
+                                    CField.showPotentialReset(false, c.getPlayer().getId(), true, itemId));
                             c.getSession().write(InventoryPacket.scrolledItem(toUse, item, false, true));
                             c.getPlayer().forceReAddItem_NoUpdate(item, MapleInventoryType.EQUIP);
-                            MapleInventoryManipulator.addById(c, 2430112, (short) 1, "Cube" + " on " + FileoutputUtil.CurrentReadable_Date());
+                            MapleInventoryManipulator.addById(c, 2430112, (short) 1,
+                                    "Cube" + " on " + FileoutputUtil.CurrentReadable_Date());
                             used = true;
                         } else {
                             c.getPlayer().dropMessage(5, "This item's Potential cannot be reset.");
                         }
                     } else {
-                        c.getPlayer().getMap().broadcastMessage(CField.showPotentialReset(false, c.getPlayer().getId(), false, itemId));
+                        c.getPlayer().getMap().broadcastMessage(
+                                CField.showPotentialReset(false, c.getPlayer().getId(), false, itemId));
                     }
                 }
             }
             case 5062002 -> // SP Reset (4th job)
             {
-                //super miracle cube
+                // super miracle cube
                 if (c.getPlayer().getLevel() < 100) {
                     c.getPlayer().dropMessage(1, "You may not use this until level 100.");
                 } else {
-                    final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem((byte) slea.readInt());
+                    final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIP)
+                            .getItem((byte) slea.readInt());
                     if (item != null && c.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() >= 1) {
                         final Equip eq = (Equip) item;
                         if (eq.getState() >= 17) {
                             eq.renewPotential(3);
-                            c.getPlayer().getMap().broadcastMessage(CField.showPotentialReset(false, c.getPlayer().getId(), true, itemId));
+                            c.getPlayer().getMap().broadcastMessage(
+                                    CField.showPotentialReset(false, c.getPlayer().getId(), true, itemId));
                             c.getSession().write(InventoryPacket.scrolledItem(toUse, item, false, true));
                             c.getPlayer().forceReAddItem_NoUpdate(item, MapleInventoryType.EQUIP);
-                            MapleInventoryManipulator.addById(c, 2430481, (short) 1, "Cube" + " on " + FileoutputUtil.CurrentReadable_Date());
+                            MapleInventoryManipulator.addById(c, 2430481, (short) 1,
+                                    "Cube" + " on " + FileoutputUtil.CurrentReadable_Date());
                             used = true;
                         } else {
                             c.getPlayer().dropMessage(5, "This item's Potential cannot be reset.");
                         }
                     } else {
-                        c.getPlayer().getMap().broadcastMessage(CField.showPotentialReset(false, c.getPlayer().getId(), false, itemId));
+                        c.getPlayer().getMap().broadcastMessage(
+                                CField.showPotentialReset(false, c.getPlayer().getId(), false, itemId));
                     }
                 }
             }
-            case 5750000 -> //evan sp resets
+            case 5750000 -> // evan sp resets
             {
-                //alien cube
+                // alien cube
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(1, "You may not use this until level 10.");
                 } else {
-                    final Item item = c.getPlayer().getInventory(MapleInventoryType.SETUP).getItem((byte) slea.readInt());
-                    if (item != null && c.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() >= 1 && c.getPlayer().getInventory(MapleInventoryType.SETUP).getNumFreeSlot() >= 1) {
+                    final Item item = c.getPlayer().getInventory(MapleInventoryType.SETUP)
+                            .getItem((byte) slea.readInt());
+                    if (item != null && c.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() >= 1
+                            && c.getPlayer().getInventory(MapleInventoryType.SETUP).getNumFreeSlot() >= 1) {
                         final int grade = GameConstants.getNebuliteGrade(item.getItemId());
                         if (grade != -1 && grade < 4) {
-                            final int rank = Randomizer.nextInt(100) < 7 ? (Randomizer.nextInt(100) < 2 ? (grade + 1) : (grade != 3 ? (grade + 1) : grade)) : grade;
+                            final int rank = Randomizer.nextInt(100) < 7
+                                    ? (Randomizer.nextInt(100) < 2 ? (grade + 1) : (grade != 3 ? (grade + 1) : grade))
+                                    : grade;
                             final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                             final List<StructItemOption> pots = new LinkedList<>(ii.getAllSocketInfo(rank).values());
                             int newId = 0;
@@ -2654,9 +2887,12 @@ public class InventoryHandler {
                                     newId = pot.opID;
                                 }
                             }
-                            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.SETUP, item.getPosition(), (short) 1, false);
-                            MapleInventoryManipulator.addById(c, newId, (short) 1, "Upgraded from alien cube on " + FileoutputUtil.CurrentReadable_Date());
-                            MapleInventoryManipulator.addById(c, 2430691, (short) 1, "Alien Cube" + " on " + FileoutputUtil.CurrentReadable_Date());
+                            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.SETUP, item.getPosition(),
+                                    (short) 1, false);
+                            MapleInventoryManipulator.addById(c, newId, (short) 1,
+                                    "Upgraded from alien cube on " + FileoutputUtil.CurrentReadable_Date());
+                            MapleInventoryManipulator.addById(c, 2430691, (short) 1,
+                                    "Alien Cube" + " on " + FileoutputUtil.CurrentReadable_Date());
                             used = true;
                         } else {
                             c.getPlayer().dropMessage(1, "Grade S Nebulite cannot be added.");
@@ -2671,7 +2907,8 @@ public class InventoryHandler {
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(1, "You may not use this until level 10.");
                 } else {
-                    final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem((byte) slea.readInt());
+                    final Item item = c.getPlayer().getInventory(MapleInventoryType.EQUIP)
+                            .getItem((byte) slea.readInt());
                     if (item != null) {
                         final Equip eq = (Equip) item;
                         if (eq.getSocket1() > 0) { // first slot only.
@@ -2692,7 +2929,8 @@ public class InventoryHandler {
                 final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
                 final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
 
-                if (item != null && !ItemFlag.KARMA_ACC.check(item.getFlag()) && !ItemFlag.KARMA_ACC_USE.check(item.getFlag())) {
+                if (item != null && !ItemFlag.KARMA_ACC.check(item.getFlag())
+                        && !ItemFlag.KARMA_ACC_USE.check(item.getFlag())) {
                     if (MapleItemInformationProvider.getInstance().isShareTagEnabled(item.getItemId())) {
                         short flag = item.getFlag();
                         if (ItemFlag.UNTRADEABLE.check(flag)) {
@@ -2704,7 +2942,8 @@ public class InventoryHandler {
                         }
                         item.setFlag(flag);
                         c.getPlayer().forceReAddItem_NoUpdate(item, type);
-                        c.getSession().write(InventoryPacket.updateSpecialItemUse(item, type.getType(), item.getPosition(), true, c.getPlayer()));
+                        c.getSession().write(InventoryPacket.updateSpecialItemUse(item, type.getType(),
+                                item.getPosition(), true, c.getPlayer()));
                         used = true;
                     }
                 }
@@ -2714,8 +2953,12 @@ public class InventoryHandler {
                 final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
                 final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
 
-                if (item != null && !ItemFlag.KARMA_EQ.check(item.getFlag()) && !ItemFlag.KARMA_USE.check(item.getFlag())) {
-                    if ((itemId == 5520000 && MapleItemInformationProvider.getInstance().isKarmaEnabled(item.getItemId())) || (itemId == 5520001 && MapleItemInformationProvider.getInstance().isPKarmaEnabled(item.getItemId()))) {
+                if (item != null && !ItemFlag.KARMA_EQ.check(item.getFlag())
+                        && !ItemFlag.KARMA_USE.check(item.getFlag())) {
+                    if ((itemId == 5520000
+                            && MapleItemInformationProvider.getInstance().isKarmaEnabled(item.getItemId()))
+                            || (itemId == 5520001
+                                    && MapleItemInformationProvider.getInstance().isPKarmaEnabled(item.getItemId()))) {
                         short flag = item.getFlag();
                         if (ItemFlag.UNTRADEABLE.check(flag)) {
                             flag -= ItemFlag.UNTRADEABLE.getValue();
@@ -2726,18 +2969,22 @@ public class InventoryHandler {
                         }
                         item.setFlag(flag);
                         c.getPlayer().forceReAddItem_NoUpdate(item, type);
-                        c.getSession().write(InventoryPacket.updateSpecialItemUse(item, type.getType(), item.getPosition(), true, c.getPlayer()));
+                        c.getSession().write(InventoryPacket.updateSpecialItemUse(item, type.getType(),
+                                item.getPosition(), true, c.getPlayer()));
                         used = true;
                     }
                 }
             }
-            case 5570000 ->  {
+            case 5570000 -> {
                 // Vicious Hammer
                 slea.readInt(); // Inventory type, Hammered eq is always EQ.
-                final Equip item = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem((byte) slea.readInt());
+                final Equip item = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIP)
+                        .getItem((byte) slea.readInt());
                 // another int here, D3 49 DC 00
                 if (item != null) {
-                    if (GameConstants.canHammer(item.getItemId()) && MapleItemInformationProvider.getInstance().getSlots(item.getItemId()) > 0 && item.getViciousHammer() < 2) {
+                    if (GameConstants.canHammer(item.getItemId())
+                            && MapleItemInformationProvider.getInstance().getSlots(item.getItemId()) > 0
+                            && item.getViciousHammer() < 2) {
                         item.setViciousHammer((byte) (item.getViciousHammer() + 1));
                         item.setUpgradeSlots((byte) (item.getUpgradeSlots() + 1));
                         c.getPlayer().forceReAddItem(item, MapleInventoryType.EQUIP);
@@ -2747,16 +2994,18 @@ public class InventoryHandler {
                         c.getPlayer().dropMessage(5, "You may not use it on this item.");
                         c.getSession().write(MTSCSPacket.ViciousHammer(true, (byte) 0));
                     }
-                }            }
-            case 5610001, 5610000 ->  { // Vega 30
+                }
+            }
+            case 5610001, 5610000 -> { // Vega 30
                 slea.readInt(); // Inventory type, always eq
                 final short dst = (short) slea.readInt();
                 slea.readInt(); // Inventory type, always use
                 final short src = (short) slea.readInt();
-                used = UseUpgradeScroll(src, dst, (short) 2, c, c.getPlayer(), itemId, false); //cannot use ws with vega but we dont care
+                used = UseUpgradeScroll(src, dst, (short) 2, c, c.getPlayer(), itemId, false); // cannot use ws with
+                                                                                               // vega but we dont care
                 cc = used;
             }
-            case 5060001 ->  { // Sealing Lock
+            case 5060001 -> { // Sealing Lock
                 final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
                 final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
                 // another int here, lock = 5A E5 F2 0A, 7 day = D2 30 F3 0A
@@ -2769,7 +3018,7 @@ public class InventoryHandler {
                     used = true;
                 }
             }
-            case 5061000 ->  { // Sealing Lock 7 days
+            case 5061000 -> { // Sealing Lock 7 days
                 final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
                 final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
                 // another int here, lock = 5A E5 F2 0A, 7 day = D2 30 F3 0A
@@ -2783,7 +3032,7 @@ public class InventoryHandler {
                     used = true;
                 }
             }
-            case 5061001 ->  { // Sealing Lock 30 days
+            case 5061001 -> { // Sealing Lock 30 days
                 final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
                 final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
                 // another int here, lock = 5A E5 F2 0A, 7 day = D2 30 F3 0A
@@ -2798,7 +3047,7 @@ public class InventoryHandler {
                     used = true;
                 }
             }
-            case 5061002 ->  { // Sealing Lock 90 days
+            case 5061002 -> { // Sealing Lock 90 days
                 final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
                 final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
                 // another int here, lock = 5A E5 F2 0A, 7 day = D2 30 F3 0A
@@ -2813,7 +3062,7 @@ public class InventoryHandler {
                     used = true;
                 }
             }
-            case 5061003 ->  { // Sealing Lock 365 days
+            case 5061003 -> { // Sealing Lock 365 days
                 final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
                 final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
                 // another int here, lock = 5A E5 F2 0A, 7 day = D2 30 F3 0A
@@ -2828,11 +3077,11 @@ public class InventoryHandler {
                     used = true;
                 }
             }
-            case 5063000 ->  {
+            case 5063000 -> {
                 final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
                 final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
                 // another int here, lock = 5A E5 F2 0A, 7 day = D2 30 F3 0A
-                if (item != null && item.getType() == 1) { //equip
+                if (item != null && item.getType() == 1) { // equip
                     short flag = item.getFlag();
                     flag |= ItemFlag.LUCKS_KEY.getValue();
                     item.setFlag(flag);
@@ -2841,15 +3090,16 @@ public class InventoryHandler {
                     used = true;
                 }
             }
-            case 5064000 ->  { System.out.println("slea..." + slea.toString());
-            final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
-            final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
+            case 5064000 -> {
+                System.out.println("slea..." + slea.toString());
+                final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
+                final Item item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
                 // another int here, lock = 5A E5 F2 0A, 7 day = D2 30 F3 0A
                 if (item != null && item.getType() == 1) {
-                    //equip
+                    // equip
                     if (((Equip) item).getEnhance() >= 8) {
-                        //cannot be used
-                        
+                        // cannot be used
+
                     }
                     short flag = item.getFlag();
                     flag |= ItemFlag.SHIELD_WARD.getValue();
@@ -2858,13 +3108,15 @@ public class InventoryHandler {
                     used = true;
                 }
             }
-            case 5060004, 5060003 ->  { //peanut
-                Item item = c.getPlayer().getInventory(MapleInventoryType.ETC).findById(itemId == 5060003 ? 4170023 : 4170024);
+            case 5060004, 5060003 -> { // peanut
+                Item item = c.getPlayer().getInventory(MapleInventoryType.ETC)
+                        .findById(itemId == 5060003 ? 4170023 : 4170024);
                 if (item == null || item.getQuantity() <= 0) { // hacking{
                     return;
                 }
                 if (getIncubatedItems(c, itemId)) {
-                    MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.ETC, item.getPosition(), (short) 1, false);
+                    MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.ETC, item.getPosition(), (short) 1,
+                            false);
                     used = true;
                 }
             }
@@ -2894,7 +3146,7 @@ public class InventoryHandler {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
                 }
             }
-            case 5071000 ->  { // Megaphone
+            case 5071000 -> { // Megaphone
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
                 }
@@ -2919,7 +3171,7 @@ public class InventoryHandler {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
                 }
             }
-            case 5077000 ->  { // 3 line Megaphone
+            case 5077000 -> { // 3 line Megaphone
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
                 }
@@ -2951,7 +3203,7 @@ public class InventoryHandler {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
                 }
             }
-            case 5079004 ->  { // Heart Megaphone
+            case 5079004 -> { // Heart Megaphone
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
                 }
@@ -2971,7 +3223,7 @@ public class InventoryHandler {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
                 }
             }
-            case 5073000 ->  { // Heart Megaphone
+            case 5073000 -> { // Heart Megaphone
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
                 }
@@ -2997,7 +3249,7 @@ public class InventoryHandler {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
                 }
             }
-            case 5074000 ->  {                 // Skull Megaphone
+            case 5074000 -> { // Skull Megaphone
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
                 }
@@ -3023,7 +3275,7 @@ public class InventoryHandler {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
                 }
             }
-            case 5072000 -> //p.karma
+            case 5072000 -> // p.karma
             {
                 // Super Megaphone
                 if (c.getPlayer().getLevel() < 10) {
@@ -3051,7 +3303,7 @@ public class InventoryHandler {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
                 }
             }
-            case 5076000 ->  {                 // Item Megaphone
+            case 5076000 -> { // Item Megaphone
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
                 }
@@ -3072,7 +3324,7 @@ public class InventoryHandler {
                     sb.append(message);
                     final boolean ear = slea.readByte() > 0;
                     Item item = null;
-                    if (slea.readByte() == 1) { //item
+                    if (slea.readByte() == 1) { // item
                         byte invType = (byte) slea.readInt();
                         byte pos = (byte) slea.readInt();
                         if (pos <= 0) {
@@ -3086,8 +3338,9 @@ public class InventoryHandler {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
                 }
             }
-            case 5075000, 5075001, 5075002 ->  { // MapleTV Heart Messenger
-                c.getPlayer().dropMessage(5, "There are no MapleTVs to broadcast the message to.");            }
+            case 5075000, 5075001, 5075002 -> { // MapleTV Heart Messenger
+                c.getPlayer().dropMessage(5, "There are no MapleTVs to broadcast the message to.");
+            }
             case 5075003, 5075004, 5075005 -> {
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
@@ -3100,28 +3353,36 @@ public class InventoryHandler {
                 }
                 int tvType = itemId % 10;
                 if (tvType == 3) {
-                    slea.readByte(); //who knows
+                    slea.readByte(); // who knows
                 }
-                boolean ear = tvType != 1 && tvType != 2 && slea.readByte() > 1; //for tvType 1/2, there is no byte. 
-                MapleCharacter victim = tvType == 1 || tvType == 4 ? null : c.getChannelServer().getPlayerStorage().getCharacterByName(slea.readMapleAsciiString()); //for tvType 4, there is no string.
+                boolean ear = tvType != 1 && tvType != 2 && slea.readByte() > 1; // for tvType 1/2, there is no byte.
+                MapleCharacter victim = tvType == 1 || tvType == 4 ? null
+                        : c.getChannelServer().getPlayerStorage().getCharacterByName(slea.readMapleAsciiString()); // for
+                                                                                                                   // tvType
+                                                                                                                   // 4,
+                                                                                                                   // there
+                                                                                                                   // is
+                                                                                                                   // no
+                                                                                                                   // string.
                 if (tvType == 0 || tvType == 3) {
-                    //doesn't allow two
+                    // doesn't allow two
                     victim = null;
                 } else if (victim == null) {
                     c.getPlayer().dropMessage(1, "That character is not in the channel.");
                 }
                 String message = slea.readMapleAsciiString();
-                World.Broadcast.broadcastSmega(CWvsContext.serverNotice(3, c.getChannel(), c.getPlayer().getName() + " : " + message, ear));
+                World.Broadcast.broadcastSmega(
+                        CWvsContext.serverNotice(3, c.getChannel(), c.getPlayer().getName() + " : " + message, ear));
                 used = true;
             }
-            case 5090100, 5090000 ->  { // Note
+            case 5090100, 5090000 -> { // Note
                 final String sendTo = slea.readMapleAsciiString();
                 final String msg = slea.readMapleAsciiString();
-                if (MapleCharacterUtil.canCreateChar(sendTo, false)) { // Name does not exist 
+                if (MapleCharacterUtil.canCreateChar(sendTo, false)) { // Name does not exist
                     c.getSession().write(MTSCSPacket.OnMemoResult((byte) 5, (byte) 1));
                 } else {
                     int ch = World.Find.findChannel(sendTo);
-                    if (ch <= 0) { // offline 
+                    if (ch <= 0) { // offline
                         c.getPlayer().sendNote(sendTo, msg);
                         c.getSession().write(MTSCSPacket.OnMemoResult((byte) 4, (byte) 0));
                         used = true;
@@ -3130,11 +3391,11 @@ public class InventoryHandler {
                     }
                 }
             }
-            case 5100000 ->  { // Congratulatory Song
+            case 5100000 -> { // Congratulatory Song
                 c.getPlayer().getMap().broadcastMessage(CField.musicChange("Jukebox/Congratulation"));
                 used = true;
             }
-            case 5190001, 5190002, 5190003, 5190004, 5190005, 5190006, 5190007, 5190008, 5190000 ->  { // Pet Flags
+            case 5190001, 5190002, 5190003, 5190004, 5190005, 5190006, 5190007, 5190008, 5190000 -> { // Pet Flags
                 final int uniqueid = (int) slea.readLong();
                 MaplePet pet = c.getPlayer().getPet(0);
                 int slo = 0;
@@ -3159,13 +3420,14 @@ public class InventoryHandler {
                 PetFlag zz = PetFlag.getByAddId(itemId);
                 if (zz != null && !zz.check(pet.getFlags())) {
                     pet.setFlags(pet.getFlags() | zz.getValue());
-                    c.getSession().write(PetPacket.updatePet(pet, c.getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition()), true));
+                    c.getSession().write(PetPacket.updatePet(pet, c.getPlayer().getInventory(MapleInventoryType.CASH)
+                            .getItem((byte) pet.getInventoryPosition()), true));
                     c.getSession().write(CWvsContext.enableActions());
                     c.getSession().write(MTSCSPacket.changePetFlag(uniqueid, true, zz.getValue()));
                     used = true;
                 }
             }
-            case 5191001, 5191002, 5191003, 5191004, 5191000 ->  { // Pet Flags
+            case 5191001, 5191002, 5191003, 5191004, 5191000 -> { // Pet Flags
                 final int uniqueid = (int) slea.readLong();
                 MaplePet pet = c.getPlayer().getPet(0);
                 int slo = 0;
@@ -3190,24 +3452,28 @@ public class InventoryHandler {
                 PetFlag zz = PetFlag.getByDelId(itemId);
                 if (zz != null && zz.check(pet.getFlags())) {
                     pet.setFlags(pet.getFlags() - zz.getValue());
-                    c.getSession().write(PetPacket.updatePet(pet, c.getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition()), true));
+                    c.getSession().write(PetPacket.updatePet(pet, c.getPlayer().getInventory(MapleInventoryType.CASH)
+                            .getItem((byte) pet.getInventoryPosition()), true));
                     c.getSession().write(CWvsContext.enableActions());
                     c.getSession().write(MTSCSPacket.changePetFlag(uniqueid, false, zz.getValue()));
                     used = true;
                 }
             }
-            case 5501001, 5501002 ->  { //expiry mount
+            case 5501001, 5501002 -> { // expiry mount
                 final Skill skil = SkillFactory.getSkill(slea.readInt());
-                if (skil == null || skil.getId() / 10000 != 8000 || c.getPlayer().getSkillLevel(skil) <= 0 || !skil.isTimeLimited() || GameConstants.getMountItem(skil.getId(), c.getPlayer()) <= 0) {
+                if (skil == null || skil.getId() / 10000 != 8000 || c.getPlayer().getSkillLevel(skil) <= 0
+                        || !skil.isTimeLimited() || GameConstants.getMountItem(skil.getId(), c.getPlayer()) <= 0) {
                 }
                 final long toAdd = (itemId == 5501001 ? 30 : 60) * 24 * 60 * 60 * 1000L;
                 final long expire = c.getPlayer().getSkillExpiry(skil);
-                if (expire < System.currentTimeMillis() || (long) (expire + toAdd) >= System.currentTimeMillis() + (365 * 24 * 60 * 60 * 1000L)) {
+                if (expire < System.currentTimeMillis()
+                        || (long) (expire + toAdd) >= System.currentTimeMillis() + (365 * 24 * 60 * 60 * 1000L)) {
                 }
-                c.getPlayer().changeSingleSkillLevel(skil, c.getPlayer().getSkillLevel(skil), c.getPlayer().getMasterLevel(skil), (long) (expire + toAdd));
+                c.getPlayer().changeSingleSkillLevel(skil, c.getPlayer().getSkillLevel(skil),
+                        c.getPlayer().getMasterLevel(skil), (long) (expire + toAdd));
                 used = true;
             }
-            case 5170000 ->  { // Pet name change
+            case 5170000 -> { // Pet name change
                 final int uniqueid = (int) slea.readLong();
                 MaplePet pet = c.getPlayer().getPet(0);
                 int slo = 0;
@@ -3237,15 +3503,17 @@ public class InventoryHandler {
                 }
                 if (MapleCharacterUtil.canChangePetName(nName)) {
                     pet.setName(nName);
-                    c.getSession().write(PetPacket.updatePet(pet, c.getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition()), true));
+                    c.getSession().write(PetPacket.updatePet(pet, c.getPlayer().getInventory(MapleInventoryType.CASH)
+                            .getItem((byte) pet.getInventoryPosition()), true));
                     c.getSession().write(CWvsContext.enableActions());
                     c.getPlayer().getMap().broadcastMessage(MTSCSPacket.changePetName(c.getPlayer(), nName, slo));
                     used = true;
                 }
             }
-            case 5700000 ->  {
+            case 5700000 -> {
                 slea.skip(8);
-                if (c.getPlayer().getAndroid() == null) {                }
+                if (c.getPlayer().getAndroid() == null) {
+                }
                 String nName = slea.readMapleAsciiString();
                 for (String z : GameConstants.RESERVED) {
                     if (c.getPlayer().getAndroid().getName().indexOf(z) != -1 || nName.indexOf(z) != -1) {
@@ -3254,14 +3522,15 @@ public class InventoryHandler {
                 }
                 if (MapleCharacterUtil.canChangePetName(nName)) {
                     c.getPlayer().getAndroid().setName(nName);
-                    c.getPlayer().setAndroid(c.getPlayer().getAndroid()); //respawn it
+                    c.getPlayer().setAndroid(c.getPlayer().getAndroid()); // respawn it
                     used = true;
                 }
             }
-            case 5240000, 5240001, 5240002, 5240003, 5240004, 5240005, 5240006, 5240007, 5240008, 5240009, 5240010, 5240011, 5240012, 5240013, 5240014, 5240015, 5240016, 5240017, 5240018, 5240019, 5240020, 5240021, 5240022, 5240023, 5240024, 5240025, 5240026, 5240027, 5240029, 5240030, 5240031, 5240032, 5240033, 5240034, 5240035, 5240036, 5240037, 5240038, 5240039, 5240040, 5240028 ->  {
+            case 5240000, 5240001, 5240002, 5240003, 5240004, 5240005, 5240006, 5240007, 5240008, 5240009, 5240010, 5240011, 5240012, 5240013, 5240014, 5240015, 5240016, 5240017, 5240018, 5240019, 5240020, 5240021, 5240022, 5240023, 5240024, 5240025, 5240026, 5240027, 5240029, 5240030, 5240031, 5240032, 5240033, 5240034, 5240035, 5240036, 5240037, 5240038, 5240039, 5240040, 5240028 -> {
                 // Pet food
                 MaplePet pet = c.getPlayer().getPet(0);
-                if (pet == null) {                }
+                if (pet == null) {
+                }
                 if (!pet.canConsume(itemId)) {
                     pet = c.getPlayer().getPet(1);
                     if (pet != null) {
@@ -3290,8 +3559,10 @@ public class InventoryHandler {
                         c.getPlayer().getMap().broadcastMessage(PetPacket.showPetLevelUp(c.getPlayer(), petindex));
                     }
                 }
-                c.getSession().write(PetPacket.updatePet(pet, c.getPlayer().getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition()), true));
-                c.getPlayer().getMap().broadcastMessage(c.getPlayer(), PetPacket.commandResponse(c.getPlayer().getId(), (byte) 1, petindex, true, true), true);
+                c.getSession().write(PetPacket.updatePet(pet,
+                        c.getPlayer().getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition()), true));
+                c.getPlayer().getMap().broadcastMessage(c.getPlayer(),
+                        PetPacket.commandResponse(c.getPlayer().getId(), (byte) 1, petindex, true, true), true);
                 used = true;
             }
             case 5230001, 5230000 -> {
@@ -3305,15 +3576,16 @@ public class InventoryHandler {
                     c.getPlayer().dropMessage(1, "Unable to find the item.");
                 }
             }
-            case 5281001, 5280001, 5281000 ->  {// Passed gas
-                Rectangle bounds = new Rectangle((int) c.getPlayer().getPosition().getX(), (int) c.getPlayer().getPosition().getY(), 1, 1);
+            case 5281001, 5280001, 5281000 -> {// Passed gas
+                Rectangle bounds = new Rectangle((int) c.getPlayer().getPosition().getX(),
+                        (int) c.getPlayer().getPosition().getY(), 1, 1);
                 MapleMist mist = new MapleMist(bounds, c.getPlayer());
                 c.getPlayer().getMap().spawnMist(mist, 10000, true);
                 c.getSession().write(CWvsContext.enableActions());
                 used = true;
             }
 
-            case 5370001, 5370000 ->  { // Chalkboard
+            case 5370001, 5370000 -> { // Chalkboard
                 for (MapleEventType t : MapleEventType.values()) {
                     final MapleEvent e = ChannelServer.getInstance(c.getChannel()).getEvent(t);
                     if (e.isRunning()) {
@@ -3328,7 +3600,9 @@ public class InventoryHandler {
                 }
                 c.getPlayer().setChalkboard(slea.readMapleAsciiString());
             }
-            case 5079000, 5079001, 5390007, 5390008, 5390009, 5390000, 5390001, 5390002, 5390003, 5390004, 5390005, 5390006 ->  { // Tiger Roar's Messenger
+            case 5079000, 5079001, 5390007, 5390008, 5390009, 5390000, 5390001, 5390002, 5390003, 5390004, 5390005, 5390006 -> { // Tiger
+                                                                                                                                 // Roar's
+                                                                                                                                 // Messenger
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
                 }
@@ -3348,13 +3622,14 @@ public class InventoryHandler {
                         lines.add(text);
                     }
                     final boolean ear = slea.readByte() != 0;
-                    World.Broadcast.broadcastSmega(CWvsContext.getAvatarMega(c.getPlayer(), c.getChannel(), itemId, lines, ear));
+                    World.Broadcast.broadcastSmega(
+                            CWvsContext.getAvatarMega(c.getPlayer(), c.getChannel(), itemId, lines, ear));
                     used = true;
                 } else {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
                 }
             }
-            case 5452001, 5450003, 5450000 ->  { // Mu Mu the Travelling Merchant
+            case 5452001, 5450003, 5450000 -> { // Mu Mu the Travelling Merchant
                 for (int i : GameConstants.blockedMaps) {
                     if (c.getPlayer().getMapId() == i) {
                         c.getPlayer().dropMessage(5, "You may not use this command here.");
@@ -3364,72 +3639,78 @@ public class InventoryHandler {
                 }
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "You must be over level 10 to use this command.");
-                } else if (c.getPlayer().hasBlockedInventory() || c.getPlayer().getMap().getSquadByMap() != null || c.getPlayer().getEventInstance() != null || c.getPlayer().getMap().getEMByMap() != null || c.getPlayer().getMapId() >= 990000000) {
+                } else if (c.getPlayer().hasBlockedInventory() || c.getPlayer().getMap().getSquadByMap() != null
+                        || c.getPlayer().getEventInstance() != null || c.getPlayer().getMap().getEMByMap() != null
+                        || c.getPlayer().getMapId() >= 990000000) {
                     c.getPlayer().dropMessage(5, "You may not use this command here.");
-                } else if ((c.getPlayer().getMapId() >= 680000210 && c.getPlayer().getMapId() <= 680000502) || (c.getPlayer().getMapId() / 1000 == 980000 && c.getPlayer().getMapId() != 980000000) || (c.getPlayer().getMapId() / 100 == 1030008) || (c.getPlayer().getMapId() / 100 == 922010) || (c.getPlayer().getMapId() / 10 == 13003000)) {
+                } else if ((c.getPlayer().getMapId() >= 680000210 && c.getPlayer().getMapId() <= 680000502)
+                        || (c.getPlayer().getMapId() / 1000 == 980000 && c.getPlayer().getMapId() != 980000000)
+                        || (c.getPlayer().getMapId() / 100 == 1030008) || (c.getPlayer().getMapId() / 100 == 922010)
+                        || (c.getPlayer().getMapId() / 10 == 13003000)) {
                     c.getPlayer().dropMessage(5, "You may not use this command here.");
                 } else {
                     MapleShopFactory.getInstance().getShop(61).sendShop(c);
                 }
-                //used = true;
+                // used = true;
             }
-            case 5300000, 5300001, 5300002 ->  { // Cash morphs
+            case 5300000, 5300001, 5300002 -> { // Cash morphs
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 ii.getItemEffect(itemId).applyTo(c.getPlayer());
                 used = true;
             }
-            default ->  { if (itemId / 10000 == 512) {
-                final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                String msg = ii.getMsg(itemId);
-                final String ourMsg = slea.readMapleAsciiString();
-                if (!msg.contains("%s")) {
-                    msg = ourMsg;
-                } else {
-                    msg = msg.replaceFirst("%s", c.getPlayer().getName());
+            default -> {
+                if (itemId / 10000 == 512) {
+                    final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                    String msg = ii.getMsg(itemId);
+                    final String ourMsg = slea.readMapleAsciiString();
                     if (!msg.contains("%s")) {
-                        msg = ii.getMsg(itemId).replaceFirst("%s", ourMsg);
+                        msg = ourMsg;
                     } else {
-                        try {
-                            msg = msg.replaceFirst("%s", ourMsg);
-                        } catch (Exception e) {
+                        msg = msg.replaceFirst("%s", c.getPlayer().getName());
+                        if (!msg.contains("%s")) {
                             msg = ii.getMsg(itemId).replaceFirst("%s", ourMsg);
+                        } else {
+                            try {
+                                msg = msg.replaceFirst("%s", ourMsg);
+                            } catch (Exception e) {
+                                msg = ii.getMsg(itemId).replaceFirst("%s", ourMsg);
+                            }
                         }
                     }
-                }
-                c.getPlayer().getMap().startMapEffect(msg, itemId);
-                
-                final int buff = ii.getStateChangeItem(itemId);
-                if (buff != 0) {
-                    c.getPlayer().getMap().getCharactersThreadsafe().forEach(mChar -> {
-                        ii.getItemEffect(buff).applyTo(mChar);
-                    });
-                }
-                used = true;
-            } else if (itemId / 10000 == 510) {
-                c.getPlayer().getMap().startJukebox(c.getPlayer().getName(), itemId);
-                used = true;
-            } else if (itemId / 10000 == 520) {
-                final int mesars = MapleItemInformationProvider.getInstance().getMeso(itemId);
-                if (mesars > 0 && c.getPlayer().getMeso() < (Integer.MAX_VALUE - mesars)) {
-                    used = true;
-                    if (Math.random() > 0.1) {
-                        final int gainmes = Randomizer.nextInt(mesars);
-                        c.getPlayer().gainMeso(gainmes, false);
-                        c.getSession().write(MTSCSPacket.sendMesobagSuccess(gainmes));
-                    } else {
-                        c.getSession().write(MTSCSPacket.sendMesobagFailed(false)); // not random
+                    c.getPlayer().getMap().startMapEffect(msg, itemId);
+
+                    final int buff = ii.getStateChangeItem(itemId);
+                    if (buff != 0) {
+                        c.getPlayer().getMap().getCharactersThreadsafe().forEach(mChar -> {
+                            ii.getItemEffect(buff).applyTo(mChar);
+                        });
                     }
+                    used = true;
+                } else if (itemId / 10000 == 510) {
+                    c.getPlayer().getMap().startJukebox(c.getPlayer().getName(), itemId);
+                    used = true;
+                } else if (itemId / 10000 == 520) {
+                    final int mesars = MapleItemInformationProvider.getInstance().getMeso(itemId);
+                    if (mesars > 0 && c.getPlayer().getMeso() < (Integer.MAX_VALUE - mesars)) {
+                        used = true;
+                        if (Math.random() > 0.1) {
+                            final int gainmes = Randomizer.nextInt(mesars);
+                            c.getPlayer().gainMeso(gainmes, false);
+                            c.getSession().write(MTSCSPacket.sendMesobagSuccess(gainmes));
+                        } else {
+                            c.getSession().write(MTSCSPacket.sendMesobagFailed(false)); // not random
+                        }
+                    }
+                } else if (itemId / 10000 == 562) {
+                    if (UseSkillBook(slot, itemId, c, c.getPlayer())) {
+                        c.getPlayer().gainSP(1);
+                    } // this should handle removing
+                } else if (itemId / 10000 == 553) {
+                    UseRewardItem(slot, itemId, c, c.getPlayer());// this too
+                } else if (itemId / 10000 != 519) {
+                    System.out.println("Unhandled CS item : " + itemId);
+                    System.out.println(slea.toString(true));
                 }
-            } else if (itemId / 10000 == 562) {
-                if (UseSkillBook(slot, itemId, c, c.getPlayer())) {
-                    c.getPlayer().gainSP(1);
-                } //this should handle removing
-            } else if (itemId / 10000 == 553) {
-                UseRewardItem(slot, itemId, c, c.getPlayer());// this too
-            } else if (itemId / 10000 != 519) {
-                System.out.println("Unhandled CS item : " + itemId);
-                System.out.println(slea.toString(true));
-            }
             }
         }
         // NPC Teleport Rock
@@ -3440,12 +3721,12 @@ public class InventoryHandler {
         // SP Reset (2nd job)
         // SP Reset (3rd job)
         // SP Reset (4th job)
-        //evan sp resets
-        //p.karma
+        // evan sp resets
+        // p.karma
         // MapleTV Messenger
         // MapleTV Star Messenger
         // Wedding Invitation Card
-        //idk, but probably
+        // idk, but probably
         // Gas Skill
         // Diablo Messenger
         // Cloud 9 Messenger
@@ -3461,7 +3742,8 @@ public class InventoryHandler {
         }
         c.getSession().write(CWvsContext.enableActions());
         if (cc) {
-            if (!c.getPlayer().isAlive() || c.getPlayer().getEventInstance() != null || FieldLimitType.ChannelSwitch.check(c.getPlayer().getMap().getFieldLimit())) {
+            if (!c.getPlayer().isAlive() || c.getPlayer().getEventInstance() != null
+                    || FieldLimitType.ChannelSwitch.check(c.getPlayer().getMap().getFieldLimit())) {
                 c.getPlayer().dropMessage(1, "Auto relog failed.");
                 return;
             }
@@ -3474,7 +3756,7 @@ public class InventoryHandler {
     }
 
     public static final void Pickup_Player(final LittleEndianAccessor slea, MapleClient c, final MapleCharacter chr) {
-        if (c.getPlayer().hasBlockedInventory()) { //hack
+        if (c.getPlayer().hasBlockedInventory()) { // hack
             return;
         }
         chr.updateTick(slea.readInt());
@@ -3502,11 +3784,13 @@ public class InventoryHandler {
                 c.getSession().write(CWvsContext.enableActions());
                 return;
             }
-            if (mapitem.getOwner() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
+            if (mapitem.getOwner() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0)
+                    || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
                 c.getSession().write(CWvsContext.enableActions());
                 return;
             }
-            if (!mapitem.isPlayerDrop() && mapitem.getDropType() == 1 && mapitem.getOwner() != chr.getId() && (chr.getParty() == null || chr.getParty().getMemberById(mapitem.getOwner()) == null)) {
+            if (!mapitem.isPlayerDrop() && mapitem.getDropType() == 1 && mapitem.getOwner() != chr.getId()
+                    && (chr.getParty() == null || chr.getParty().getMemberById(mapitem.getOwner()) == null)) {
                 c.getSession().write(CWvsContext.enableActions());
                 return;
             }
@@ -3527,7 +3811,8 @@ public class InventoryHandler {
                         }
                     }
                     for (final MapleCharacter m : toGive) {
-                        int mesos = splitMeso / toGive.size() + (m.getStat().hasPartyBonus ? (int) (mapitem.getMeso() / 20.0) : 0);
+                        int mesos = splitMeso / toGive.size()
+                                + (m.getStat().hasPartyBonus ? (int) (mapitem.getMeso() / 20.0) : 0);
                         if (mapitem.getDropper() instanceof MapleMonster && m.getStat().incMesoProp > 0) {
                             mesos += Math.floor((m.getStat().incMesoProp * mesos) / 100.0f);
                         }
@@ -3550,22 +3835,25 @@ public class InventoryHandler {
                 if (MapleItemInformationProvider.getInstance().isPickupBlocked(mapitem.getItemId())) {
                     c.getSession().write(CWvsContext.enableActions());
                     c.getPlayer().dropMessage(5, "This item cannot be picked up.");
-                } else if (c.getPlayer().inPVP() && Integer.parseInt(c.getPlayer().getEventInstance().getProperty("ice")) == c.getPlayer().getId()) {
+                } else if (c.getPlayer().inPVP() && Integer
+                        .parseInt(c.getPlayer().getEventInstance().getProperty("ice")) == c.getPlayer().getId()) {
                     c.getSession().write(InventoryPacket.getInventoryFull());
                     c.getSession().write(InventoryPacket.getShowInventoryFull());
                     c.getSession().write(CWvsContext.enableActions());
                 } else if (useItem(c, mapitem.getItemId())) {
                     removeItem(c.getPlayer(), mapitem, ob);
-                    //another hack
+                    // another hack
                     if (mapitem.getItemId() / 10000 == 291) {
                         c.getPlayer().getMap().broadcastMessage(CField.getCapturePosition(c.getPlayer().getMap()));
                         c.getPlayer().getMap().broadcastMessage(CField.resetCapture());
                     }
-                } else if (mapitem.getItemId() / 10000 != 291 && MapleInventoryManipulator.checkSpace(c, mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
+                } else if (mapitem.getItemId() / 10000 != 291 && MapleInventoryManipulator.checkSpace(c,
+                        mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
                     if (mapitem.getItem().getQuantity() >= 50 && mapitem.getItemId() == 2340000) {
-                        c.setMonitored(true); //hack check
+                        c.setMonitored(true); // hack check
                     }
-                    MapleInventoryManipulator.addFromDrop(c, mapitem.getItem(), true, mapitem.getDropper() instanceof MapleMonster);
+                    MapleInventoryManipulator.addFromDrop(c, mapitem.getItem(), true,
+                            mapitem.getDropper() instanceof MapleMonster);
                     removeItem(chr, mapitem, ob);
                 } else {
                     c.getSession().write(InventoryPacket.getInventoryFull());
@@ -3578,15 +3866,17 @@ public class InventoryHandler {
         }
     }
 
-    public static final void Pickup_Pet(final LittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
+    public static final void Pickup_Pet(final LittleEndianAccessor slea, final MapleClient c,
+            final MapleCharacter chr) {
         if (chr == null) {
             return;
         }
-        if (c.getPlayer().hasBlockedInventory() || c.getPlayer().inPVP()) { //hack
+        if (c.getPlayer().hasBlockedInventory() || c.getPlayer().inPVP()) { // hack
             return;
         }
         c.getPlayer().setScrolledPosition((short) 0);
-        final byte petz = (byte) (GameConstants.GMS ? (c.getPlayer().getPetIndex((int) slea.readLong())) : slea.readInt());
+        final byte petz = (byte) (GameConstants.GMS ? (c.getPlayer().getPetIndex((int) slea.readLong()))
+                : slea.readInt());
         final MaplePet pet = chr.getPet(petz);
         slea.skip(1); // [4] Zero, [4] Seems to be tickcount, [1] Always zero
         chr.updateTick(slea.readInt());
@@ -3607,11 +3897,13 @@ public class InventoryHandler {
             if (mapitem.getOwner() != chr.getId() && mapitem.isPlayerDrop()) {
                 return;
             }
-            if (mapitem.getOwner() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
+            if (mapitem.getOwner() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0)
+                    || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
                 c.getSession().write(CWvsContext.enableActions());
                 return;
             }
-            if (!mapitem.isPlayerDrop() && mapitem.getDropType() == 1 && mapitem.getOwner() != chr.getId() && (chr.getParty() == null || chr.getParty().getMemberById(mapitem.getOwner()) == null)) {
+            if (!mapitem.isPlayerDrop() && mapitem.getDropType() == 1 && mapitem.getOwner() != chr.getId()
+                    && (chr.getParty() == null || chr.getParty().getMemberById(mapitem.getOwner()) == null)) {
                 c.getSession().write(CWvsContext.enableActions());
                 return;
             }
@@ -3634,7 +3926,8 @@ public class InventoryHandler {
                         }
                     }
                     for (final MapleCharacter m : toGive) {
-                        m.gainMeso(splitMeso / toGive.size() + (m.getStat().hasPartyBonus ? (int) (mapitem.getMeso() / 20.0) : 0), true);
+                        m.gainMeso(splitMeso / toGive.size()
+                                + (m.getStat().hasPartyBonus ? (int) (mapitem.getMeso() / 20.0) : 0), true);
                     }
                     chr.gainMeso(mapitem.getMeso() - splitMeso, true);
                 } else {
@@ -3642,15 +3935,18 @@ public class InventoryHandler {
                 }
                 removeItem_Pet(chr, mapitem, petz);
             } else {
-                if (MapleItemInformationProvider.getInstance().isPickupBlocked(mapitem.getItemId()) || mapitem.getItemId() / 10000 == 291) {
+                if (MapleItemInformationProvider.getInstance().isPickupBlocked(mapitem.getItemId())
+                        || mapitem.getItemId() / 10000 == 291) {
                     c.getSession().write(CWvsContext.enableActions());
                 } else if (useItem(c, mapitem.getItemId())) {
                     removeItem_Pet(chr, mapitem, petz);
-                } else if (MapleInventoryManipulator.checkSpace(c, mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
+                } else if (MapleInventoryManipulator.checkSpace(c, mapitem.getItemId(), mapitem.getItem().getQuantity(),
+                        mapitem.getItem().getOwner())) {
                     if (mapitem.getItem().getQuantity() >= 50 && mapitem.getItemId() == 2340000) {
-                        c.setMonitored(true); //hack check
+                        c.setMonitored(true); // hack check
                     }
-                    MapleInventoryManipulator.addFromDrop(c, mapitem.getItem(), true, mapitem.getDropper() instanceof MapleMonster);
+                    MapleInventoryManipulator.addFromDrop(c, mapitem.getItem(), true,
+                            mapitem.getDropper() instanceof MapleMonster);
                     removeItem_Pet(chr, mapitem, petz);
                 }
             }
@@ -3666,7 +3962,7 @@ public class InventoryHandler {
             if (eff == null) {
                 return false;
             }
-            //must hack here for ctf
+            // must hack here for ctf
             if (id / 10000 == 291) {
                 boolean area = false;
                 for (Rectangle rect : c.getPlayer().getMap().getAreas()) {
@@ -3676,7 +3972,7 @@ public class InventoryHandler {
                     }
                 }
                 if (!c.getPlayer().inPVP() || (c.getPlayer().getTeam() == (id - 2910000) && area)) {
-                    return false; //dont apply the consume
+                    return false; // dont apply the consume
                 }
             }
             final int consumeval = eff.getConsume();
@@ -3697,9 +3993,11 @@ public class InventoryHandler {
         }
         if (eff.getConsume() == 2) {
             if (c.getPlayer().getParty() != null && c.getPlayer().isAlive()) {
-                c.getPlayer().getParty().getMembers().stream().map(pc -> c.getPlayer().getMap().getCharacterById(pc.getId())).filter(chr -> (chr != null && chr.isAlive())).forEachOrdered(chr -> {
-                    eff.applyTo(chr);
-                });
+                c.getPlayer().getParty().getMembers().stream()
+                        .map(pc -> c.getPlayer().getMap().getCharacterById(pc.getId()))
+                        .filter(chr -> (chr != null && chr.isAlive())).forEachOrdered(chr -> {
+                            eff.applyTo(chr);
+                        });
             } else {
                 eff.applyTo(c.getPlayer());
             }
@@ -3717,9 +4015,11 @@ public class InventoryHandler {
         }
     }
 
-    private static final void removeItem(final MapleCharacter chr, final MapleMapItem mapitem, final MapleMapObject ob) {
+    private static final void removeItem(final MapleCharacter chr, final MapleMapItem mapitem,
+            final MapleMapObject ob) {
         mapitem.setPickedUp(true);
-        chr.getMap().broadcastMessage(CField.removeItemFromMap(mapitem.getObjectId(), 2, chr.getId()), mapitem.getPosition());
+        chr.getMap().broadcastMessage(CField.removeItemFromMap(mapitem.getObjectId(), 2, chr.getId()),
+                mapitem.getPosition());
         chr.getMap().removeMapObject(ob);
         if (mapitem.isRandDrop()) {
             chr.getMap().spawnRandDrop();
@@ -3746,7 +4046,9 @@ public class InventoryHandler {
     }
 
     private static boolean getIncubatedItems(MapleClient c, int itemId) {
-        if (c.getPlayer().getInventory(MapleInventoryType.EQUIP).getNumFreeSlot() < 2 || c.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() < 2 || c.getPlayer().getInventory(MapleInventoryType.SETUP).getNumFreeSlot() < 2) {
+        if (c.getPlayer().getInventory(MapleInventoryType.EQUIP).getNumFreeSlot() < 2
+                || c.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() < 2
+                || c.getPlayer().getInventory(MapleInventoryType.SETUP).getNumFreeSlot() < 2) {
             c.getPlayer().dropMessage(5, "Please make room in your inventory.");
             return false;
         }
@@ -3759,8 +4061,10 @@ public class InventoryHandler {
             id2 = RandomRewards.getPeanutReward();
         }
         c.getSession().write(CWvsContext.getPeanutResult(id1, (short) 1, id2, (short) 1, itemId));
-        MapleInventoryManipulator.addById(c, id1, (short) 1, ii.getName(itemId) + " on " + FileoutputUtil.CurrentReadable_Date());
-        MapleInventoryManipulator.addById(c, id2, (short) 1, ii.getName(itemId) + " on " + FileoutputUtil.CurrentReadable_Date());
+        MapleInventoryManipulator.addById(c, id1, (short) 1,
+                ii.getName(itemId) + " on " + FileoutputUtil.CurrentReadable_Date());
+        MapleInventoryManipulator.addById(c, id2, (short) 1,
+                ii.getName(itemId) + " on " + FileoutputUtil.CurrentReadable_Date());
         return true;
     }
 
@@ -3768,7 +4072,8 @@ public class InventoryHandler {
         final byte slot = (byte) slea.readShort();
         final int itemid = slea.readInt();
         final Item toUse = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
-        if (toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == itemid && itemid == 2310000 && !c.getPlayer().hasBlockedInventory()) {
+        if (toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == itemid && itemid == 2310000
+                && !c.getPlayer().hasBlockedInventory()) {
             final int itemSearch = slea.readInt();
             final List<HiredMerchant> hms = c.getChannelServer().searchMerchant(itemSearch);
             if (hms.size() > 0) {
@@ -3791,7 +4096,8 @@ public class InventoryHandler {
             }
         }
     }
-    public static final int OWL_ID = 2; //don't change. 0 = owner ID, 1 = store ID, 2 = object ID
+
+    public static final int OWL_ID = 2; // don't change. 0 = owner ID, 1 = store ID, 2 = object ID
 
     public static final void OwlWarp(final LittleEndianAccessor slea, final MapleClient c) {
         if (!c.getPlayer().isAlive()) {
@@ -3801,7 +4107,8 @@ public class InventoryHandler {
             c.getSession().write(CWvsContext.getOwlMessage(7));
             return;
         }
-        if (c.getPlayer().getMapId() >= 910000000 && c.getPlayer().getMapId() <= 910000022 && !c.getPlayer().hasBlockedInventory()) {
+        if (c.getPlayer().getMapId() >= 910000000 && c.getPlayer().getMapId() <= 910000022
+                && !c.getPlayer().hasBlockedInventory()) {
             final int id = slea.readInt();
             final int map = slea.readInt();
             if (map >= 910000001 && map <= 910000022) {
@@ -3859,7 +4166,8 @@ public class InventoryHandler {
                         c.getSession().write(PlayerShopPacket.getHiredMerch(c.getPlayer(), merchant, false));
                     } else {
                         if (!merchant.isOpen() || !merchant.isAvailable()) {
-                            c.getPlayer().dropMessage(1, "The owner of the store is currently undergoing store maintenance. Please try again in a bit.");
+                            c.getPlayer().dropMessage(1,
+                                    "The owner of the store is currently undergoing store maintenance. Please try again in a bit.");
                         } else {
                             if (merchant.getFreeSlot() == -1) {
                                 c.getPlayer().dropMessage(1, "You can't enter the room due to full capacity.");
@@ -3886,14 +4194,16 @@ public class InventoryHandler {
     public static final void PamSong(LittleEndianAccessor slea, MapleClient c) {
         final Item pam = c.getPlayer().getInventory(MapleInventoryType.CASH).findById(5640000);
         if (slea.readByte() > 0 && c.getPlayer().getScrolledPosition() != 0 && pam != null && pam.getQuantity() > 0) {
-            final MapleInventoryType inv = c.getPlayer().getScrolledPosition() < 0 ? MapleInventoryType.EQUIPPED : MapleInventoryType.EQUIP;
+            final MapleInventoryType inv = c.getPlayer().getScrolledPosition() < 0 ? MapleInventoryType.EQUIPPED
+                    : MapleInventoryType.EQUIP;
             final Item item = c.getPlayer().getInventory(inv).getItem(c.getPlayer().getScrolledPosition());
             c.getPlayer().setScrolledPosition((short) 0);
             if (item != null) {
                 final Equip eq = (Equip) item;
                 eq.setUpgradeSlots((byte) (eq.getUpgradeSlots() + 1));
                 c.getPlayer().forceReAddItem_Flag(eq, inv);
-                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, pam.getPosition(), (short) 1, true, false);
+                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, pam.getPosition(), (short) 1, true,
+                        false);
                 c.getPlayer().getMap().broadcastMessage(CField.pamsSongEffect(c.getPlayer().getId()));
             }
         } else {
@@ -3906,7 +4216,8 @@ public class InventoryHandler {
         final int itemId = slea.readInt();
         final Item toUse = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
 
-        if (toUse == null || toUse.getQuantity() < 1 || toUse.getItemId() != itemId || itemId / 10000 != 232 || c.getPlayer().hasBlockedInventory()) {
+        if (toUse == null || toUse.getQuantity() < 1 || toUse.getItemId() != itemId || itemId / 10000 != 232
+                || c.getPlayer().hasBlockedInventory()) {
             c.getSession().write(CWvsContext.enableActions());
             return;
         }
@@ -3920,10 +4231,23 @@ public class InventoryHandler {
     public static final boolean UseTeleRock(LittleEndianAccessor slea, MapleClient c, int itemId) {
         boolean used = false;
         if (slea.readByte() == 0) { // Rocktype
-            slea.readByte(); //useless byte
+            slea.readByte(); // useless byte
             final MapleMap target = c.getChannelServer().getMapFactory().getMap(slea.readInt());
-            if (target != null && ((itemId == 5041000 && c.getPlayer().isRockMap(target.getId())) || ((itemId == 5040000 || itemId == 5040001) && c.getPlayer().isRegRockMap(target.getId())) || ((itemId == 5040004 || itemId == 5041001) && (c.getPlayer().isHyperRockMap(target.getId()) || GameConstants.isHyperTeleMap(target.getId()))))) {
-                if (!FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) && !FieldLimitType.VipRock.check(target.getFieldLimit()) && !c.getPlayer().isInBlockedMap()) { //Makes sure this map doesn't have a forced return map
+            if (target != null && ((itemId == 5041000 && c.getPlayer().isRockMap(target.getId()))
+                    || ((itemId == 5040000 || itemId == 5040001) && c.getPlayer().isRegRockMap(target.getId()))
+                    || ((itemId == 5040004 || itemId == 5041001) && (c.getPlayer().isHyperRockMap(target.getId())
+                            || GameConstants.isHyperTeleMap(target.getId()))))) {
+                if (!FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit())
+                        && !FieldLimitType.VipRock.check(target.getFieldLimit()) && !c.getPlayer().isInBlockedMap()) { // Makes
+                                                                                                                       // sure
+                                                                                                                       // this
+                                                                                                                       // map
+                                                                                                                       // doesn't
+                                                                                                                       // have
+                                                                                                                       // a
+                                                                                                                       // forced
+                                                                                                                       // return
+                                                                                                                       // map
                     c.getPlayer().changeMap(target, target.getPortal(0));
                     used = true;
                 } else {
@@ -3935,10 +4259,18 @@ public class InventoryHandler {
         } else {
             final String name = slea.readMapleAsciiString();
             final MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
-            if (victim != null && !victim.isIntern() && c.getPlayer().getEventInstance() == null && victim.getEventInstance() == null) {
-                if (!FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) && !FieldLimitType.VipRock.check(c.getChannelServer().getMapFactory().getMap(victim.getMapId()).getFieldLimit()) && !victim.isInBlockedMap() && !c.getPlayer().isInBlockedMap()) {
-                    if (itemId == 5041000 || itemId == 5040004 || itemId == 5041001 || (victim.getMapId() / 100000000) == (c.getPlayer().getMapId() / 100000000)) { // Viprock or same continent
-                        c.getPlayer().changeMap(victim.getMap(), victim.getMap().findClosestPortal(victim.getTruePosition()));
+            if (victim != null && !victim.isIntern() && c.getPlayer().getEventInstance() == null
+                    && victim.getEventInstance() == null) {
+                if (!FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit())
+                        && !FieldLimitType.VipRock
+                                .check(c.getChannelServer().getMapFactory().getMap(victim.getMapId()).getFieldLimit())
+                        && !victim.isInBlockedMap() && !c.getPlayer().isInBlockedMap()) {
+                    if (itemId == 5041000 || itemId == 5040004 || itemId == 5041001
+                            || (victim.getMapId() / 100000000) == (c.getPlayer().getMapId() / 100000000)) { // Viprock
+                                                                                                            // or same
+                                                                                                            // continent
+                        c.getPlayer().changeMap(victim.getMap(),
+                                victim.getMap().findClosestPortal(victim.getTruePosition()));
                         used = true;
                     } else {
                         c.getPlayer().dropMessage(1, "You cannot go to that place.");
@@ -3947,7 +4279,8 @@ public class InventoryHandler {
                     c.getPlayer().dropMessage(1, "You cannot go to that place.");
                 }
             } else {
-                c.getPlayer().dropMessage(1, "(" + name + ") is currently difficult to locate, so the teleport will not take place.");
+                c.getPlayer().dropMessage(1,
+                        "(" + name + ") is currently difficult to locate, so the teleport will not take place.");
             }
         }
         return used;
