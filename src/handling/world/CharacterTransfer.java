@@ -53,13 +53,13 @@ public class CharacterTransfer implements Externalizable {
             meso, hair, face, demonMarking, mapid, guildid,
             partyid, messengerid, nxPrepaid, nxCredit, maplePoints,
             mount_itemid, mount_exp, points, vpoints, marriageId, maxhp, maxmp, hp, mp,
-            familyid, seniorid, junior1, junior2, currentrep, totalrep, battleshipHP, gachexp, guildContribution, totalWins, totalLosses;
+            familyid, seniorid, junior1, junior2, currentrep, totalrep, battleshipHP, gachexp, guildContribution;
     public byte channel, gender, gmLevel, guildrank, alliancerank, clonez,
             fairyExp, buddysize, world, initialSpawnPoint, skinColor, mount_level, mount_Fatigue, subcategory;
     public long lastfametime, TranferTime;
     public String name, accountname, BlessOfFairy, BlessOfEmpress, chalkboard, tempIP;
     public short level, str, dex, int_, luk, remainingAp, hpApUsed, job, fatigue;
-    public Object inventorys, skillmacro, storage, cs, battlers, anticheat;
+    public Object inventorys, skillmacro, storage, cs, anticheat;
     public int[] savedlocation, wishlist, rocks, remainingSp, regrocks, hyperrocks;
     public byte[] petStore;
     public MapleImp[] imps;
@@ -67,7 +67,7 @@ public class CharacterTransfer implements Externalizable {
     public Map<Byte, Integer> reports = new LinkedHashMap<Byte, Integer>();
     public Map<Integer, Pair<Byte, Integer>> keymap;
     public Map<Integer, MonsterFamiliar> familiars;
-    public List<Integer> finishedAchievements = null, famedcharacters = null, battledaccs = null, extendedSlots = null;
+    public List<Integer> finishedAchievements = null, famedcharacters = null, extendedSlots = null;
     public List<Item> rebuy = null;
     public final Map<MapleTraitType, Integer> traits = new EnumMap<MapleTraitType, Integer>(MapleTraitType.class);
     public final Map<CharacterNameAndId, Boolean> buddies = new LinkedHashMap<CharacterNameAndId, Boolean>();
@@ -82,7 +82,6 @@ public class CharacterTransfer implements Externalizable {
     public CharacterTransfer() {
         finishedAchievements = new ArrayList<Integer>();
         famedcharacters = new ArrayList<Integer>();
-        battledaccs = new ArrayList<Integer>();
         extendedSlots = new ArrayList<Integer>();
         rebuy = new ArrayList<Item>();
         InfoQuest = new LinkedHashMap<Integer, String>();
@@ -147,8 +146,6 @@ public class CharacterTransfer implements Externalizable {
         this.currentrep = chr.getCurrentRep();
         this.totalrep = chr.getTotalRep();
         this.familyid = chr.getFamilyId();
-        this.totalWins = chr.getTotalWins();
-        this.totalLosses = chr.getTotalLosses();
         this.seniorid = chr.getSeniorId();
         this.junior1 = chr.getJunior1();
         this.junior2 = chr.getJunior2();
@@ -220,7 +217,6 @@ public class CharacterTransfer implements Externalizable {
         this.regrocks = chr.getRegRocks();
         this.hyperrocks = chr.getHyperRocks();
         this.famedcharacters = chr.getFamedCharacters();
-        this.battledaccs = chr.getBattledCharacters();
         this.lastfametime = chr.getLastFameTime();
         this.storage = chr.getStorage();
         this.cs = chr.getCashInventory();
@@ -298,7 +294,6 @@ public class CharacterTransfer implements Externalizable {
         this.lastfametime = in.readLong();
         this.storage = in.readObject();
         this.cs = in.readObject();
-        this.battlers = in.readObject();
         this.mount_itemid = in.readInt();
         this.mount_Fatigue = in.readByte();
         this.mount_level = in.readByte();
@@ -318,8 +313,6 @@ public class CharacterTransfer implements Externalizable {
         this.totalrep = in.readInt();
         this.battleshipHP = in.readInt();
         this.gachexp = in.readInt();
-        this.totalWins = in.readInt();
-        this.totalLosses = in.readInt();
         this.anticheat = in.readObject();
         this.tempIP = in.readUTF();
         this.pvpExp = in.readInt();
@@ -363,11 +356,6 @@ public class CharacterTransfer implements Externalizable {
         final int famesize = in.readByte(); //max 31
         for (int i = 0; i < famesize; i++) {
             this.famedcharacters.add(in.readInt());
-        }
-
-        final int battlesize = in.readInt();
-        for (int i = 0; i < battlesize; i++) {
-            this.battledaccs.add(in.readInt());
         }
 
         final int esize = in.readByte();
@@ -511,7 +499,6 @@ public class CharacterTransfer implements Externalizable {
         out.writeLong(this.lastfametime);
         out.writeObject(this.storage);
         out.writeObject(this.cs);
-        out.writeObject(this.battlers);
         out.writeInt(this.mount_itemid);
         out.writeByte(this.mount_Fatigue);
         out.writeByte(this.mount_level);
@@ -531,8 +518,6 @@ public class CharacterTransfer implements Externalizable {
         out.writeInt(this.totalrep);
         out.writeInt(this.battleshipHP);
         out.writeInt(this.gachexp);
-        out.writeInt(this.totalWins);
-        out.writeInt(this.totalLosses);
         out.writeObject(this.anticheat);
         out.writeUTF(this.tempIP);
         out.writeInt(this.pvpExp);
@@ -585,11 +570,6 @@ public class CharacterTransfer implements Externalizable {
 
         out.writeByte(this.famedcharacters.size());
         for (final Integer zz : famedcharacters) {
-            out.writeInt(zz.intValue());
-        }
-
-        out.writeInt(this.battledaccs.size());
-        for (final Integer zz : battledaccs) {
             out.writeInt(zz.intValue());
         }
 

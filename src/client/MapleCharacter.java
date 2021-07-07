@@ -161,8 +161,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
     private short level, mulung_energy, combo, force, availableCP, fatigue, totalCP, hpApUsed, job, remainingAp,
             scrolledPosition;
 
-    private int accountid, id, meso, exp, hair, face, demonMarking, mapid, fame, pvpExp, pvpPoints, totalWins,
-            totalLosses, guildid = 0, fallcounter, maplepoints, NxPrepaid, NXCredit, chair, itemEffect, points, vpoints,
+    private int accountid, id, meso, exp, hair, face, demonMarking, mapid, fame, pvpExp, pvpPoints,
+            guildid = 0, fallcounter, maplepoints, NxPrepaid, NXCredit, chair, itemEffect, points, vpoints,
             rank = 1, rankMove = 0, jobRank = 1, jobRankMove = 0, marriageId, marriageItemId, dotHP, currentrep,
             totalrep, coconutteam, followid, battleshipHP, gachexp, challenge, guildContribution = 0;
 
@@ -171,7 +171,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
     private int[] wishlist, rocks, savedLocations, regrocks, hyperrocks, remainingSp = new int[10];
     private transient AtomicInteger inst, insd;
     private transient List<LifeMovementFragment> lastres;
-    private List<Integer> lastmonthfameids, lastmonthbattleids, extendedSlots;
+    private List<Integer> lastmonthfameids, extendedSlots;
     private List<MapleDoor> doors;
     private List<MechDoor> mechDoors;
     private List<MaplePet> pets;
@@ -442,8 +442,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         ret.face = ct.face;
         ret.demonMarking = ct.demonMarking;
         ret.accountid = ct.accountid;
-        ret.totalWins = ct.totalWins;
-        ret.totalLosses = ct.totalLosses;
         client.setAccID(ct.accountid);
         ret.mapid = ct.mapid;
         ret.initialSpawnPoint = ct.initialSpawnPoint;
@@ -546,7 +544,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         ret.keydown_skill = 0; // Keydown skill can't be brought over
         ret.lastfametime = ct.lastfametime;
         ret.lastmonthfameids = ct.famedcharacters;
-        ret.lastmonthbattleids = ct.battledaccs;
         ret.extendedSlots = ct.extendedSlots;
         ret.storage = (MapleStorage) ct.storage;
         ret.cs = (CashShop) ct.cs;
@@ -625,8 +622,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             ret.guildrank = rs.getByte("guildrank");
             ret.allianceRank = rs.getByte("allianceRank");
             ret.guildContribution = rs.getInt("guildContribution");
-            ret.totalWins = rs.getInt("totalWins");
-            ret.totalLosses = rs.getInt("totalLosses");
             ret.currentrep = rs.getInt("currentrep");
             ret.totalrep = rs.getInt("totalrep");
             ret.makeMFC(rs.getInt("familyid"), rs.getInt("seniorid"), rs.getInt("junior1"), rs.getInt("junior2"));
@@ -955,17 +950,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 while (rs.next()) {
                     ret.lastfametime = Math.max(ret.lastfametime, rs.getTimestamp("when").getTime());
                     ret.lastmonthfameids.add(rs.getInt("characterid_to"));
-                }
-                rs.close();
-                ps.close();
-
-                ps = con.prepareStatement(
-                        "SELECT `accid_to`,`when` FROM battlelog WHERE accid = ? AND DATEDIFF(NOW(),`when`) < 30");
-                ps.setInt(1, ret.accountid);
-                rs = ps.executeQuery();
-                ret.lastmonthbattleids = new ArrayList<>();
-                while (rs.next()) {
-                    ret.lastmonthbattleids.add(rs.getInt("accid_to"));
                 }
                 rs.close();
                 ps.close();
@@ -1375,8 +1359,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             ps.setInt(37, traits.get(MapleTraitType.insight).getTotalExp());
             ps.setInt(38, traits.get(MapleTraitType.sense).getTotalExp());
             ps.setInt(39, traits.get(MapleTraitType.will).getTotalExp());
-            ps.setInt(40, totalWins);
-            ps.setInt(41, totalLosses);
+            ps.setInt(40, 0);
+            ps.setInt(41, 0);
             ps.setInt(42, pvpExp);
             ps.setInt(43, pvpPoints);
             /* Start of Custom Features */
@@ -4764,10 +4748,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         return lastmonthfameids;
     }
 
-    public final List<Integer> getBattledCharacters() {
-        return lastmonthbattleids;
-    }
-
     public FameStatus canGiveFame(MapleCharacter from) {
         if (lastfametime >= System.currentTimeMillis() - 60 * 60 * 24 * 1000) {
             return FameStatus.NOT_TODAY;
@@ -4792,32 +4772,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             con.close();
         } catch (SQLException e) {
             System.err.println("ERROR writing famelog for char " + getName() + " to " + to.getName() + e);
-        } finally {
-            try {
-                if (con != null && !con.isClosed()) {
-                    con.close();
-                }
-            } catch (Exception ignore) {
-            }
-        }
-    }
-
-    public boolean canBattle(MapleCharacter to) {
-        return !(to == null || lastmonthbattleids == null || lastmonthbattleids.contains(to.getAccountID()));
-    }
-
-    public void hasBattled(MapleCharacter to) {
-        lastmonthbattleids.add(to.getAccountID());
-        Connection con = DatabaseConnection.getConnection();
-        try {
-            try (PreparedStatement ps = con.prepareStatement("INSERT INTO battlelog (accid, accid_to) VALUES (?, ?)")) {
-                ps.setInt(1, getAccountID());
-                ps.setInt(2, to.getAccountID());
-                ps.execute();
-                ps.close();
-            }
-        } catch (SQLException e) {
-            System.err.println("ERROR writing battlelog for char " + getName() + " to " + to.getName() + e);
         } finally {
             try {
                 if (con != null && !con.isClosed()) {
@@ -5008,22 +4962,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         if (mfc != null) {
             mfc.setTotalRep(_rank);
         }
-    }
-
-    public int getTotalWins() {
-        return totalWins;
-    }
-
-    public int getTotalLosses() {
-        return totalLosses;
-    }
-
-    public void increaseTotalWins() {
-        totalWins++;
-    }
-
-    public void increaseTotalLosses() {
-        totalLosses++;
     }
 
     public int getGuildId() {
