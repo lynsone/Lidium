@@ -2,6 +2,7 @@
 out/*
 build/*
 wz/*
+nbproject./*
 nbproject/*
 META-INF/*
 scripts/.vscode/*
