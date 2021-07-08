@@ -243,6 +243,7 @@ public class CommandsExecutor {
         addCommand("killall", 2, KillAllCommand.class);
         addCommand("listallsquads", 2, ListAllSquadsCommand.class);
         addCommand("warphere", 2, WarpHereCommand.class);
+        addCommand("monitor", 2, MonitorCommand.class);
         //addCommand("", 2, Command.class);
         commandsNameDesc.add(levelCommandsCursor);
     }
@@ -251,6 +252,7 @@ public class CommandsExecutor {
         levelCommandsCursor = new Pair<>((List<String>) new ArrayList<String>(), (List<String>) new ArrayList<String>());
         addCommand("spawn", 3, SpawnCommand.class);
         addCommand("clearreports", 3, ClearReportsCommand.class);
+        addCommand("fame", 3, FameCommand.class);
         //addCommand("", 3, Command.class);               
         commandsNameDesc.add(levelCommandsCursor);
     }
@@ -262,11 +264,20 @@ public class CommandsExecutor {
         addCommand("looknpc", 4, LookNpcCommand.class);
         addCommand("lookportal", 4, LookPortalCommand.class);
         addCommand("lookreactor", 4, LookReactorCommand.class);
-        addCommand("mynpcpost", 4, MyNpcPosCommand.class);
+        addCommand("mynpcpos", 4, MyNpcPosCommand.class);
         addCommand("spawndebug", 4, SpawnDebugCommand.class);
         addCommand("jobperson", 4, JobPersonCommand.class);
         addCommand("drop", 4, DropCommand.class);
         addCommand("multidrop", 4, MultiDropCommand.class);
+        addCommand("reloaddrops", 4, ReloadDropsCommand.class);
+        addCommand("reloadevents", 4, ReloadEventsCommand.class);
+        addCommand("reloadmap", 4, ReloadMapCommand.class);
+        addCommand("reloadops", 4, ReloadOpsCommand.class);
+        addCommand("reloadportal", 4, ReloadPortalCommand.class);
+        addCommand("reloadshops", 4, ReloadShopsCommand.class);   
+        addCommand("npc", 4, NpcCommand.class);
+        addCommand("setsubcategory", 4, SetSubCategoryCommand.class);
+        addCommand("ap", 4, ApCommand.class);
         //addCommand("", 4, Command.class);
         commandsNameDesc.add(levelCommandsCursor);
     }
@@ -274,6 +285,13 @@ public class CommandsExecutor {
     private void registerLv5Commands() {
         levelCommandsCursor = new Pair<>((List<String>) new ArrayList<String>(), (List<String>) new ArrayList<String>());
         addCommand("servermessage", 5, ServerMessageCommand.class);
+        addCommand("playernpc", 5, PlayerNpcCommand.class);  
+        addCommand("offlineplayernpc", 5, OfflinePlayerNpcCommand.class);  
+        addCommand("toggleoffence", 5, ToggleOffenceCommand.class);
+        addCommand("mesorate", 5, MesoRateCommand.class);
+        addCommand("droprate", 5, DropRateCommand.class);  
+        addCommand("exprate", 5, ExpRateCommand.class);  
+        addCommand("setgmlevel", 5, SetGMLevelCommand.class);  
         //addCommand("", 5, Command.class);             
         commandsNameDesc.add(levelCommandsCursor);
     }

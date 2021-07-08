@@ -2962,7 +2962,7 @@ public class GameConstants {
 
     public static float getExpRateByLevel(final int level, final int channel) {
         if (level < 10) {
-            return 1.0f;
+            return 10.0f;
         } else {
             return ChannelServer.getInstance(channel).getExpRate();
         }

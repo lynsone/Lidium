@@ -291,6 +291,10 @@ public class ChannelServer {
     public final float getDropRate() {
         return dropRate;
     }
+    
+    public final void setDropRate(final float dropRate) {
+        this.dropRate = dropRate;
+    }
 
     public static final void startChannel_Main() {
 
