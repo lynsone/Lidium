@@ -264,7 +264,7 @@ public class CommandsExecutor {
         addCommand("looknpc", 4, LookNpcCommand.class);
         addCommand("lookportal", 4, LookPortalCommand.class);
         addCommand("lookreactor", 4, LookReactorCommand.class);
-        addCommand("mynpcpost", 4, MyNpcPosCommand.class);
+        addCommand("mynpcpos", 4, MyNpcPosCommand.class);
         addCommand("spawndebug", 4, SpawnDebugCommand.class);
         addCommand("jobperson", 4, JobPersonCommand.class);
         addCommand("drop", 4, DropCommand.class);
