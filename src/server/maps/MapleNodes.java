@@ -81,7 +81,7 @@ public class MapleNodes {
 
         public int x, y, key;
         public boolean forcedInput;
-        public List<String> eventQ = new ArrayList<String>();
+        public List<String> EventQ = new ArrayList<String>();
 
         public DirectionInfo(int key, int x, int y, boolean forcedInput) {
             this.key = key;

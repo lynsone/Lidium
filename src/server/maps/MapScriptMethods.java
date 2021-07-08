@@ -1698,12 +1698,12 @@ public class MapScriptMethods {
     public static void startDirectionInfo(MapleCharacter chr, boolean start) {
 		final MapleClient c = chr.getClient();
 		DirectionInfo di = chr.getMap().getDirectionInfo(start ? 0 : chr.getDirection());
-        if (di != null && di.eventQ.size() > 0) {
+        if (di != null && di.EventQ.size() > 0) {
             if (start) {
                 c.getSession().write(UIPacket.IntroDisableUI(true));
                 c.getSession().write(UIPacket.getDirectionInfo(3, 4));
             } else {
-                for (String s : di.eventQ) {
+                for (String s : di.EventQ) {
                     switch (directionInfo.fromString(s)) {
                         case merTutorDrecotion01: //direction info: 1 is probably the time
                             c.getSession().write(UIPacket.getDirectionInfo("Effect/Direction5.img/effect/mercedesInIce/merBalloon/0", 2000, 0, -100, 1));
