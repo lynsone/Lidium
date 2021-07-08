@@ -51,32 +51,47 @@ public class MapleGuildAlliance implements java.io.Serializable {
     public MapleGuildAlliance(final int id) {
         super();
 
+        Connection con = DatabaseConnection.getConnection();
         try {
-            Connection con = DatabaseConnection.getConnection();
             PreparedStatement ps = con.prepareStatement("SELECT * FROM alliances WHERE id = ?");
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
-            if (!rs.first()) {
+            boolean read = false;
+
+            if (rs.next()) {
+                allianceid = id;
+                name = rs.getString("name");
+                capacity = rs.getInt("capacity");
+                for (int i = 1; i < 6; i++) {
+                    guilds[i - 1] = rs.getInt("guild" + i);
+                    ranks[i - 1] = rs.getString("rank" + i);
+                }
+                leaderid = rs.getInt("leaderid");
+                notice = rs.getString("notice");
+                read = true;
+            }
+            if (!read) {
                 rs.close();
                 ps.close();
+                con.close();
                 allianceid = -1;
                 return;
             }
-            allianceid = id;
-            name = rs.getString("name");
-            capacity = rs.getInt("capacity");
-            for (int i = 1; i < 6; i++) {
-                guilds[i - 1] = rs.getInt("guild" + i);
-                ranks[i - 1] = rs.getString("rank" + i);
-            }
-            leaderid = rs.getInt("leaderid");
-            notice = rs.getString("notice");
             rs.close();
             ps.close();
+            con.close();
         } catch (SQLException se) {
             System.err.println("unable to read guild information from sql");
             se.printStackTrace();
             return;
+        } finally {
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (Exception ignore) {
+
+                }
+            }
         }
     }
 
@@ -130,7 +145,7 @@ public class MapleGuildAlliance implements java.io.Serializable {
             ps.setString(1, name);
             ResultSet rs = ps.executeQuery();
 
-            if (rs.first()) {// name taken
+            if (rs.next()) {// name taken
                 rs.close();
                 ps.close();
                 return ret;
@@ -154,6 +169,13 @@ public class MapleGuildAlliance implements java.io.Serializable {
         } catch (SQLException SE) {
             System.err.println("SQL THROW");
             SE.printStackTrace();
+        }finally{
+            if(con!=null){
+                try {
+                    con.close();
+                } catch (SQLException ignore) {
+                }
+            }
         }
         return ret;
     }
