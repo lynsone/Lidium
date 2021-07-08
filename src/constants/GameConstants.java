@@ -2961,11 +2961,11 @@ public class GameConstants {
     }
 
     public static float getExpRateByLevel(final int level, final int channel) {
-        if (level < 10) {
-            return 1.0f;
-        } else {
+        //if (level < 10) {
+        //    return 1.0f;
+        //} else {
             return ChannelServer.getInstance(channel).getExpRate();
-        }
+        //}
     }
 
     public static int getExpRate_Quest(final int level) {
