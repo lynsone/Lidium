@@ -267,6 +267,12 @@ public class CommandsExecutor {
         addCommand("jobperson", 4, JobPersonCommand.class);
         addCommand("drop", 4, DropCommand.class);
         addCommand("multidrop", 4, MultiDropCommand.class);
+        addCommand("reloaddrops", 4, ReloadDropsCommand.class);
+        addCommand("reloadevents", 4, ReloadEventsCommand.class);
+        addCommand("reloadmap", 4, ReloadMapCommand.class);
+        addCommand("reloadops", 4, ReloadOpsCommand.class);
+        addCommand("reloadportal", 4, ReloadPortalCommand.class);
+        addCommand("reloadshops", 4, ReloadShopsCommand.class);       
         //addCommand("", 4, Command.class);
         commandsNameDesc.add(levelCommandsCursor);
     }
@@ -274,6 +280,13 @@ public class CommandsExecutor {
     private void registerLv5Commands() {
         levelCommandsCursor = new Pair<>((List<String>) new ArrayList<String>(), (List<String>) new ArrayList<String>());
         addCommand("servermessage", 5, ServerMessageCommand.class);
+        addCommand("playernpc", 5, PlayerNpcCommand.class);  
+        addCommand("offlineplayernpc", 5, OfflinePlayerNpcCommand.class);  
+        addCommand("toggleoffence", 5, ToggleOffenceCommand.class);
+        addCommand("mesorate", 5, MesoRateCommand.class);
+        addCommand("droprate", 5, DropRateCommand.class);  
+        addCommand("exprate", 5, ExpRateCommand.class);  
+        addCommand("setgmlevel", 5, SetGMLevelCommand.class);  
         //addCommand("", 5, Command.class);             
         commandsNameDesc.add(levelCommandsCursor);
     }

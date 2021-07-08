@@ -1613,4 +1613,8 @@ public class MapleClient implements Serializable {
         }
         return updated;
     }
+    
+    public void setGMLevel(int level){
+        gm = level > 4 ? true : false;
+    }
 }

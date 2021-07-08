@@ -7665,6 +7665,11 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
     public final PlayerRandomStream CRand() {
         return CRand;
     }
+    
+    public void setGMLevel(int level){
+        this.gmLevel = (byte) Math.min(level, 5);
+        this.gmLevel = (byte) Math.max(level, 0);
+    }
 
     /* Start of Custom Feature */
     public int getReborns() {
