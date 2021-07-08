@@ -243,6 +243,7 @@ public class CommandsExecutor {
         addCommand("killall", 2, KillAllCommand.class);
         addCommand("listallsquads", 2, ListAllSquadsCommand.class);
         addCommand("warphere", 2, WarpHereCommand.class);
+        addCommand("monitor", 2, MonitorCommand.class);
         //addCommand("", 2, Command.class);
         commandsNameDesc.add(levelCommandsCursor);
     }
@@ -251,6 +252,7 @@ public class CommandsExecutor {
         levelCommandsCursor = new Pair<>((List<String>) new ArrayList<String>(), (List<String>) new ArrayList<String>());
         addCommand("spawn", 3, SpawnCommand.class);
         addCommand("clearreports", 3, ClearReportsCommand.class);
+        addCommand("fame", 3, FameCommand.class);
         //addCommand("", 3, Command.class);               
         commandsNameDesc.add(levelCommandsCursor);
     }
@@ -272,7 +274,10 @@ public class CommandsExecutor {
         addCommand("reloadmap", 4, ReloadMapCommand.class);
         addCommand("reloadops", 4, ReloadOpsCommand.class);
         addCommand("reloadportal", 4, ReloadPortalCommand.class);
-        addCommand("reloadshops", 4, ReloadShopsCommand.class);       
+        addCommand("reloadshops", 4, ReloadShopsCommand.class);   
+        addCommand("npc", 4, NpcCommand.class);
+        addCommand("setsubcategory", 4, SetSubCategoryCommand.class);
+        addCommand("ap", 4, ApCommand.class);
         //addCommand("", 4, Command.class);
         commandsNameDesc.add(levelCommandsCursor);
     }
