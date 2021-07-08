@@ -544,7 +544,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         ret.keydown_skill = 0; // Keydown skill can't be brought over
         ret.lastfametime = ct.lastfametime;
         ret.lastmonthfameids = ct.famedcharacters;
-        ret.extendedSlots = ct.extendedSlots;
+        //ret.extendedSlots = ct.extendedSlots;
+        ret.extendedSlots = null;
         ret.storage = (MapleStorage) ct.storage;
         ret.cs = (CashShop) ct.cs;
         client.setAccountName(ct.accountname);
@@ -954,6 +955,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 rs.close();
                 ps.close();
 
+                /*
                 ps = con.prepareStatement("SELECT `itemId` FROM extendedSlots WHERE characterid = ?");
                 ps.setInt(1, charid);
                 rs = ps.executeQuery();
@@ -962,7 +964,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 }
                 rs.close();
                 ps.close();
-
+                */
                 ret.buddylist.loadFromDb(charid);
                 ret.storage = MapleStorage.loadStorage(ret.accountid);
                 ret.cs = new CashShop(ret.accountid, charid, ret.getJob());
