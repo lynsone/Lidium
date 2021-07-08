@@ -113,7 +113,7 @@ public class GuildHandler {
                 c.getSession().write(GuildPacket.newGuildInfo(c.getPlayer()));
 		World.Guild.gainGP(c.getPlayer().getGuildId(), 500, c.getPlayer().getId());
                 //c.getPlayer().dropMessage(1, "You have successfully created a Guild.");
-                //respawnPlayer(c.getPlayer());
+                respawnPlayer(c.getPlayer());
                 break;
             case 0x05: // invitation
                 if (c.getPlayer().getGuildId() <= 0 || c.getPlayer().getGuildRank() > 2) { // 1 == guild master, 2 == jr
