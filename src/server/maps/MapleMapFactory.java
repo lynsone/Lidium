@@ -1097,10 +1097,10 @@ public class MapleMapFactory {
             final MapleData mc = mapData.getChildByPath("directionInfo");
             for (MapleData area : mc) {
                 DirectionInfo di = new DirectionInfo(Integer.parseInt(area.getName()), MapleDataTool.getInt("x", area, 0), MapleDataTool.getInt("y", area, 0), MapleDataTool.getInt("forcedInput", area, 0) > 0);
-                final MapleData mc2 = area.getChildByPath("eventQ");
+                final MapleData mc2 = area.getChildByPath("EventQ");
                 if (mc2 != null) {
                     for (MapleData event : mc2) {
-                        di.eventQ.add(MapleDataTool.getString(event));
+                        di.EventQ.add(MapleDataTool.getString(event));
                     }
                 }
                 nodeInfo.addDirection(Integer.parseInt(area.getName()), di);
