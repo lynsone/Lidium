@@ -5,8 +5,8 @@ function init() {
 function scheduleNew() {
     em.setProperty("docked", "true");
     em.setProperty("entry", "true");
-    em.schedule("stopEntry", 240000); //The time to close the gate, 4 min
-    em.schedule("takeoff", 300000); // The time to begin the ride, 5 min
+    em.schedule("stopEntry", 60000); //The time to close the gate, 1 min
+    em.schedule("takeoff", 90000); // The time to begin the ride, 1:30 min
 }
 
 function stopEntry() {

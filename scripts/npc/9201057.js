@@ -30,7 +30,10 @@ function action(mode, type, selection) {
 	}
 	if (status == 0) {
 	    switch (cm.getMapId()) {
-		case 103000100:
+                case 103000100: //same as 103020000 newbms only
+                    section =0;
+                    break;
+		case 103020000: //newer version of 103000100
 		    section = 0;
 		    break;
 		case 600010001:
@@ -43,7 +46,7 @@ function action(mode, type, selection) {
 		    section = 3;
 		    break;
 		default:
-		    cm.sendNext("Error~");
+		    cm.sendNext("Error~ mapid not defined.");
 		    cm.dispose();
 		    break;
 	    }
