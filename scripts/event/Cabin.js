@@ -56,7 +56,7 @@ var  rideTime = 5 * 60 * 1000; //The time that require move to destination
 function init() {
     closeTime = em.getTransportationTime(closeTime);
     beginTime = em.getTransportationTime(beginTime);
-     rideTime = em.getTransportationTime(rideTime);
+    rideTime = em.getTransportationTime(rideTime);
     
     Orbis_btf = em.getChannelServer().getMapFactory().getMap(200000132);
     Leafre_btf = em.getChannelServer().getMapFactory().getMap(240000111);

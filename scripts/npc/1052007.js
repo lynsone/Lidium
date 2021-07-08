@@ -1,5 +1,5 @@
 var itemid = new Array(4031036,4031037,4031038,4031711);
-var mapid = new Array(910360000,910360100,910360200,600000000);
+var mapid = new Array(910360000,910360100,910360200,600010004);
 var menu;
 var status;
 var sw;
