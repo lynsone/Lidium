@@ -85,32 +85,37 @@ public class MapleGuild implements java.io.Serializable {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM guilds WHERE guildid = ?");
             ps.setInt(1, guildid);
             ResultSet rs = ps.executeQuery();
+            boolean read=false;
+          
+            while(rs.next()){
 
-            if (!rs.first()) {
+                id = guildid;
+                name = rs.getString("name");
+                gp = rs.getInt("GP");
+                logo = rs.getInt("logo");
+                logoColor = rs.getInt("logoColor");
+                logoBG = rs.getInt("logoBG");
+                logoBGColor = rs.getInt("logoBGColor");
+                capacity = rs.getInt("capacity");
+                rankTitles[0] = rs.getString("rank1title");
+                rankTitles[1] = rs.getString("rank2title");
+                rankTitles[2] = rs.getString("rank3title");
+                rankTitles[3] = rs.getString("rank4title");
+                rankTitles[4] = rs.getString("rank5title");
+                leader = rs.getInt("leader");
+                notice = rs.getString("notice");
+                signature = rs.getInt("signature");
+                allianceid = rs.getInt("alliance");
+                read=true;
+            }
+            rs.close();
+            ps.close();
+            if(!read){
                 rs.close();
                 ps.close();
                 id = -1;
                 return;
             }
-            id = guildid;
-            name = rs.getString("name");
-            gp = rs.getInt("GP");
-            logo = rs.getInt("logo");
-            logoColor = rs.getInt("logoColor");
-            logoBG = rs.getInt("logoBG");
-            logoBGColor = rs.getInt("logoBGColor");
-            capacity = rs.getInt("capacity");
-            rankTitles[0] = rs.getString("rank1title");
-            rankTitles[1] = rs.getString("rank2title");
-            rankTitles[2] = rs.getString("rank3title");
-            rankTitles[3] = rs.getString("rank4title");
-            rankTitles[4] = rs.getString("rank5title");
-            leader = rs.getInt("leader");
-            notice = rs.getString("notice");
-            signature = rs.getInt("signature");
-            allianceid = rs.getInt("alliance");
-            rs.close();
-            ps.close();
 
             MapleGuildAlliance alliance = World.Alliance.getAlliance(allianceid);
             if (alliance == null) {
@@ -120,18 +125,13 @@ public class MapleGuild implements java.io.Serializable {
             ps = con.prepareStatement("SELECT id, name, level, job, guildrank, guildContribution, alliancerank FROM characters WHERE guildid = ? ORDER BY guildrank ASC, name ASC", ResultSet.CONCUR_UPDATABLE);
             ps.setInt(1, guildid);
             rs = ps.executeQuery();
-
-            if (!rs.first()) {
-                System.err.println("No members in guild " + id + ".  Impossible... guild is disbanding");
-                rs.close();
-                ps.close();
-                writeToDB(true);
-                proper = false;
-                return;
-            }
+            read=false;
+            
             boolean leaderCheck = false;
             byte gFix = 0, aFix = 0;
-            do {
+            
+            while(rs.next()) {
+                read=true;
                 int cid = rs.getInt("id");
                 byte gRank = rs.getByte("guildrank"), aRank = rs.getByte("alliancerank");
 
@@ -161,7 +161,15 @@ public class MapleGuild implements java.io.Serializable {
                     }
                 }
                 members.add(new MapleGuildCharacter(cid, rs.getShort("level"), rs.getString("name"), (byte) -1, rs.getInt("job"), gRank, rs.getInt("guildContribution"), aRank, guildid, false));
-            } while (rs.next());
+            }
+            if (!read) {
+                System.err.println("No members in guild " + id + ".  Impossible... guild is disbanding");
+                rs.close();
+                ps.close();
+                writeToDB(true);
+                proper = false;
+                return;
+            }
             rs.close();
             ps.close();
 
@@ -642,15 +650,16 @@ public class MapleGuild implements java.io.Serializable {
         if (name.length() > 12) {
             return 0;
         }
+        Connection con = DatabaseConnection.getConnection();
         try {
-            Connection con = DatabaseConnection.getConnection();
             PreparedStatement ps = con.prepareStatement("SELECT guildid FROM guilds WHERE name = ?");
             ps.setString(1, name);
             ResultSet rs = ps.executeQuery();
 
-            if (rs.first()) {// name taken
+            if (rs.next()) {// name taken
                 rs.close();
                 ps.close();
+                con.close();
                 return 0;
             }
             ps.close();
@@ -673,6 +682,14 @@ public class MapleGuild implements java.io.Serializable {
             System.err.println("SQL THROW");
             se.printStackTrace();
             return 0;
+        }
+        finally{
+            if(con!=null){
+                try {
+                    con.close();
+                } catch (SQLException ignore) {
+                }
+            }
         }
     }
 
