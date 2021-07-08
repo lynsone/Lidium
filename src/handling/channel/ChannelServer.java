@@ -22,6 +22,8 @@ package handling.channel;
 
 import client.MapleCharacter;
 import constants.GameConstants;
+import constants.ServerConstants;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Collection;
@@ -300,7 +302,7 @@ public class ChannelServer {
 
         serverStartTime = System.currentTimeMillis();
 
-        int amountOfChannels = 2; // should be constant
+        short amountOfChannels = Short.parseShort(ServerProperties.getProperty("net.sf.odinms.channel.count")); 
         for (int i = 1; i <= amountOfChannels; i++) {
             newInstance(i).run_startup_configurations();
         }
