@@ -815,6 +815,10 @@ public class MapScriptMethods {
             return;
         } //o_O
         String data = "";
+        if(c.getPlayer().isGM()){
+            System.out.println("[Script Map]: "+scriptName);
+            c.getPlayer().dropMessage(5, "[Script Map]: "+scriptName);
+        }
         switch (onUserEnter.fromString(scriptName)) {
             case cannon_tuto_direction: {
                 showIntro(c, "Effect/Direction4.img/cannonshooter/Scene00");
