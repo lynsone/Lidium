@@ -292,6 +292,7 @@ public class CommandsExecutor {
         addCommand("droprate", 5, DropRateCommand.class);  
         addCommand("exprate", 5, ExpRateCommand.class);  
         addCommand("setgmlevel", 5, SetGMLevelCommand.class);  
+        addCommand("travelrate", 5, TravelRateCommand.class);
         //addCommand("", 5, Command.class);             
         commandsNameDesc.add(levelCommandsCursor);
     }

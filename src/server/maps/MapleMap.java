@@ -58,6 +58,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
+import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import server.MapleItemInformationProvider;
@@ -136,7 +137,8 @@ public final class MapleMap {
     private MapleNodes nodes;
     private MapleSquadType squad;
     private final Map<String, Integer> environment = new LinkedHashMap<String, Integer>();
-    private boolean docked;
+    private boolean boat;
+    private boolean docked = false;
 
     public MapleMap(final int mapid, final int channel, final int returnMapId, final float monsterRate) {
         this.soaring = false;
@@ -159,14 +161,6 @@ public final class MapleMap {
         }
         mapobjects = Collections.unmodifiableMap(objsMap);
         mapobjectlocks = Collections.unmodifiableMap(objlockmap);
-    }
-
-    public void setDocked(boolean docked) {
-        this.docked = docked;
-    }
-
-    public boolean getDocked() {
-        return docked;
     }
 
     public MapleMap() {
@@ -234,7 +228,7 @@ public final class MapleMap {
     }
 
     public final MapleMap getReturnMap() {
-        return ChannelServer.getInstance(channel).getMapFactory().getMap(returnMapId);
+        return ChannelServer.getInstance(channel).getMapFactory().getMap(returnMapId);       
     }
 
     public final int getReturnMapId() {
@@ -2073,6 +2067,115 @@ public final class MapleMap {
         }
         if (chr.getJob() < 3200 || chr.getJob() > 3212) {
             chr.cancelEffectFromBuffStat(MapleBuffStat.AURA);
+        }  
+        
+        if (mapid == 200090060) { // To Rien
+            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(1 * 60 * 1000);
+            chr.getClient().getSession().write(CField.getClock(travelTime / 1000));
+            TimerManager.getInstance().schedule(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (chr.getMapId() == 200090060) {
+                        chr.changeMap(140020300, 0);
+                    }
+                }
+            }, travelTime);
+        } else if (mapid == 200090070) { // To Lith Harbor
+            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(1 * 60 * 1000);
+            chr.getClient().getSession().write(CField.getClock(travelTime / 1000));
+            TimerManager.getInstance().schedule(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (chr.getMapId() == 200090070) {
+                        chr.changeMap(104000000, 3);
+                    }
+                }
+            }, travelTime);
+        } else if (mapid == 200090030) { // To Ereve (SkyFerry)
+            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(2 * 60 * 1000);
+            chr.getClient().getSession().write(CField.getClock(travelTime / 1000));
+            TimerManager.getInstance().schedule(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (chr.getMapId() == 200090030) {
+                        chr.changeMap(130000210, 0);
+                    }
+                }
+            }, travelTime);
+        } else if (mapid == 200090031) { // To Victoria Island (SkyFerry)
+            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(2 * 60 * 1000);
+            chr.getClient().getSession().write(CField.getClock(travelTime / 1000));
+            TimerManager.getInstance().schedule(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (chr.getMapId() == 200090031) {
+                        chr.changeMap(101000400, 0);
+                    }
+                }
+            }, travelTime);
+        } else if (mapid == 200090021) { // To Orbis from ereve (SkyFerry)
+            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(8 * 60 * 1000);
+            chr.getClient().getSession().write(CField.getClock(travelTime / 1000));
+            TimerManager.getInstance().schedule(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (chr.getMapId() == 200090021) {
+                        chr.changeMap(200000100, 0);
+                    }
+                }
+            }, travelTime);
+        } else if (mapid == 200090020) { // To Ereve From Orbis (SkyFerry)
+            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(8 * 60 * 1000);
+            chr.getClient().getSession().write(CField.getClock(travelTime / 1000));
+            TimerManager.getInstance().schedule(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (chr.getMapId() == 200090020) {
+                        chr.changeMap(130000210, 0);
+                    }
+                }
+            }, travelTime);
+        } else if (mapid == 200090600) { // To edelstein From Orbis
+            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(8 * 60 * 1000);
+            chr.getClient().getSession().write(CField.getClock(travelTime / 1000));
+            TimerManager.getInstance().schedule(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (chr.getMapId() == 200090600) { //edelstein bound
+                        chr.changeMap(310000010, 0); //edelstein station
+                    }
+                }
+            }, travelTime);
+        } else if (mapid == 200090610) { // To orbis From edelstein
+            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(8 * 60 * 1000);
+            chr.getClient().getSession().write(CField.getClock(travelTime / 1000));
+            TimerManager.getInstance().schedule(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (chr.getMapId() == 200090610) { //orbis bound
+                        chr.changeMap(200000100, 0); //orbis station
+                    }
+                }
+            }, travelTime);
+        }
+        
+        if(mapid == 0){
+            ChannelServer.getInstance(channel).getTransportationTime(1 * 60 * 1000);
+        }
+        if (hasBoat() > 0) {
+            if (hasBoat() == 1) {
+                chr.getClient().getSession().write(CField.boatStatePacket(true));
+            } else {
+                chr.getClient().getSession().write(CField.boatStatePacket(false));
+            }
         }
     }
 
@@ -3463,5 +3566,58 @@ public final class MapleMap {
 
     public DirectionInfo getDirectionInfo(int i) {
         return nodes.getDirection(i);
+    }
+    
+    public void broadcastShip(final boolean state) {
+        broadcastMessage(CField.boatStatePacket(state));
+        this.setDocked(state);
+    }
+    
+    public void broadcastBalrogShip(final boolean state) {
+        broadcastMessage(CField.boatPacket(state));
+        this.setDocked(state);
+    }
+    
+    private int hasBoat() {
+        return !boat ? 0 : (docked ? 1 : 2);
+    }
+
+    public void setBoat(boolean hasBoat) {
+        this.boat = hasBoat;
+    }
+
+    public void setDocked(boolean isDocked) {
+        this.docked = isDocked;
+    }
+    
+    public boolean getDocked() {
+        return this.docked;
+    }
+    
+    public void warpEveryone(int to) {
+        List<MapleCharacter> players = new ArrayList<>(getCharacters());
+        
+        for (MapleCharacter chr : players) {
+            chr.changeMap(to);
+        }
+    }
+    
+    public void warpEveryone(int to, int pto) {
+        List<MapleCharacter> players = new ArrayList<>(getCharacters());
+        
+        for (MapleCharacter chr : players) {
+            chr.changeMap(to, pto);
+        }
+    }
+    
+    public MaplePortal getRandomPlayerSpawnpoint() {
+        List<MaplePortal> spawnPoints = new ArrayList<>();
+        for (MaplePortal portal : portals.values()) {
+            if (portal.getType() >= 0 && portal.getType() <= 1 && portal.getTargetMapId() == 999999999) {
+                spawnPoints.add(portal);
+            }
+        }
+        MaplePortal portal = spawnPoints.get(new Random().nextInt(spawnPoints.size()));
+        return portal != null ? portal : getPortal(0);
     }
 }

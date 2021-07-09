@@ -10,7 +10,7 @@ function action(mode, type, selection) {
     if (mode == 0) {
 	cm.sendOk("FUUUUUU!, COME WITH ME!");
     } else {
-	cm.warp(104000000,0);
+	cm.warp(200090070,0);
     }
     cm.dispose();
 }

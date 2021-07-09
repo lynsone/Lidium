@@ -6,7 +6,7 @@ function action(mode,type,selection) {
     if (mode == 1) { //or 931000400 + selection..?
 	switch(selection) {
 	    case 0:
-		cm.warp(310000010,0);
+		cm.warp(200090600, 0);
 		break;
 	}
     }

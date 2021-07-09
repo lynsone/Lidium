@@ -2836,6 +2836,32 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         final MapleMap map = client.getChannelServer().getMapFactory().getMap(mapid);
         changeMap(map, map.getPortal(portal));
     }
+    
+    public void changeMap(int map) {
+        MapleMap warpMap;
+        EventInstanceManager eim = getEventInstance();
+        
+        if (eim != null) {
+            warpMap = eim.getMapInstance(map);
+        } else {
+            warpMap = client.getChannelServer().getMapFactory().getMap(map);
+        }
+        
+        changeMap(warpMap, warpMap.getRandomPlayerSpawnpoint());
+    }
+    
+    public void changeMap(int map, int portal) {
+        MapleMap warpMap;
+        EventInstanceManager eim = getEventInstance();
+        
+        if (eim != null) {
+            warpMap = eim.getMapInstance(map);
+        } else {
+            warpMap = client.getChannelServer().getMapFactory().getMap(map);
+        }
+
+        changeMap(warpMap, warpMap.getPortal(portal));
+    }
 
     public void changeMap(final MapleMap to, final Point pos) {
         changeMapInternal(to, pos, CField.getWarpToMap(to, 0x80, this), null);
