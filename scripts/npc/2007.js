@@ -1,5 +1,12 @@
 var status = -1;
 
+function start() {
+    cm.warp(104000000);
+    cm.sendPlayerToNpc("Ah, finally here!");
+    cm.dispose();
+}
+
+/*
 function action(mode, type, selection) {
     if (cm.getPlayer().getLevel() != 1 || cm.getPlayer().getMapId() != 10000) {
 	cm.dispose();
@@ -22,3 +29,4 @@ function action(mode, type, selection) {
 	cm.dispose();
     }
 }
+*/
