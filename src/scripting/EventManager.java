@@ -373,10 +373,6 @@ public class EventManager {
         return new MapleReactor(MapleReactorFactory.getReactor(id), id);
     }
 
-    public void broadcastShip(final int mapid, final int effect, final int mode) {
-        getMapFactory().getMap(mapid).broadcastMessage(CField.boatPacket(effect, mode));
-    }
-
     public void broadcastYellowMsg(final String msg) {
         getChannelServer().broadcastPacket(CWvsContext.yellowChat(msg));
     }
@@ -435,5 +431,9 @@ public class EventManager {
         for (int i = 0; i < eventChannel.length; i++) {
             eventChannel[i] = Randomizer.nextInt(ChannelServer.getAllInstances().size() - 4) + 2 + i; //2-13
         }
+    }
+    
+    public int getTransportationTime(int travelTime) {
+        return this.getChannelServer().getTransportationTime(travelTime);
     }
 }

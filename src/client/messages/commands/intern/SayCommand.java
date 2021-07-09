@@ -12,18 +12,7 @@ public class SayCommand extends Command{
     public void execute(MapleClient c, String[] splitted) {
         if (splitted.length > 0) {
             StringBuilder sb = new StringBuilder();
-            sb.append("[");
-            if (c.getPlayer().isIntern()){
-                sb.append("Intern ");
-            }else if (c.getPlayer().isGM()) {
-                sb.append("GM ");
-            }else if (c.getPlayer().isHeadGM()) {
-                sb.append("Head-GM ");
-            }else if (c.getPlayer().isDeveloper()) {
-                sb.append("Developer ");
-            }else if (c.getPlayer().isAdmin()) {
-                sb.append("Admin ");
-            }
+            sb.append("[");            
             sb.append(c.getPlayer().getName());
             sb.append("] ");
             sb.append(StringUtil.joinStringFrom(splitted, 0));

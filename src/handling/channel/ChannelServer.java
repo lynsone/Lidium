@@ -71,7 +71,7 @@ public class ChannelServer {
     private float expRate, mesoRate, dropRate = 1, cashRate = 1, traitRate = 1; // ???????
     private short port = 8585;
     private static final short DEFAULT_PORT = 8585;
-    private int channel, running_MerchantID = 0, flags = 0;
+    private int channel, running_MerchantID = 0, flags = 0, travelrate;
     private String serverMessage, ip, serverName;
     private boolean shutdown = false, finishedShutdown = false, MegaphoneMuteState = false, adminOnly = false;
     private PlayerStorage players;
@@ -118,6 +118,7 @@ public class ChannelServer {
             expRate = Float.parseFloat(ServerProperties.getProperty("net.sf.odinms.world.exp"));
             mesoRate = Float.parseFloat(ServerProperties.getProperty("net.sf.odinms.world.meso"));
             dropRate = Float.parseFloat(ServerProperties.getProperty("net.sf.odinms.world.dropRate"));
+            travelrate = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.travelrate"));
             serverMessage = ServerProperties.getProperty("net.sf.odinms.world.serverMessage");
             serverName = ServerProperties.getProperty("net.sf.odinms.login.serverName");
             flags = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.flags", "0"));
@@ -550,5 +551,17 @@ public class ChannelServer {
 
     public float getTraitRate() {
         return traitRate;
+    }
+    
+    public int getTravelRate() {
+        return travelrate;
+    }
+    
+    public void setTravelRate(int travel) {
+        this.travelrate = travel;
+    }
+    
+    public int getTransportationTime(int travelTime) {
+        return (int) Math.ceil(travelTime / travelrate);
     }
 }

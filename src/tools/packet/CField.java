@@ -1710,26 +1710,19 @@ public class CField {
         return mplew.getPacket();
     }
 
-    public static byte[] boatPacket(int effect, int mode) {
+    public static byte[] boatPacket(boolean type) { //balrog ship packet      
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
         mplew.writeShort(SendPacketOpcode.BOAT_MOVE.getValue());
-        mplew.write(effect); // 8 = start, 10 = move, 12 = end
-        mplew.write(mode);
-        // Effect 8: 2 = ship go
-        // Effect 10: 4 = appears, 5 = disappears
-        // Effect 12: 6 = ship arrives
-
+        mplew.write(10);
+        mplew.write(type ? 4 : 5);
         return mplew.getPacket();
     }
-
-    public static byte[] setBoatState(int effect) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
+    
+    public static byte[] boatStatePacket(boolean type) { //boat state docked yes/no
+        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendPacketOpcode.BOAT_STATE.getValue());
-        mplew.write(effect); // 0/1/6: arrives | 3/4/2/5: go
-        mplew.write(1);  // we put 1 here
-
+        mplew.write(type ? 1 : 2);
+        mplew.write(0);
         return mplew.getPacket();
     }
 
