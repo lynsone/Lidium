@@ -81,5 +81,8 @@ function action(mode, type, selection) {
 		cm.getPlayer().changeJob(3100);
 		cm.warp(310010000,0);
 		cm.dispose();
+		importPackage(Packages.client.messages.commands.player);
+		var dispose = new DisposeCommand();
+		dispose.execute(cm.getClient(), null);
 	}
 }

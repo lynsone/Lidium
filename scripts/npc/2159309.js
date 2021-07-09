@@ -1,23 +1,25 @@
 var status = -1;
 
+
 function action(mode, type, selection) {
+	java.lang.System.out.println("hi");
 	if (cm.getMap().getAllMonstersThreadsafe().size() > 0) {
-		cm.dispose();	
+		cm.dispose();
 		return;
 	}
-    if (mode == 1) {
-	status++;
-    } else {
-	if (status == 0) {
-	    cm.dispose();
+	if (mode == 1) {
+		status++;
+	} else {
+		if (status == 0) {
+			cm.dispose();
+		}
+		status--;
 	}
-	status--;
-    }
-    if (status == 0) {
+	if (status == 0) {
 		cm.sendNextNoESC("Oh, look, it's #h0#? How was your trip? Was it worth disobeying orders? And how was your family? Heh heh...", 2159308);
-    } else if (status == 1) {
+	} else if (status == 1) {
 		cm.sendPlayerToNpc("I don't have time for you. Move aside.");
-    } else if (status == 2) {
+	} else if (status == 2) {
 		cm.sendDirectionInfo("Effect/Direction6.img/effect/tuto/balloonMsg1/14");
 		cm.sendDirectionStatus(0, 325);
 		cm.showMapEffect("demonSlayer/31111003");
@@ -35,9 +37,16 @@ function action(mode, type, selection) {
 		cm.sendDirectionStatus(4, 0);
 		cm.EnableUI(0);
 		cm.DisableUI(false);
+		cm.MovieClipIntroUI(false);
 		cm.spawnMonster(9300455, 3);
 		cm.forceStartQuest(23205);
 		cm.showWZEffect("Effect/Direction6.img/DemonTutorial/Scene4");
+		importPackage(Packages.client.messages.commands.player);
 		cm.dispose();
+		var dispose = new DisposeCommand();
+		dispose.execute(cm.getClient(), null);
 	}
+}
+function end() {
+	action(1,0,0);
 }
