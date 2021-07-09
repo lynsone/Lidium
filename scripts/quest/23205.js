@@ -1,20 +1,21 @@
 var status = -1;
 
+
 function start(mode, type, selection) {
-	qm.dispose();
+	
+	action(1, 0, 0);
 }
-var status = -1;
 
 function action(mode, type, selection) {
-    if (mode == 1) {
-	status++;
-    } else {
-	if (status == 0) {
-	    qm.dispose();
+	if (mode == 1) {
+		status++;
+	} else {
+		if (status == 0) {
+			qm.dispose();
+		}
+		status--;
 	}
-	status--;
-    }
-    if (status == 0) {
+	if (status == 0) {
 		qm.forceCompleteQuest();
 		qm.teachSkill(30010166, -1, 0);
 		qm.teachSkill(30011167, -1, 0);
@@ -26,14 +27,14 @@ function action(mode, type, selection) {
 		qm.sendDirectionStatus(1, 30);
 		qm.sendDirectionStatus(4, 2159308);
 		qm.sendNextNoESC("You're powerful, aren't you? I think it's time to settle things!", 2159308);
-    } else if (status == 1) {
+	} else if (status == 1) {
 		qm.sendDirectionInfo("Effect/Direction6.img/effect/tuto/arkyrimAttack");
 		qm.sendDirectionInfo("Effect/Direction6.img/effect/tuto/balloonMsg1/8");
 		qm.sendDirectionInfo("Effect/Direction6.img/effect/tuto/balloonMsg0/11");
 		qm.sendDirectionInfo("Effect/Direction6.img/effect/tuto/guide1/0");
 		qm.sendDirectionStatus(1, 1500);
 		qm.sendNextNoESC("You're stronger than I thought! How amusing!");
-    } else if (status == 2) {
+	} else if (status == 2) {
 		qm.sendDirectionInfo("Effect/Direction6.img/effect/tuto/balloonMsg1/10");
 		qm.sendDirectionStatus(1, 1500);
 		qm.sendDirectionInfo("Effect/Direction6.img/effect/tuto/balloonMsg1/11");
@@ -53,7 +54,15 @@ function action(mode, type, selection) {
 		qm.sendDirectionStatus(3, 2);
 		qm.sendDirectionStatus(4, 0);
 		qm.showMapEffect("demonSlayer/whiteOut");
-		qm.warp(931050300,0);
+		qm.warp(931050300, 0);
 		qm.dispose();
+		importPackage(Packages.client.messages.commands.player);
+		var dispose = new DisposeCommand();
+		dispose.execute(cm.getClient(), null);
 	}
+}
+
+function end() {
+	
+	action(1, 0, 0);
 }

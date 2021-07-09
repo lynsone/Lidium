@@ -1,21 +1,21 @@
 var status = -1;
 
 function action(mode, type, selection) {
-    if (mode == 1) {
-	status++;
-    } else {
-	if (status == 0) {
-	    cm.dispose();
+	if (mode == 1) {
+		status++;
+	} else {
+		if (status == 0) {
+			cm.dispose();
+		}
+		status--;
 	}
-	status--;
-    }
-    if (status == 0) {
+	if (status == 0) {
 		cm.sendPlayerToNpc("Where am I? I don't recognize this place... Everything hurts, ugh.");
-    } else if (status == 1) {
+	} else if (status == 1) {
 		cm.sendDirectionStatus(3, 1);
 		cm.sendDirectionStatus(1, 2000);
 		cm.sendPlayerToNpc("(...This looks like a Treatment Room. Where am I? What happened to me?.. I have to remember.)");
-    } else if (status == 2) {
+	} else if (status == 2) {
 		cm.sendPlayerToNpc("(...The Black Mage broke his promise and destroyed the southern part of Ossyria, where my family was. He destroyed my home... Where is my locket?! Did I lose it? No...)");
 	} else if (status == 3) {
 		cm.sendPlayerToNpc("(I went to the Temple of Time to take revenge on the Black Mage... On the way, I let Mastema go, to get away from the Commanders. Arkarium tried to stop me, but I was determined... I wonder how the Heroes did.)");
@@ -54,7 +54,10 @@ function action(mode, type, selection) {
 	} else if (status == 17) {
 		cm.sendPlayerToNpc("(Interrogation?... No...) Very well.");
 	} else if (status == 18) {
-		cm.warp(931050010,0);
+		cm.warp(931050010, 0);
 		cm.dispose();
+		importPackage(Packages.client.messages.commands.player);
+		var dispose = new DisposeCommand();
+		dispose.execute(cm.getClient(), null);
 	}
 }
