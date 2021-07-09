@@ -565,6 +565,7 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
     }
 
     public static final void handlePacket(final RecvPacketOpcode header, final LittleEndianAccessor slea, final MapleClient c, final boolean cs) throws Exception {
+        //System.out.println(header);
         switch (header) {
             case PONG:
                 c.pongReceived();
@@ -632,7 +633,7 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 CharLoginHandler.Character_WithoutSecondPassword(slea, c, true, true);
                 break;
             case CHAR_SELECT:
-                CharLoginHandler.Character_WithoutSecondPassword(slea, c, true, false);
+                CharLoginHandler.Character_WithoutSecondPassword(slea, c, true,true);
                 break;
             case VIEW_SELECT_PIC:
                 CharLoginHandler.Character_WithSecondPassword(slea, c, true);

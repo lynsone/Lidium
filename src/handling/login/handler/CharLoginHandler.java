@@ -32,6 +32,7 @@ import client.SkillEntry;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import constants.GameConstants;
+import constants.ServerConstants;
 import client.SkillFactory;
 import handling.channel.ChannelServer;
 import handling.login.LoginInformationProvider;
@@ -44,6 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import server.MapleItemInformationProvider;
+import server.ServerProperties;
 import server.quest.MapleQuest;
 import tools.packet.CField;
 import tools.packet.LoginPacket;
@@ -146,7 +148,7 @@ public class CharLoginHandler {
             c.setChannel(channel);
             c.getSession().write(LoginPacket.getSecondAuthSuccess(c));
             
-            c.getSession().write(LoginPacket.getCharList((c.isPicEnable()?c.getSecondPassword():""), chars, c.getCharacterSlots()));
+            c.getSession().write(LoginPacket.getCharList(c, chars));
         } else {
             c.getSession().close();
         }
@@ -465,13 +467,13 @@ public class CharLoginHandler {
 
     public static final void Character_WithoutSecondPassword(final LittleEndianAccessor slea, final MapleClient c, final boolean haspic, final boolean view) {
         
-        final int charId = slea.readInt();
         if (view) {
-            c.setChannel(1);
-            c.setWorld(slea.readInt());
+            c.setChannel(slea.readByte());
+            c.setWorld(slea.readByte());
         }
+        final int charId = slea.readInt();
         
-        if (!c.isLoggedIn() || loginFailCount(c) || !c.login_Auth(charId) || ChannelServer.getInstance(c.getChannel()) == null || c.getWorld() != 0) { // TODOO: MULTI WORLDS
+        if (!c.isLoggedIn() || loginFailCount(c) || !c.login_Auth(charId) || ChannelServer.getInstance(c.getChannel()) == null /*|| c.getWorld() != 0*/) { // TODOO: MULTI WORLDS
             c.getSession().close();
             return;
         }
@@ -504,11 +506,13 @@ public class CharLoginHandler {
         final String password = slea.readMapleAsciiString();
         final int charId = slea.readInt();
         if (view) {
-            c.setChannel(1);
-            c.setWorld(slea.readInt());
+            int ch=(int) (Math.random() * Short.parseShort(ServerProperties.getProperty("net.sf.odinms.channel.count")) + 1);
+            c.setChannel(ch);
+            c.setWorld(c.getWorld()+1);
+            slea.skip(4);
         }
-        if (!c.isLoggedIn() || loginFailCount(c) || c.getSecondPassword() == null || !c.login_Auth(charId) || ChannelServer.getInstance(c.getChannel()) == null || c.getWorld() != 0) { // TODOO: MULTI WORLDS
-            c.getSession().close();
+        if (!c.isLoggedIn() || loginFailCount(c) || c.getSecondPassword() == null || !c.login_Auth(charId) || ChannelServer.getInstance(c.getChannel()) == null /*|| c.getWorld() != 0*/) { // TODOO: MULTI WORLDS
+            //c.getSession().close();
             return;
         }
         if (GameConstants.GMS) {
@@ -529,7 +533,7 @@ public class CharLoginHandler {
 
     public static void ViewChar(LittleEndianAccessor slea, MapleClient c) {
         Map<Byte, ArrayList<MapleCharacter>> worlds = new HashMap<Byte, ArrayList<MapleCharacter>>();
-        List<MapleCharacter> chars = c.loadCharacters(0); //TODO multi world
+        List<MapleCharacter> chars = c.loadCharacters(c.getWorld()); //TODO multi world
         c.getSession().write(LoginPacket.showAllCharacter(chars.size()));
         for (MapleCharacter chr : chars) {
             if (chr != null) {
@@ -544,7 +548,7 @@ public class CharLoginHandler {
             }
         }
         for (Entry<Byte, ArrayList<MapleCharacter>> w : worlds.entrySet()) {
-            c.getSession().write(LoginPacket.showAllCharacterInfo(w.getKey(), w.getValue(), c.getSecondPassword()));
+            c.getSession().write(LoginPacket.showAllCharacterInfo(w.getKey(), w.getValue(), c));
         }
     }
 }

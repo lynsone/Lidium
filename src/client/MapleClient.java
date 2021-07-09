@@ -1108,7 +1108,6 @@ public class MapleClient implements Serializable {
                 ps.close();
             }
 
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM characters WHERE id = ?", cid);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM hiredmerch WHERE characterid = ?", cid);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM mts_cart WHERE characterid = ?", cid);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM mts_items WHERE characterid = ?", cid);
@@ -1134,6 +1133,8 @@ public class MapleClient implements Serializable {
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM queststatus WHERE characterid = ?", cid);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM inventoryslot WHERE characterid = ?", cid);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM extendedSlots WHERE characterid = ?", cid);
+            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM gmlog WHERE cid = ?", cid);
+            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM characters WHERE id = ?", cid);
             return 0;
         } catch (SQLException e) {
             FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);

@@ -82,7 +82,10 @@ public class PortalScriptManager {
 
     public final void executePortalScript(final MaplePortal portal, final MapleClient c) {
         final PortalScript script = getPortalScript(portal.getScriptName());
-
+        if (c.getPlayer().isGM()) {
+            System.out.println("[Portal]: scripts/portal/" + portal.getScriptName() + ".js");
+            c.getPlayer().dropMessage(5, "[Portal] scripts/portal/: " + portal.getScriptName() + ".js");
+        }
         if (script != null) {
             try {
                 script.enter(new PortalPlayerInteraction(c, portal));
@@ -90,8 +93,10 @@ public class PortalScriptManager {
                 System.err.println("Error entering Portalscript: " + portal.getScriptName() + " : " + e);
             }
         } else {
-            System.out.println("Unhandled portal script " + portal.getScriptName() + " on map " + c.getPlayer().getMapId());
-            FileoutputUtil.log(FileoutputUtil.ScriptEx_Log, "Unhandled portal script " + portal.getScriptName() + " on map " + c.getPlayer().getMapId());
+            System.out.println(
+                    "Unhandled portal script " + portal.getScriptName() + " on map " + c.getPlayer().getMapId());
+            FileoutputUtil.log(FileoutputUtil.ScriptEx_Log,
+                    "Unhandled portal script " + portal.getScriptName() + " on map " + c.getPlayer().getMapId());
         }
     }
 
