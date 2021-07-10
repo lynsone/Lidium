@@ -1,5 +1,5 @@
 importPackage(Packages.client);
-importPackage(Packages.tools.packet.CField);
+importPackage(Packages.tools.packet.CField.InteractionPacket);
 importPackage(Packages.server.maps);
 
 var Orbis_btf;
@@ -88,8 +88,8 @@ function approach() {
         em.setProperty("haveBalrog","true");
         Boat_to_Orbis.broadcastBalrogShip(true);
         Boat_to_Ellinia.broadcastBalrogShip(true);
-        Boat_to_Orbis.broadcastMessage(CField.musicChange("Bgm04/ArabPirate"));
-        Boat_to_Ellinia.broadcastMessage(musicChange("Bgm04/ArabPirate"));
+        //Boat_to_Orbis.broadcastMessage(Packages.tools.packet.CField.InteractionPacket.musicChange("Bgm04/ArabPirate")); plays music already so not needed
+        //Boat_to_Ellinia.broadcastMessage(Packages.tools.packet.CField.InteractionPacket.musicChange("Bgm04/ArabPirate")); plays music already so not needed
         
         em.schedule("invasion", invasionDelay);
     }
