@@ -15,6 +15,9 @@ function end(mode, type, selection) {
 	status++;
     }
     if (status == 0) {
+	if(qm.getJob() == 910){
+		qm.forceCompleteQuest();
+	}	
 	qm.sendYesNo("Have you made your decision? The decision will be final, so think carefully before deciding what to do. Are you sure you want to become a Mercedes?");
     } else if (status == 1) {
 	qm.sendNext("I have just molded your body to make it perfect for a Mercedes. If you wish to become more powerful, use Stat Window (S) to raise the appropriate stats. If you arn't sure what to raise, just click on #bAuto#k.");
