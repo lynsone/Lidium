@@ -1660,7 +1660,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             changed_skills = false;
             changed_reports = false;
             con.commit();
-            System.out.println("Character " + getName() + " saved @" + new Date());
+            System.out.println("Character " + getName() + " saved @ " + new Date());
         } catch (DatabaseException | SQLException e) {
             e.printStackTrace();
             FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
