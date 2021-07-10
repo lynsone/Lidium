@@ -37,7 +37,8 @@ function init() {
     
     Ellinia_docked.setDocked(true);
     Orbis_docked.setDocked(true);
-    
+    Boat_to_Orbis.setDocked(false);
+    Boat_to_Ellinia.setDocked(false);
     scheduleNew();
 }
 

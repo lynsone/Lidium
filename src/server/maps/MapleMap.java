@@ -2173,8 +2173,7 @@ public final class MapleMap {
                 chr.getClient().getSession().write(CField.boatStatePacket(false));
             }
         }
-        
-        if(getDocked()){
+        if(getDocked()){ //make sure the balrog ship appears if their invading
             switch (mapid) {
                 case 200090010, 200090000  -> {
                     chr.getClient().getSession().write(CField.boatPacket(true));
