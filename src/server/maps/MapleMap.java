@@ -2173,6 +2173,15 @@ public final class MapleMap {
                 chr.getClient().getSession().write(CField.boatStatePacket(false));
             }
         }
+        
+        if(getDocked()){
+            switch (mapid) {
+                case 200090010, 200090000  -> {
+                    chr.getClient().getSession().write(CField.boatPacket(true));
+                    chr.getClient().getSession().write(CField.musicChange("Bgm04/ArabPirate"));
+                }    
+            }
+        }
     }
 
     public int getNumItems() {
