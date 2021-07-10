@@ -1,12 +1,34 @@
+var KC_bfd;
+var Plane_to_CBD;
+var CBD_docked;
+var CBD_bfd;
+var Plane_to_KC;
+var KC_docked;
+
+//Time Setting is in millisecond
+var closeTime = 4 * 60 * 1000; //The time to close the gate
+var beginTime = 5 * 60 * 1000; //The time to begin the ride
+var  rideTime = 1 * 60 * 1000; //The time that require move to destination
+
 function init() {
+    closeTime = em.getTransportationTime(closeTime);
+    beginTime = em.getTransportationTime(beginTime);
+    rideTime = em.getTransportationTime(rideTime);
+    
+    KC_bfd = em.getChannelServer().getMapFactory().getMap(540010100);
+    CBD_bfd = em.getChannelServer().getMapFactory().getMap(540010001);
+    Plane_to_CBD = em.getChannelServer().getMapFactory().getMap(540010101);
+    Plane_to_KC = em.getChannelServer().getMapFactory().getMap(540010002);
+    CBD_docked = em.getChannelServer().getMapFactory().getMap(540010000);
+    KC_docked = em.getChannelServer().getMapFactory().getMap(103000000);
     scheduleNew();
 }
 
 function scheduleNew() {
     em.setProperty("docked", "true");
     em.setProperty("entry", "true");
-    em.schedule("stopEntry", 60000); //The time to close the gate, 1 min
-    em.schedule("takeoff", 90000); // The time to begin the ride, 1:30 min
+    em.schedule("stopEntry", closeTime);
+    em.schedule("takeoff", beginTime);
 }
 
 function stopEntry() {
@@ -15,16 +37,16 @@ function stopEntry() {
 
 function takeoff() {
     em.setProperty("docked","false");
-    em.warpAllPlayer(540010100, 540010101);
-    em.warpAllPlayer(540010001, 540010002);
-    em.schedule("arrived", 60000); //The time that require move to destination
+    KC_bfd.warpEveryone(Plane_to_CBD.getId());
+    CBD_bfd.warpEveryone(Plane_to_KC.getId());
+    em.schedule("arrived", rideTime); //The time that require move to destination
 }
 
 function arrived() {
-    em.warpAllPlayer(540010002, 103000000);
-    em.warpAllPlayer(540010101, 540010000);
+    Plane_to_CBD.warpEveryone(CBD_docked.getId(), 0);
+    Plane_to_KC.warpEveryone(KC_docked.getId(), 7);
+        
     scheduleNew();
 }
 
-function cancelSchedule() {
-}
+function cancelSchedule() {}

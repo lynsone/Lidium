@@ -1,12 +1,34 @@
+var KC_Waiting;
+var Subway_to_KC;
+var KC_docked;
+var NLC_Waiting;
+var Subway_to_NLC;
+var NLC_docked;
+
+//Time Setting is in millisecond
+var closeTime =     50 * 1000; //The time to close the gate
+var beginTime = 1 * 60 * 1000; //The time to begin the ride
+var  rideTime = 4 * 60 * 1000; //The time that require move to destination
+
 function init() {
+    closeTime = em.getTransportationTime(closeTime);
+    beginTime = em.getTransportationTime(beginTime);
+     rideTime = em.getTransportationTime(rideTime);
+    
+    KC_Waiting = em.getChannelServer().getMapFactory().getMap(600010004);
+    NLC_Waiting = em.getChannelServer().getMapFactory().getMap(600010002);
+    Subway_to_KC = em.getChannelServer().getMapFactory().getMap(600010003);
+    Subway_to_NLC = em.getChannelServer().getMapFactory().getMap(600010005);
+    KC_docked = em.getChannelServer().getMapFactory().getMap(103000100);
+    NLC_docked = em.getChannelServer().getMapFactory().getMap(600010001);
     scheduleNew();
 }
 
 function scheduleNew() {
     em.setProperty("docked", "true");
     em.setProperty("entry", "true");
-    em.schedule("stopEntry", 60000); //The time to close the gate, 1 min
-    em.schedule("takeoff", 90000); // The time to begin the ride, 1:30 min
+    em.schedule("stopEntry", closeTime);
+    em.schedule("takeoff", beginTime);
 }
 
 function stopEntry() {
@@ -15,16 +37,15 @@ function stopEntry() {
 
 function takeoff() {
     em.setProperty("docked","false");
-    em.warpAllPlayer(600010004, 600010005);
-    em.warpAllPlayer(600010002, 600010003);
-    em.schedule("arrived", 60000); //The time that require move to destination
+    KC_Waiting.warpEveryone(Subway_to_NLC.getId());
+    NLC_Waiting.warpEveryone(Subway_to_KC.getId());
+    em.schedule("arrived", rideTime);
 }
 
 function arrived() {
-    em.warpAllPlayer(600010005, 600010001);
-    em.warpAllPlayer(600010003, 103000100);
+    Subway_to_KC.warpEveryone(KC_docked.getId(), 0);
+    Subway_to_NLC.warpEveryone(NLC_docked.getId(), 0);
     scheduleNew();
 }
 
-function cancelSchedule() {
-}
+function cancelSchedule() {}

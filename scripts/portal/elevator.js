@@ -1,10 +1,18 @@
-
 function enter(pi) {
-	if (pi.getMapId() == 222020100) {
-		pi.playPortalSE();
-		pi.warp(222020200, "sp");
-	} else { // 222020200
-		pi.playPortalSE();
-		pi.warp(222020100, "sp");
-	}
+    try {
+        var elevator = pi.getEventManager("Elevator");
+        if (elevator == null) {
+            pi.getPlayer().dropMessage(5, "The elevator is under maintenance.");
+        } else if (elevator.getProperty(pi.getMapId() == 222020100 ? ("goingUp") : ("goingDown")).equals("false")) {
+            pi.playPortalSE(); 
+            pi.warp(pi.getMapId() == 222020100 ? 222020110 : 222020210, 0);
+            return true;
+        } else if (elevator.getProperty(pi.getMapId() == 222020100 ? ("goingUp") : ("goingDown")).equals("true")) {
+            pi.getPlayer().dropMessage(5, "The elevator is currently moving.");
+        }
+        else pi.getPlayer().dropMessage(5, "Dafuq is happening?!");
+    } catch(e) {
+        pi.getPlayer().dropMessage(5, "Error: " + e);
+    }
+	return false;
 }
