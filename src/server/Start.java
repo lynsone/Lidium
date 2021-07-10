@@ -188,6 +188,8 @@ public class Start {
         TimerManager.getInstance().register(() -> {
             System.gc();
         }, 60000 * 5);
+
+        TimerManager.getInstance().schedule(new AutoSaver(), 1000 * 60 * 5);
     }
 
     public static class Shutdown implements Runnable {
@@ -196,6 +198,22 @@ public class Start {
         public void run() {
             ShutdownServer.getInstance().run();
             ShutdownServer.getInstance().run();
+        }
+    }
+
+    public static class AutoSaver implements Runnable {
+        @Override
+        public void run() {
+            System.out.println("Auto Saving characters:" );
+            
+            ChannelServer.getAllInstances().parallelStream().forEach((ch) -> {
+                ch.getPlayerStorage().getAllCharacters().parallelStream().forEach((chr) -> {
+                    if (chr != null) {
+                        chr.saveToDB(false, false);
+                    }
+                });
+            });
+
         }
     }
 
