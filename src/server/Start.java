@@ -189,7 +189,7 @@ public class Start {
             System.gc();
         }, 60000 * 5);
 
-        TimerManager.getInstance().schedule(new AutoSaver(), 1000 * 60 * 5);
+        TimerManager.getInstance().register(new AutoSaver(), 1000 * 60 * 5);
     }
 
     public static class Shutdown implements Runnable {
