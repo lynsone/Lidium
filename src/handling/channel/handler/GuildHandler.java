@@ -59,12 +59,12 @@ public class GuildHandler {
         return true;
     }
 
-    private static final void respawnPlayer(final MapleCharacter mc) {
+    private static final void updateGuildInfo(final MapleCharacter mc) {
         if (mc.getMap() == null) {
             return;
         }
         mc.getMap().broadcastMessage(CField.loadGuildName(mc));
-		mc.getMap().broadcastMessage(CField.loadGuildIcon(mc));
+        mc.getMap().broadcastMessage(CField.loadGuildIcon(mc));
     }
     private static final Map<String, Pair<Integer, Long>> invited = new HashMap<String, Pair<Integer, Long>>();
     private static long nextPruneTime = System.currentTimeMillis() + 5 * 60 * 1000;
@@ -111,9 +111,9 @@ public class GuildHandler {
                 World.Guild.setGuildMemberOnline(c.getPlayer().getMGC(), true, c.getChannel());
                 //c.getSession().write(GuildPacket.showGuildInfo(c.getPlayer()));
                 c.getSession().write(GuildPacket.newGuildInfo(c.getPlayer()));
-		World.Guild.gainGP(c.getPlayer().getGuildId(), 500, c.getPlayer().getId());
+                World.Guild.gainGP(c.getPlayer().getGuildId(), 500, c.getPlayer().getId());
                 //c.getPlayer().dropMessage(1, "You have successfully created a Guild.");
-                respawnPlayer(c.getPlayer());
+                updateGuildInfo(c.getPlayer());
                 break;
             case 0x05: // invitation
                 if (c.getPlayer().getGuildId() <= 0 || c.getPlayer().getGuildRank() > 2) { // 1 == guild master, 2 == jr
@@ -161,7 +161,7 @@ public class GuildHandler {
                         }
                     }
                     c.getPlayer().saveGuildStatus();
-                    respawnPlayer(c.getPlayer());
+                    updateGuildInfo(c.getPlayer());
                 }
                 break;
             case 0x07: // leaving
@@ -221,7 +221,7 @@ public class GuildHandler {
                 World.Guild.setGuildEmblem(c.getPlayer().getGuildId(), bg, bgcolor, logo, logocolor);
 
                 c.getPlayer().gainMeso(-1500000, true, true);
-                respawnPlayer(c.getPlayer());
+                updateGuildInfo(c.getPlayer());
                 break;
             case 0x11: // guild notice change
                 final String notice = slea.readMapleAsciiString();

@@ -22,12 +22,34 @@ package server.life;
 
 public class MonsterDropEntry {
 
-    public MonsterDropEntry(int itemId, int chance, int Minimum, int Maximum, int questid) {
+    private final int itemId, chance, minimum, maximum, questId;
+
+    public MonsterDropEntry(int itemId, int chance, int minimum, int maximum, int questId) {
         this.itemId = itemId;
         this.chance = chance;
-        this.questid = questid;
-        this.Minimum = Minimum;
-        this.Maximum = Maximum;
+        this.minimum = minimum;
+        this.maximum = maximum;
+        this.questId = questId;
     }
-    public int itemId, chance, Minimum, Maximum, questid;
+
+    public int getItemId() {
+        return itemId;
+    }
+
+    public int getChance() {
+        return chance;
+    }
+
+    public int getMinimum() {
+        return minimum;
+    }
+
+    public int getMaximum() {
+        return maximum;
+    }
+
+    public int getQuestId() {
+        return questId;
+    }
+
 }

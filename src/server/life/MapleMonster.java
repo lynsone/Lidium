@@ -1460,14 +1460,14 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             Collections.shuffle(dropEntry);
             Item idrop;
             for (MonsterDropEntry d : dropEntry) { //set to 4x rate atm, 40% chance + 10x
-                if (d.itemId > 0 && d.questid == 0 && d.itemId / 10000 != 238 && Randomizer.nextInt(999999) < (int) Math.round(d.chance * chServerrate * chr.getDropMod() * (chr.getStat().dropBuff / 100.0) * (showdown / 100.0))) { //kinda op
-                    if (GameConstants.getInventoryType(d.itemId) == MapleInventoryType.EQUIP) {
-                        Equip eq = (Equip) MapleItemInformationProvider.getInstance().getEquipById(d.itemId);
+                if (d.getItemId() > 0 && d.getQuestId() == 0 && d.getItemId() / 10000 != 238 && Randomizer.nextInt(999999) < (int) Math.round(d.getChance() * chServerrate * chr.getDropMod() * (chr.getStat().dropBuff / 100.0) * (showdown / 100.0))) { //kinda op
+                    if (GameConstants.getInventoryType(d.getItemId()) == MapleInventoryType.EQUIP) {
+                        Equip eq = (Equip) MapleItemInformationProvider.getInstance().getEquipById(d.getItemId());
                         idrop = MapleItemInformationProvider.getInstance().randomizeStats(eq);
                     } else {
-                        idrop = new Item(d.itemId, (byte) 0, (short) (d.Maximum != 1 ? Randomizer.nextInt(d.Maximum - d.Minimum) + d.Minimum : 1), (byte) 0);
+                        idrop = new Item(d.getItemId(), (byte) 0, (short) (d.getMaximum() != 1 ? Randomizer.nextInt(d.getMaximum() - d.getMinimum()) + d.getMinimum() : 1), (byte) 0);
                     }
-                    stolen = d.itemId;
+                    stolen = d.getItemId();
                     map.spawnMobDrop(idrop, map.calcDropPos(getPosition(), getTruePosition()), this, chr, (byte) 0, (short) 0);
                     break;
                 }
