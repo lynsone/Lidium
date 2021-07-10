@@ -27,6 +27,7 @@ import handling.channel.ChannelServer;
 import handling.world.MapleParty;
 import handling.world.MaplePartyCharacter;
 import handling.world.PartyOperation;
+import handling.world.PlayerBuffValueHolder;
 import handling.world.World;
 import handling.world.exped.ExpeditionType;
 import handling.world.exped.MapleExpedition;
@@ -117,6 +118,11 @@ public class PartyHandler {
                         c.getPlayer().dropMessage(5, "You may not do party operations while in a raid.");
                         return;
                     }
+                    if(c.getPlayer().isBattleMage()){
+                        for(int sk:new int[]{32001003, 32101003,32110000,32111012,32120001}){
+                            c.getPlayer().cancelAurasIfBattleMage(sk);
+                        }
+                    }
                     if (partyplayer.equals(party.getLeader())) { // disband
                         if (GameConstants.isDojo(c.getPlayer().getMapId())) {
                             Event_DojoAgent.failed(c.getPlayer());
@@ -140,6 +146,9 @@ public class PartyHandler {
                             c.getPlayer().getEventInstance().leftParty(c.getPlayer());
                         }
                     }
+                   
+                   
+                   // c.getPlayer().cancelAurasIfBattleMage();
                     c.getPlayer().setParty(null);
                 }
                 break;
@@ -210,6 +219,13 @@ public class PartyHandler {
                         if (c.getPlayer().getPyramidSubway() != null && expelled.isOnline()) {
                             c.getPlayer().getPyramidSubway().fail(c.getPlayer());
                         }
+                        if(expelled.isOnline()){
+                            var chExpelled=ChannelServer.getInstance(expelled.getChannel()).getPlayerStorage().getCharacterByName(expelled.getName());
+                            for(int sk:new int[]{32001003, 32101003,32110000,32111012,32120001}){
+                                chExpelled.cancelAllOwnAura(sk);
+                            } 
+                        }
+                        
                         World.Party.updateParty(party.getId(), PartyOperation.EXPEL, expelled);
                         if (c.getPlayer().getEventInstance() != null) {
                             /*if leader wants to boot someone, then the whole party gets expelled

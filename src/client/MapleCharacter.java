@@ -7763,4 +7763,40 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         return this.commandtext;
     }
     /* End of Custom Feature */
+
+    //Manu was here :P
+    public boolean isBattleMage(){
+        return job>=3200 && job <=3212;
+    }
+    public void cancelAurasIfBattleMage(int skillid) {
+
+        final Skill skill = SkillFactory.getSkill(skillid);
+        if(skill==null){
+            return;
+        }
+        switch(skillid){
+            case 32001003, 32101003,32110000,32111012,32120001->{
+                var pt=getParty();   
+                if(pt!=null){
+                    
+                    pt.getMembers().forEach((mp)->{
+                        var chx=ChannelServer.getInstance(mp.getChannel()).getPlayerStorage().getCharacterById(mp.getId());
+                        chx.cancelAllOwnAura(skillid);
+                    });
+                }
+            }
+
+        }
+    }
+    public void cancelAllOwnAura(int skillid){
+        final Skill skill = SkillFactory.getSkill(skillid);
+        if(skill==null){
+            return;
+        }
+        switch(skillid){
+            case 32001003, 32101003,32110000,32111012,32120001->{
+                cancelEffect(skill.getEffect(1), false, -1);                    
+            }
+        }
+    }
 }
