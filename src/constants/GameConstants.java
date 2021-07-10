@@ -31,6 +31,7 @@ import client.status.MonsterStatus;
 import handling.channel.ChannelServer;
 import java.awt.Point;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -3593,8 +3594,67 @@ public class GameConstants {
         //Example 
         9070006, //Cursed Knight in henesys to test this altough it shud work add w/e ids later to block them from spawning
     };
-
+    
     public static int[] getBlockedNpc() {
         return Blocked_NPC;
+    }
+
+    public static boolean isBroadcastableInAllMap(int id) {
+
+        ArrayList<Integer> SkillsForAllMap=new ArrayList<>();
+        Collections.addAll(SkillsForAllMap, new Integer[]{
+            1005 // Hecho of hero
+        });
+
+        return SkillsForAllMap.contains(id);
+    }
+
+    public static boolean isBroadcastableInParty(int id) {
+        //9101001
+        ArrayList<Integer> SkillsBroadcastableInParty=new ArrayList<Integer>();
+ 
+        Collections.addAll(SkillsBroadcastableInParty, new Integer[]{
+            //SuperGM skills 
+            9101001, //Haste (SuperGM)
+            9101002, //Holy Symbol (SuperGM)
+            9101003, //Bless (SuperGM),
+            9101005, //Resurection (SuperGM),
+            9101008, //Hyper Body (SuperGM)
+            9101000, //Dispel + Heal
+            //Players Skills
+            //Decent Haste ._. 
+            4101004, 4201003, 14101003,
+            1101006, 11101003, //Rage
+            2322022, //Combat Orders
+             //Maple Warrior
+            1221000, 1321000, 2121000,2221000,2321000,3121000,3221000,4121000,
+            4221000, 4341000, 5121000, 5221000, 5321005,21121000,22171000,
+            23121005, 32121007, 33121007, 35121007,31121004,
+            1301006, //Iron Will
+            1301007, //Hyper Body
+            //Meditation
+            2101001, 2201001, 12101000,
+            2301002, //Heal
+            2311001, //Dispel
+            2311003, //Holy Symbol
+            2321005, // Advanced Blessing
+           
+            //Sharp Eyes
+            3121002, 3221002, 33121004,
+            //Dark Flare
+            4111007, 4211007,14111010,
+            5301003, //Monkey Magic 
+            5320008, //Mega Monkey Magic
+            21111012, // Maha Blessing
+            22131001, //Magic Shield,
+            22151003, //Magic Resistance
+            22161003, //Recovery Aura
+            22161004, //Onyx Shroud
+            22181003, //Soul Stone
+            23111002, //Unicorn Spike
+           
+        });
+       
+        return SkillsBroadcastableInParty.contains(id);
     }
 }
