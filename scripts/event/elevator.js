@@ -1,40 +1,64 @@
+//Elevator Ludibrium eos tower
+var beginTime = 60 * 1000; //The time to begin the ride
+var rideTime = 60 * 1000; //The time that require move to destination
+
 function init() {
+    beginTime = em.getTransportationTime(beginTime);
+    rideTime = em.getTransportationTime(rideTime);
+    
+    em.getChannelServer().getMapFactory().getMap(222020100).resetReactors();
+    em.getChannelServer().getMapFactory().getMap(222020200).resetReactors();
+    
     scheduleNew();
 }
 
 function scheduleNew() {
-    em.setProperty("isUp","false");
-    em.setProperty("isDown","false");
-    onDown();
-}
-
-function onDown() {
+    em.setProperty("goingUp", "false");
+    em.setProperty("goingDown", "true");
+    
     em.getChannelServer().getMapFactory().getMap(222020100).resetReactors();
-    em.warpAllPlayer(222020210, 222020211);
-    em.setProperty("isDown","true");
-    em.schedule("goingUp", 60000);
+    em.getChannelServer().getMapFactory().getMap(222020200).setReactorState();
+    em.schedule("goingUpNow", beginTime);
 }
 
-function goingUp() {
-    em.warpAllPlayer(222020110, 222020111);
-    em.setProperty("isDown","false");
-    em.schedule("onUp", 50000);
+function goUp() {
+    em.schedule("goingUpNow", beginTime);
+}
+
+function goDown() {
+    em.schedule("goingDownNow", beginTime);
+}
+
+function goingUpNow() {
+    em.getChannelServer().getMapFactory().getMap(222020110).warpEveryone(222020111);
+    em.setProperty("goingUp", "true");
+    em.schedule("isUpNow", rideTime);
+    
     em.getChannelServer().getMapFactory().getMap(222020100).setReactorState();
 }
 
-function onUp() {
-    em.getChannelServer().getMapFactory().getMap(222020200).resetReactors();
-    em.warpAllPlayer(222020111, 222020100);
-    em.setProperty("isUp","true");
-    em.schedule("goingDown", 60000);
-}
-
-function goingDown() {
-    em.warpAllPlayer(222020211, 222020100);
-    em.setProperty("isUp","false");
-    em.schedule("onDown", 50000);
+function goingDownNow() {
+    em.getChannelServer().getMapFactory().getMap(222020210).warpEveryone(222020211);
+    em.setProperty("goingDown", "true");
+    em.schedule("isDownNow", rideTime);
+    
     em.getChannelServer().getMapFactory().getMap(222020200).setReactorState();
 }
 
-function cancelSchedule() {
+function isUpNow() {
+    em.setProperty("goingDown", "false"); // clear
+    em.getChannelServer().getMapFactory().getMap(222020200).resetReactors();
+    em.getChannelServer().getMapFactory().getMap(222020111).warpEveryone(222020200, 0);
+
+    goDown();
 }
+
+function isDownNow() {
+    em.setProperty("goingUp", "false"); // clear
+    em.getChannelServer().getMapFactory().getMap(222020100).resetReactors();
+    em.getChannelServer().getMapFactory().getMap(222020211).warpEveryone(222020100, 4);
+    
+    goUp();
+}
+
+function cancelSchedule() {}

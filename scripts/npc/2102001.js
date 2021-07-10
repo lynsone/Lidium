@@ -6,7 +6,7 @@ var gm;
 
 function start() {
     status = -1;
-    gm = cm.getEventManager("Geenie");
+    gm = cm.getEventManager("Genie");
     action(1, 0, 0);
 }
 

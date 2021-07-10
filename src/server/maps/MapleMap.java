@@ -2069,7 +2069,7 @@ public final class MapleMap {
         }  
         
         if (mapid == 200090060) { // To Rien
-            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(1 * 60 * 1000);
+            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(1 * 60 * 1000); // [1 min]
             chr.getClient().getSession().write(CField.getClock(travelTime / 1000));
             TimerManager.getInstance().schedule(new Runnable() {
 
@@ -2081,7 +2081,7 @@ public final class MapleMap {
                 }
             }, travelTime);
         } else if (mapid == 200090070) { // To Lith Harbor
-            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(1 * 60 * 1000);
+            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(1 * 60 * 1000); // [1 min]
             chr.getClient().getSession().write(CField.getClock(travelTime / 1000));
             TimerManager.getInstance().schedule(new Runnable() {
 
@@ -2092,8 +2092,8 @@ public final class MapleMap {
                     }
                 }
             }, travelTime);
-        } else if (mapid == 200090030) { // To Ereve (SkyFerry)
-            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(2 * 60 * 1000);
+        } else if (mapid == 200090030) { // To Ereve from Victoria Island (SkyFerry)
+            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(2 * 60 * 1000); // [2 min]
             chr.getClient().getSession().write(CField.getClock(travelTime / 1000));
             TimerManager.getInstance().schedule(new Runnable() {
 
@@ -2104,8 +2104,8 @@ public final class MapleMap {
                     }
                 }
             }, travelTime);
-        } else if (mapid == 200090031) { // To Victoria Island (SkyFerry)
-            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(2 * 60 * 1000);
+        } else if (mapid == 200090031) { // To Victoria Island from Ereve (SkyFerry)
+            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(2 * 60 * 1000); // [2 min]
             chr.getClient().getSession().write(CField.getClock(travelTime / 1000));
             TimerManager.getInstance().schedule(new Runnable() {
 
@@ -2117,7 +2117,7 @@ public final class MapleMap {
                 }
             }, travelTime);
         } else if (mapid == 200090021) { // To Orbis from ereve (SkyFerry)
-            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(8 * 60 * 1000);
+            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(2 * 60 * 1000); // [2 min]
             chr.getClient().getSession().write(CField.getClock(travelTime / 1000));
             TimerManager.getInstance().schedule(new Runnable() {
 
@@ -2129,7 +2129,7 @@ public final class MapleMap {
                 }
             }, travelTime);
         } else if (mapid == 200090020) { // To Ereve From Orbis (SkyFerry)
-            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(8 * 60 * 1000);
+            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(2 * 60 * 1000); // [2 min]
             chr.getClient().getSession().write(CField.getClock(travelTime / 1000));
             TimerManager.getInstance().schedule(new Runnable() {
 
@@ -2141,7 +2141,7 @@ public final class MapleMap {
                 }
             }, travelTime);
         } else if (mapid == 200090600) { // To edelstein From Orbis
-            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(8 * 60 * 1000);
+            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(2 * 60 * 1000); // [2 min]
             chr.getClient().getSession().write(CField.getClock(travelTime / 1000));
             TimerManager.getInstance().schedule(new Runnable() {
 
@@ -2153,7 +2153,7 @@ public final class MapleMap {
                 }
             }, travelTime);
         } else if (mapid == 200090610) { // To orbis From edelstein
-            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(8 * 60 * 1000);
+            int travelTime = ChannelServer.getInstance(channel).getTransportationTime(2 * 60 * 1000); // [2 min]
             chr.getClient().getSession().write(CField.getClock(travelTime / 1000));
             TimerManager.getInstance().schedule(new Runnable() {
 
@@ -2166,14 +2166,19 @@ public final class MapleMap {
             }, travelTime);
         }
         
-        if(mapid == 0){
-            ChannelServer.getInstance(channel).getTransportationTime(1 * 60 * 1000);
-        }
         if (hasBoat() > 0) {
             if (hasBoat() == 1) {
                 chr.getClient().getSession().write(CField.boatStatePacket(true));
             } else {
                 chr.getClient().getSession().write(CField.boatStatePacket(false));
+            }
+        }
+        if(getDocked()){ //make sure the balrog ship appears if their invading
+            switch (mapid) {
+                case 200090010, 200090000  -> {
+                    chr.getClient().getSession().write(CField.boatPacket(true));
+                    chr.getClient().getSession().write(CField.musicChange("Bgm04/ArabPirate"));
+                }    
             }
         }
     }
