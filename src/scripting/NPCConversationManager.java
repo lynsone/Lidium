@@ -1559,8 +1559,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             StringBuilder name = new StringBuilder();
             for (int i = 0; i < ranks.size(); i++) {
                 de = ranks.get(i);
-                if (de.chance > 0 && (de.questid <= 0 || (de.questid > 0 && MapleQuest.getInstance(de.questid).getName().length() > 0))) {
-                    itemId = de.itemId;
+                if (de.getChance() > 0 && (de.getQuestId() <= 0 || (de.getQuestId() > 0 && MapleQuest.getInstance(de.getQuestId()).getName().length() > 0))) {
+                    itemId = de.getItemId();
                     if (num == 0) {
                         name.append("Drops for #o").append(mobId).append("#\r\n");
                         name.append("--------------------------------------\r\n");
@@ -1568,10 +1568,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                     String namez = "#z" + itemId + "#";
                     if (itemId == 0) { //meso
                         itemId = 4031041; //display sack of cash
-                        namez = (de.Minimum * getClient().getChannelServer().getMesoRate()) + " to " + (de.Maximum * getClient().getChannelServer().getMesoRate()) + " meso";
+                        namez = (de.getMinimum() * getClient().getChannelServer().getMesoRate()) + " to " + (de.getMaximum() * getClient().getChannelServer().getMesoRate()) + " meso";
                     }
-                    ch = Math.round(de.chance * getClient().getChannelServer().getDropRate());
-                    name.append(num).append(1).append(") #v").append(itemId).append("#").append(namez).append(" - ").append(Integer.valueOf(ch >= 999999 ? 1000000 : ch).doubleValue() / 10000.0).append("% chance. ").append(de.questid > 0 && MapleQuest.getInstance(de.questid).getName().length() > 0 ? ("Requires quest " + MapleQuest.getInstance(de.questid).getName() + " to be started.") : "").append("\r\n");
+                    ch = Math.round(de.getChance() * getClient().getChannelServer().getDropRate());
+                    name.append(num).append(1).append(") #v").append(itemId).append("#").append(namez).append(" - ").append(Integer.valueOf(ch >= 999999 ? 1000000 : ch).doubleValue() / 10000.0).append("% chance. ").append(de.getQuestId() > 0 && MapleQuest.getInstance(de.getQuestId()).getName().length() > 0 ? ("Requires quest " + MapleQuest.getInstance(de.getQuestId()).getName() + " to be started.") : "").append("\r\n");
                     num++;
                 }
             }

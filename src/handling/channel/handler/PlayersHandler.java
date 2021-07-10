@@ -548,8 +548,8 @@ public class PlayersHandler {
         final MapleMonsterInformationProvider ii = MapleMonsterInformationProvider.getInstance();
         final List<Integer> newDrops = new ArrayList<>();
         for (final MonsterDropEntry de : ii.retrieveDrop(mobid)) {
-            if (de.itemId > 0 && de.questid <= 0 && !newDrops.contains(de.itemId)) {
-                newDrops.add(de.itemId);
+            if (de.getItemId() > 0 && de.getQuestId() <= 0 && !newDrops.contains(de.getItemId())) {
+                newDrops.add(de.getItemId());
             }
         }
         for (final MonsterGlobalDropEntry de : ii.getGlobalDrop()) {
