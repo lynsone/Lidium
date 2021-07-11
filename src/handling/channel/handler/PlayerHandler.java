@@ -36,6 +36,7 @@ import client.anticheat.CheatingOffense;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import handling.channel.ChannelServer;
+import handling.world.MapleParty;
 import java.lang.ref.WeakReference;
 import server.events.MapleEvent;
 import server.events.MapleEventType;
@@ -514,8 +515,8 @@ public class PlayerHandler {
         } else {
             chr.cancelEffect(skill.getEffect(1), false, -1);
         }
-        chr.cancelAurasIfBattleMage(skill.getId()); 
-       
+        chr.cancelAurasIfBattleMage(skill.getId());
+
     }
 
     public static final void CancelMech(final LittleEndianAccessor slea, final MapleCharacter chr) {
@@ -590,7 +591,6 @@ public class PlayerHandler {
         }
         int skillLevel = slea.readByte();
         final Skill skill = SkillFactory.getSkill(skillid);
-
 
         if (skill == null || (GameConstants.isAngel(skillid) && (chr.getStat().equippedSummon % 10000) != (skillid % 10000)) || (chr.inPVP() && skill.isPVPDisabled())) {
             c.getSession().write(CWvsContext.enableActions());
@@ -735,30 +735,27 @@ public class PlayerHandler {
                 }
                 break;
         }
-    
-        boolean isBroadcastableInAllMap=GameConstants.isBroadcastableInAllMap(skill.getId());
-        if(isBroadcastableInAllMap){
-            chr.getMap().getCharacters().forEach((chrx)->{
+
+        if (GameConstants.isBroadcastableInAllMap(skill.getId())) {
+            chr.getMap().getCharacters().forEach((chrx) -> {
                 effect.applyTo(chrx);
             });
         }
-        boolean isBroadcastableInParty = GameConstants.isBroadcastableInParty(skill.getId());
-        if(isBroadcastableInParty){
-            var party=chr.getParty();
-            if(party!=null){
-                party.getMembers().forEach((mpc)->{
-                    var partychar=ChannelServer.getInstance(chr.getClient().getChannel()).getPlayerStorage().getCharacterById(mpc.getId());
-                    if(partychar.getMap().getId()== chr.getMapId()){
-                        effect.applyTo(partychar);
-                        if(skill.getId()==9101000){
-                            partychar.addHP(partychar.getStat().getMaxHp());
+        if (GameConstants.isBroadcastableSkillInParty(skill.getId())) { // Actually, there's something that called party buff for applying like this system
+            MapleParty party = chr.getParty();
+            if (party != null) {
+                party.getMembers().forEach((mpc) -> {
+                    MapleCharacter partyChar = ChannelServer.getInstance(chr.getClient().getChannel()).getPlayerStorage().getCharacterById(mpc.getId());
+                    if (partyChar.getMap().getId() == chr.getMapId()) {
+                        effect.applyTo(partyChar);
+                        if (skill.getId() == 9101000) {
+                            partyChar.addHP(partyChar.getStat().getMaxHp());
                         }
                     }
-                   
                 });
             }
         }
-    
+
     }
 
     public static final void closeRangeAttack(final LittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr, final boolean energy) {
