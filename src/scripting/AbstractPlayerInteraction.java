@@ -99,7 +99,20 @@ public abstract class AbstractPlayerInteraction {
     public final EventInstanceManager getEventInstance() {
         return c.getPlayer().getEventInstance();
     }
-
+    
+    public final boolean returnPartyHasItem(int i) {
+        if(i > 0) return false;
+        return true;
+    }
+    
+    public final void partyHasItem(final int id, final List<MapleCharacter> party) {
+        party.forEach(chr -> {
+            final int possesed = chr.getInventory(GameConstants.getInventoryType(id)).countById(id);
+            if(possesed < 1) returnPartyHasItem(0);
+        });
+        returnPartyHasItem(1);
+    }
+        
     public final void warp(final int map) {
         final MapleMap mapz = getWarpMap(map);
         try {
