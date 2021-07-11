@@ -1,21 +1,21 @@
 var status = -1;
 
 function action(mode, type, selection) {
-    if (mode == 1) {
-	status++;
-    } else {
-	if (status == 0) {
-	    cm.dispose();
+	if (mode == 1) {
+		status++;
+	} else {
+		if (status == 0) {
+			cm.dispose();
+		}
+		status--;
 	}
-	status--;
-    }
-    if (status == 0) {
+	if (status == 0) {
 		cm.sendNextNoESC("W-What is that?");
-    } else if (status == 1) {
+	} else if (status == 1) {
 		cm.sendDirectionInfo("Effect/Direction6.img/effect/tuto/balloonMsg2/1");
 		cm.sendDirectionStatus(1, 2000);
 		cm.sendPlayerToNpc("(...What's going on? My Fury is nearly gone! Did it take my power?)");
-    } else if (status == 2) {
+	} else if (status == 2) {
 		cm.sendNextNoESC("This can't be happening...!");
 	} else if (status == 3) {
 		cm.sendPlayerToNpc("What did you do to me? Is this the Black Mage's energy?");
@@ -66,7 +66,10 @@ function action(mode, type, selection) {
 			cm.sendDirectionInfo("Effect/Direction6.img/effect/tuto/fallFemale");
 		}
 		cm.sendDirectionInfo("Effect/Direction6.img/effect/tuto/balloonMsg1/13");
-		cm.warp(931050030,0);
+		cm.warp(931050030, 0);
 		cm.dispose();
+		importPackage(Packages.client.messages.commands.player);
+		var dispose = new DisposeCommand();
+		dispose.execute(cm.getClient(), null);
 	}
 }

@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -324,7 +325,7 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
     public void sessionOpened(final IoSession session) throws Exception {
         // Start of IP checking
         final String address = session.getRemoteAddress().toString().split(":")[0];
-
+        System.out.println("\nNew connection from "+session.getRemoteAddress()+" @ "+new Date());
         if (BlockedIP.contains(address)) {
             session.close();
             return;
@@ -431,7 +432,7 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
     @Override
     public void sessionClosed(final IoSession session) throws Exception {
         final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
-
+        System.out.println("\nClosing connection from "+session.getRemoteAddress()+" @ "+new Date());
         if (client != null) {
             byte state = MapleClient.CHANGE_CHANNEL;
             if (Log_Packets && !LoginServer.isShutdown() && !cs && channel > -1) {
@@ -498,7 +499,7 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
         final short header_num = slea.readShort();
 
         if (PacketLogging.Log_Packet_Receives) {
-            final StringBuilder sb = new StringBuilder("Client to Server: \n");
+            final StringBuilder sb = new StringBuilder("Client to Server: \n"); 
             sb.append(HexTool.toString((byte[]) message));
             sb.append(HexTool.toString((byte[]) message)).append("\n").append(HexTool.toStringFromAscii((byte[]) message));
             System.out.println(sb.toString());
@@ -565,7 +566,7 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
     }
 
     public static final void handlePacket(final RecvPacketOpcode header, final LittleEndianAccessor slea, final MapleClient c, final boolean cs) throws Exception {
-        //System.out.println(header);
+        System.out.println(header);
         switch (header) {
             case PONG:
                 c.pongReceived();
@@ -600,6 +601,7 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 if (slea.readByte() != 8 || slea.readShort() != ServerConstants.MAPLE_VERSION || !String.valueOf(slea.readShort()).equals(ServerConstants.MAPLE_PATCH)) {
                     c.getSession().close();
                 }
+                
                 break;
             case CHARLIST_REQUEST:
                 CharLoginHandler.CharlistRequest(slea, c);
