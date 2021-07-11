@@ -3590,30 +3590,22 @@ public class GameConstants {
         return 0;
     }
 
-    public static int[] Blocked_NPC = new int[]{ //list of npc's you dont want to spawn anywhere.
+    private static final int[] blockedNpcs = new int[]{ //list of npc's you dont want to spawn anywhere.
         //Example 
         9070006, //Cursed Knight in henesys to test this altough it shud work add w/e ids later to block them from spawning
     };
-    
+
     public static int[] getBlockedNpc() {
-        return Blocked_NPC;
+        return blockedNpcs;
     }
+
+    private static final List<Integer> broadcastableSkillsForAllMap = Arrays.asList(1005);
 
     public static boolean isBroadcastableInAllMap(int id) {
-
-        ArrayList<Integer> SkillsForAllMap=new ArrayList<>();
-        Collections.addAll(SkillsForAllMap, new Integer[]{
-            1005 // Hecho of hero
-        });
-
-        return SkillsForAllMap.contains(id);
+        return broadcastableSkillsForAllMap.contains(id);
     }
 
-    public static boolean isBroadcastableInParty(int id) {
-        //9101001
-        ArrayList<Integer> SkillsBroadcastableInParty=new ArrayList<Integer>();
- 
-        Collections.addAll(SkillsBroadcastableInParty, new Integer[]{
+    private static final List<Integer> broadcastableSkillInParty = Arrays.asList(
             //SuperGM skills 
             9101001, //Haste (SuperGM)
             9101002, //Holy Symbol (SuperGM)
@@ -3626,10 +3618,10 @@ public class GameConstants {
             4101004, 4201003, 14101003,
             1101006, 11101003, //Rage
             2322022, //Combat Orders
-             //Maple Warrior
-            1221000, 1321000, 2121000,2221000,2321000,3121000,3221000,4121000,
-            4221000, 4341000, 5121000, 5221000, 5321005,21121000,22171000,
-            23121005, 32121007, 33121007, 35121007,31121004,
+            //Maple Warrior
+            1221000, 1321000, 2121000, 2221000, 2321000, 3121000, 3221000, 4121000,
+            4221000, 4341000, 5121000, 5221000, 5321005, 21121000, 22171000,
+            23121005, 32121007, 33121007, 35121007, 31121004,
             1301006, //Iron Will
             1301007, //Hyper Body
             //Meditation
@@ -3638,11 +3630,11 @@ public class GameConstants {
             2311001, //Dispel
             2311003, //Holy Symbol
             2321005, // Advanced Blessing
-           
+
             //Sharp Eyes
             3121002, 3221002, 33121004,
             //Dark Flare
-            4111007, 4211007,14111010,
+            4111007, 4211007, 14111010,
             5301003, //Monkey Magic 
             5320008, //Mega Monkey Magic
             21111012, // Maha Blessing
@@ -3651,10 +3643,11 @@ public class GameConstants {
             22161003, //Recovery Aura
             22161004, //Onyx Shroud
             22181003, //Soul Stone
-            23111002, //Unicorn Spike
-           
-        });
-       
-        return SkillsBroadcastableInParty.contains(id);
+            23111002 //Unicorn Spike
+    );
+
+    public static boolean isBroadcastableSkillInParty(int skillId) {
+        //9101001
+        return broadcastableSkillInParty.contains(skillId);
     }
 }
