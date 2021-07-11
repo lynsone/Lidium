@@ -1,8 +1,7 @@
 var status = -1;
 
-
 function action(mode, type, selection) {
-	java.lang.System.out.println("hi");
+
 	if (cm.getMap().getAllMonstersThreadsafe().size() > 0) {
 		cm.dispose();
 		return;
@@ -48,5 +47,5 @@ function action(mode, type, selection) {
 	}
 }
 function end() {
-	action(1,0,0);
+	action(1, 0, 0);
 }

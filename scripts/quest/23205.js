@@ -2,7 +2,7 @@ var status = -1;
 
 
 function start(mode, type, selection) {
-	
+
 	action(1, 0, 0);
 }
 
@@ -58,11 +58,11 @@ function action(mode, type, selection) {
 		qm.dispose();
 		importPackage(Packages.client.messages.commands.player);
 		var dispose = new DisposeCommand();
-		dispose.execute(cm.getClient(), null);
+		dispose.execute(qm.getClient(), null);
 	}
 }
 
 function end() {
-	
+
 	action(1, 0, 0);
 }

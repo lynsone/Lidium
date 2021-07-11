@@ -4,12 +4,11 @@ function action(mode, type, selection) {
 	if (mode == 1) {
 		status++;
 	} else {
-		if (status == 0) {
-			cm.dispose();
-		}
-		status--;
+		cm.dispose();
+		return;
 	}
 	if (status == 0) {
+		cm.EnableUI(0);
 		cm.sendPlayerToNpc("Where am I? I don't recognize this place... Everything hurts, ugh.");
 	} else if (status == 1) {
 		cm.sendDirectionStatus(3, 1);
