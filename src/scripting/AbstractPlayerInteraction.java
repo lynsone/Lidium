@@ -51,7 +51,10 @@ import server.quest.MapleQuest;
 import tools.packet.CField;
 import tools.packet.PetPacket;
 import client.inventory.MapleInventoryIdentifier;
+import handling.world.MaplePartyCharacter;
 import handling.world.World;
+import java.util.ArrayList;
+import java.util.Arrays;
 import server.events.MapleEvent;
 import server.events.MapleEventType;
 import tools.FileoutputUtil;
@@ -98,19 +101,41 @@ public abstract class AbstractPlayerInteraction {
 
     public final EventInstanceManager getEventInstance() {
         return c.getPlayer().getEventInstance();
-    }
+    }    
     
-    public final boolean returnPartyHasItem(int i) {
-        if(i > 0) return false;
+    public boolean partyHasItem(int itemid, int quantity) {
+        var party = getParty();
+        if (party == null) {
+            return false;
+        }
+
+        for (MaplePartyCharacter mpc : party.getMembers()) {
+            var chrx = ChannelServer.getInstance(mpc.getChannel()).getPlayerStorage().getCharacterById(mpc.getId());
+            boolean haveitem = chrx.haveItem(itemid, quantity, false, true);
+            if (!haveitem) {
+                return false;
+            }
+        }
         return true;
     }
     
-    public final void partyHasItem(final int id, final List<MapleCharacter> party) {
-        party.forEach(chr -> {
-            final int possesed = chr.getInventory(GameConstants.getInventoryType(id)).countById(id);
-            if(possesed < 1) returnPartyHasItem(0);
-        });
-        returnPartyHasItem(1);
+    public String getPlayersMissingItem(int itemid, int quantity) {
+        var party = getParty();
+        ArrayList<String> PlayerNames = new ArrayList<>(6);
+        if (party == null) {
+            return "You are not in a party.";
+        }
+
+        for (MaplePartyCharacter mpc : party.getMembers()) {
+            var chrx = ChannelServer.getInstance(mpc.getChannel()).getPlayerStorage().getCharacterById(mpc.getId());
+
+            boolean haveitem = chrx.haveItem(itemid, quantity, false, true);
+            if (!haveitem) {
+                PlayerNames.add(chrx.getName());
+            }
+        }
+        String[] array = PlayerNames.toArray(new String[0]);
+        return Arrays.toString(array).replace("[", "").replace("]", "");
     }
         
     public final void warp(final int map) {
@@ -865,6 +890,12 @@ public abstract class AbstractPlayerInteraction {
     public final void openNpc(final int id) {
         getClient().removeClickedNPC();
         NPCScriptManager.getInstance().start(getClient(), id);
+    }
+    
+    public final void openNpc(final int id, final String script){
+        getClient().removeClickedNPC();
+        NPCScriptManager.getInstance().dispose(getClient());
+        NPCScriptManager.getInstance().start(getClient(), id, script);
     }
 
     public final void openNpc(final MapleClient cg, final int id) {

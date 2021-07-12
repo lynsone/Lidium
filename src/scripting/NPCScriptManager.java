@@ -74,6 +74,42 @@ public class NPCScriptManager extends AbstractScriptManager {
             lock.unlock();
         }
     }
+    
+    void start(final MapleClient c, final int npc, final String script) {
+        final Lock lock = c.getNPCLock();
+        lock.lock();
+        try {
+            if (!cms.containsKey(c) && c.canClickNPC()) {
+                Invocable iv = getInvocable("npc/" + script + ".js", c, true);
+                if (iv == null) {
+                    iv = getInvocable("npc/notcoded.js", c, true); //safe disposal
+                    if (iv == null) {
+                        dispose(c);
+                        return;
+                    }
+                }
+                final ScriptEngine scriptengine = (ScriptEngine) iv;
+                final NPCConversationManager cm = new NPCConversationManager(c, npc, script, -1, (byte) -1, iv);
+                cms.put(c, cm);
+                scriptengine.put("cm", cm);
+
+                c.getPlayer().setConversation(1);
+		c.setClickedNPC();
+                //System.out.println("NPCID started: " + npc);
+                try {
+                    iv.invokeFunction("start"); // Temporary until I've removed all of start
+                } catch (NoSuchMethodException nsme) {
+                    iv.invokeFunction("action", (byte) 1, (byte) 0, 0);
+                }
+            }
+        } catch (final Exception e) {
+            System.err.println("Error executing NPC script, NPC ID : " + npc + "." + e);
+            FileoutputUtil.log(FileoutputUtil.ScriptEx_Log, "Error executing NPC script, NPC ID : " + npc + "." + e);
+            dispose(c);
+        } finally {
+            lock.unlock();
+        }
+    }
 
     public final void action(final MapleClient c, final byte mode, final byte type, final int selection) {
         if (mode != -1) {
@@ -217,6 +253,7 @@ public class NPCScriptManager extends AbstractScriptManager {
             cms.remove(c);
             if (npccm.getType() == -1) {
                 c.removeScriptEngine("scripts/npc/" + npccm.getNpc() + ".js");
+                c.removeScriptEngine("scripts/npc/" + npccm.getScript() + ".js");
                 c.removeScriptEngine("scripts/npc/notcoded.js");
             } else {
                 c.removeScriptEngine("scripts/quest/" + npccm.getQuest() + ".js");
@@ -229,5 +266,5 @@ public class NPCScriptManager extends AbstractScriptManager {
 
     public final NPCConversationManager getCM(final MapleClient c) {
         return cms.get(c);
-    }
+    }   
 }
