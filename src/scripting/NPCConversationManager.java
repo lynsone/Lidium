@@ -94,11 +94,19 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     private byte lastMsg = -1;
     public boolean pendingDisposal = false;
     private Invocable iv;
+    private String script;
 
     public NPCConversationManager(MapleClient c, int npc, int questid, byte type, Invocable iv) {
         super(c, npc, questid);
         this.type = type;
         this.iv = iv;
+    }
+
+    NPCConversationManager(MapleClient c, int npc, String script, int questid, byte type, Invocable iv) {
+        super(c, npc, questid);
+        this.script = script;
+        this.type = type;
+        this.iv = iv;       
     }
 
     public Invocable getIv() {
@@ -115,6 +123,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public byte getType() {
         return type;
+    }
+    
+    public String getScript(){
+        return script;
     }
 
     public void safeDispose() {
