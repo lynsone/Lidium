@@ -2938,6 +2938,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
     }
 
     public void leaveMap(MapleMap map) {
+        resetKillCount(); //custom
+        
         controlledLock.writeLock().lock();
         visibleMapObjectsLock.writeLock().lock();
         try {
