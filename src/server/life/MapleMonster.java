@@ -354,6 +354,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     private void giveExpToCharacter(final MapleCharacter attacker, int exp, final boolean highestDamage, final int numExpSharers, final byte pty, final byte Class_Bonus_EXP_PERCENT, final byte Premium_Bonus_EXP_PERCENT, final int lastskillID) {
+        attacker.addKillCount(); // this is from GMS but NOT from v111 so it is custom...
+        
         if (highestDamage) {
             if (eventInstance != null) {
                 eventInstance.monsterKilled(attacker, this);
