@@ -7,6 +7,10 @@ import client.MapleStat;
 import client.messages.Command;
 
 public class StatDexCommand extends Command{
+    
+    {
+        setDescription("Use an amount of AP to DEX.");
+    }
 
     @Override
     public void execute(MapleClient c, String[] params){

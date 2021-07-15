@@ -6,7 +6,9 @@ import client.MapleClient;
 import client.MapleCharacter;
 import client.MapleStat;
 public class StatIntCommand extends Command{
-    
+    {
+        setDescription("Use an amount of AP to INT.");
+    }
     @Override
     public void execute(MapleClient c, String[] params){
         MapleCharacter player = c.getPlayer();
