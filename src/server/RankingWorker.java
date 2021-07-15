@@ -76,7 +76,7 @@ public class RankingWorker {
 
         PreparedStatement charSelect = con.prepareStatement(sb.toString());
         ResultSet rs = charSelect.executeQuery();
-        PreparedStatement ps = con.prepareStatement("UPDATE characters SET jobRank = ?, jobRankMove = ?, rank = ?, rankMove = ? WHERE id = ?");
+        PreparedStatement ps = con.prepareStatement("UPDATE characters SET `jobRank` = ?, `jobRankMove` = ?, `rank` = ?, `rankMove` = ? WHERE `id` = ?");
         int rank = 0; //for "all"
         final Map<Integer, Integer> rankMap = new LinkedHashMap<Integer, Integer>();
         for (int i : jobCommands.values()) {

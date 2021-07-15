@@ -546,8 +546,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         ret.keydown_skill = 0; // Keydown skill can't be brought over
         ret.lastfametime = ct.lastfametime;
         ret.lastmonthfameids = ct.famedcharacters;
-        //ret.extendedSlots = ct.extendedSlots;
-        ret.extendedSlots = null;
+        ret.extendedSlots = ct.extendedSlots;
         ret.storage = (MapleStorage) ct.storage;
         ret.cs = (CashShop) ct.cs;
         client.setAccountName(ct.accountname);
