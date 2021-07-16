@@ -387,7 +387,6 @@ public final class MapleMap {
         int newOid;
         try {
             newOid = ++runningOid;
-            newOid = (int)(runningOid * Math.random());
         } catch (Throwable throwable) {
             Logger.getLogger(MapleMap.class.getName()).log(Level.SEVERE, "Updating RunningOidLock failed.", throwable);
             return;
