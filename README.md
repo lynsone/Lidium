@@ -7,6 +7,8 @@ It is highly recommended that you use Java 16 for this project.
 
 Live instance: http://newbms.org/
 
+Current Pre-BB WZ: https://drive.google.com/drive/folders/1YOWjrFl-RPBgydbk4lbvHsLR1DG-yErG?usp=sharing
+
 v111.1 Client Mod Collection: https://github.com/atnight348/Lidium-Mod
 
 Lidium Development Server: https://discord.gg/deYbTkckBe
