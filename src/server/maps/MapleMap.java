@@ -29,6 +29,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -380,19 +382,42 @@ public final class MapleMap {
     }
 
     public final void addMapObject(final MapleMapObject mapobject) {
-        runningOidLock.lock();
+        try {
+            runningOidLock.lock();
+        } catch(Throwable throwable) {
+            Logger.getLogger(MapleMap.class.getName()).log(Level.SEVERE, "RunningOidLock locking failed.", throwable);
+            return;
+        }
+
         int newOid;
         try {
             newOid = ++runningOid;
+        } catch (Throwable throwable) {
+            Logger.getLogger(MapleMap.class.getName()).log(Level.SEVERE, "Updating RunningOidLock failed.", throwable);
+            return;
         } finally {
             runningOidLock.unlock();
         }
 
-        mapobject.setObjectId(newOid);
+        try {
+            mapobject.setObjectId(newOid);
+        } catch (Throwable throwable) {
+            Logger.getLogger(MapleMap.class.getName()).log(Level.SEVERE, "Setting objectId on mapobject failed.", throwable);
+            return;
+        }
 
-        mapobjectlocks.get(mapobject.getType()).writeLock().lock();
+        try {
+            mapobjectlocks.get(mapobject.getType()).writeLock().lock();
+        } catch (Throwable throwable) {
+            Logger.getLogger(MapleMap.class.getName()).log(Level.SEVERE, "Locking mapObject failed.", throwable);
+            return;
+        }
+        
         try {
             mapobjects.get(mapobject.getType()).put(newOid, mapobject);
+        } catch (Throwable throwable) {
+            Logger.getLogger(MapleMap.class.getName()).log(Level.SEVERE, "Putting on mapObejct failed.", throwable);
+            return;
         } finally {
             mapobjectlocks.get(mapobject.getType()).writeLock().unlock();
         }
