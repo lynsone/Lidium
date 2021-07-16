@@ -7,7 +7,9 @@ import client.MapleCharacter;
 import client.MapleStat;
 
 public class StatStrCommand extends Command{
-    
+    {
+        setDescription("Use an amount of AP to STR.");
+    }
     @Override
     public void execute(MapleClient c, String[] params){
         MapleCharacter player = c.getPlayer();

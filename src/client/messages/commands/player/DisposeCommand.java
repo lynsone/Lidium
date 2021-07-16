@@ -7,6 +7,10 @@ import tools.packet.CWvsContext;
 
 public class DisposeCommand extends Command{
 
+    {
+        setDescription("Fix client problems.");
+    }
+
     @Override
     public void execute(MapleClient c, String[] params){       
         c.removeClickedNPC();

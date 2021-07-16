@@ -8,6 +8,10 @@ import server.maps.MapleMap;
 import server.maps.SavedLocationType;
 
 public class FMCommand extends Command{
+
+    {
+        setDescription("Warps you to Free Market.");
+    }
     
     @Override
     public void execute(MapleClient c, String[] params){ 

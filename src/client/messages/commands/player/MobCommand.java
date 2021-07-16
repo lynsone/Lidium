@@ -8,6 +8,9 @@ import server.maps.MapleMapObject;
 import server.maps.MapleMapObjectType;
 
 public class MobCommand extends Command{
+    {
+        setDescription("Show monsters close to you.");
+    }
     
     @Override
     public void execute(MapleClient c, String[] params){
