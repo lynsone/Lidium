@@ -6,11 +6,6 @@ function start() {
 			cm.dispose();
 			return;
 		}
-		if (cm.getPlayer().getClient().getChannel() != 8) {
-			cm.sendOk("Chaos Horntail may only be attempted on channel 8");
-			cm.dispose();
-			return;
-		}
     var em = cm.getEventManager("ChaosHorntail");
 
     if (em == null) {
