@@ -22,6 +22,7 @@ function start(mode, type, selection) {
 			} else if(status == 3){
 				qm.sendNext("Okay. In that case, I'll just give you the routes to the Kingdom of Mushroom. #bNear the west entrance of Henesys,#k you'll find an #bempty house#k. Enter the house, and turn left to enter#b<Themed Dungeon : Mushroom Castle>#k. That's the entrance to the Kingdom of Mushroom. There's not much time!");
 				qm.forceStartQuest();
+				qm.warp(106020000, 0);
 				return;
 			}
 		}
@@ -37,6 +38,7 @@ function start(mode, type, selection) {
 	if(status == 4){
 		qm.gainItem(4032375, 1);
 		qm.forceStartQuest();
+		qm.warp(106020000, 0);
 		qm.dispose();
 	}
 }
