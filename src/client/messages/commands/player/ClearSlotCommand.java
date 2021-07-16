@@ -8,6 +8,9 @@ import client.messages.Command;
 import server.MapleInventoryManipulator;
 
 public class ClearSlotCommand extends Command{
+    {
+        setDescription("Remove all items from a tab of your inventory.");
+    }
     
     private static MapleInventoryType[] invs = {
             MapleInventoryType.EQUIP,

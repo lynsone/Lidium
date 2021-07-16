@@ -7,6 +7,9 @@ import server.RankingWorker;
 import server.RankingWorker.RankingInformation;
 
 public class RankingCommand extends Command{
+    {
+        setDescription("Show ranking.");
+    }
     @Override
     public void execute(MapleClient c, String[] splitted){ 
         if(splitted.length < 4){
@@ -34,7 +37,7 @@ public class RankingCommand extends Command{
                 }else{
                     final List<RankingInformation> ranks = RankingWorker.getRankingInfo(job.intValue());
                     if(ranks == null || ranks.size() <= 0){
-                        c.getPlayer().dropMessage(5, "Please try again later.");
+                        c.getPlayer().dropMessage(5, "Ranking not available. Please try again later.");
                     }else{
                         int num = 0;
                         for(RankingInformation rank : ranks){

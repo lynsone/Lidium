@@ -7,7 +7,9 @@ import client.MapleStat;
 import client.messages.Command;
 
 public class StatLukCommand extends Command{
-    
+    {
+        setDescription("Use an amount of AP to LUK.");
+    }
     @Override
     public void execute(MapleClient c, String[] params){
         MapleCharacter player = c.getPlayer();
