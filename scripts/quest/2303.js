@@ -37,6 +37,7 @@ function start(mode, type, selection) {
 	if(status == 4){
 		qm.gainItem(4032375, 1);
 		qm.forceStartQuest();
+		qm.warp(106020000, 0);
 		qm.dispose();
 	}
 }
