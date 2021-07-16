@@ -117,7 +117,7 @@ public class MaplePortal {
                 try {
                     PortalScriptManager.getInstance().executePortalScript(this, c);
                 } catch (final Exception e) {
-                    e.printStackTrace();
+                    System.err.println(e);
                 }
             } else if (getTargetMapId() != 999999999) {
                 final MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(getTargetMapId());

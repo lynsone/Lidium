@@ -38,7 +38,6 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map.Entry;
 import server.MapleDueyActions;
 import server.MapleShop;
 import server.MapleTrade;
@@ -49,7 +48,6 @@ import server.maps.MapleDragon;
 import server.maps.MapleMap;
 import server.maps.MapleMapItem;
 import server.maps.MapleMist;
-import server.maps.MapleNodes.MaplePlatform;
 import server.maps.MapleReactor;
 import server.maps.MapleSummon;
 import server.maps.MechDoor;
@@ -652,24 +650,9 @@ public class CField {
             mplew.writeInt(summon.getObjectId());
             if (animated) {
                 switch (summon.getSkill()) {
-                    case 35121003:
-                        mplew.write(10);
-                        break;
-                    case 35111001:
-                    case 35111010:
-                    case 35111009:
-                    case 35111002:
-                    case 35111005:
-                    case 35111011:
-                    case 35121009:
-                    case 35121010:
-                    case 35121011:
-                    case 33101008:
-                        mplew.write(5);
-                        break;
-                    default:
-                        mplew.write(4);
-                        break;
+                    case 35121003 -> mplew.write(10);
+                    case 35111001, 35111010, 35111009, 35111002, 35111005, 35111011, 35121009, 35121010, 35121011, 33101008 -> mplew.write(5);
+                    default -> mplew.write(4);
                 }
             } else {
                 mplew.write(1);
@@ -700,11 +683,13 @@ public class CField {
             mplew.write(level - 1); //? guess
             mplew.write(animation);
             mplew.write(allDamage.size());
-            for (final Pair<Integer, Integer> attackEntry : allDamage) {
+            allDamage.stream().map(attackEntry -> {
                 mplew.writeInt(attackEntry.left); // oid
+                return attackEntry;
+            }).forEachOrdered(attackEntry -> {
                 mplew.write(7); // who knows
                 mplew.writeInt(attackEntry.right); // damage
-            }
+            });
             mplew.write(darkFlare ? 1 : 0);
 
             return mplew.getPacket();
@@ -721,15 +706,21 @@ public class CField {
             mplew.writePos(pos);
             mplew.writeInt(0); //<-- delay
             mplew.write(attack.size());
-            for (AttackPair p : attack) {
+            attack.stream().map(p -> {
                 mplew.writeInt(p.objectid);
+                return p;
+            }).map(p -> {
                 mplew.writePos(p.point);
+                return p;
+            }).map(p -> {
                 mplew.write(p.attack.size());
+                return p;
+            }).forEachOrdered(p -> {
                 mplew.write(0); // who knows
-                for (Pair<Integer, Boolean> atk : p.attack) {
+                p.attack.forEach(atk -> {
                     mplew.writeInt(atk.left);
-                }
-            }
+                });
+            });
 
             return mplew.getPacket();
         }
@@ -820,12 +811,18 @@ public class CField {
             MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
             mplew.writeShort(SendPacketOpcode.NPC_SCRIPTABLE.getValue());
             mplew.write(npcs.size());
-            for (Pair<Integer, String> s : npcs) {
+            npcs.stream().map(s -> {
                 mplew.writeInt(s.left);
+                return s;
+            }).map(s -> {
                 mplew.writeMapleAsciiString(s.right);
+                return s;
+            }).map(_item -> {
                 mplew.writeInt(0); // start time
+                return _item;
+            }).forEachOrdered(_item -> {
                 mplew.writeInt(Integer.MAX_VALUE); // end time
-            }
+            });
             return mplew.getPacket();
         }
 
@@ -968,9 +965,9 @@ public class CField {
             mplew.writeInt(meso);
             mplew.writeShort(0);
             mplew.write((byte) items.size());
-            for (Item item : items) {
+            items.forEach(item -> {
                 PacketHelper.addItemInfo(mplew, item);
-            }
+            });
             mplew.writeShort(0);
             mplew.write(0);
 
@@ -1009,9 +1006,9 @@ public class CField {
             mplew.write(0x7C); //4 | 8 | 10 | 20 | 40
             mplew.writeZeroBytes(10);
             mplew.write(items.size());
-            for (Item item : items) {
+            items.forEach(item -> {
                 PacketHelper.addItemInfo(mplew, item);
-            }
+            });
             mplew.write(0);
             return mplew.getPacket();
         }
@@ -1042,9 +1039,9 @@ public class CField {
             mplew.writeShort(0);
             mplew.writeInt(0);
             mplew.write(items.size());
-            for (Item item : items) {
+            items.forEach(item -> {
                 PacketHelper.addItemInfo(mplew, item);
-            }
+            });
             return mplew.getPacket();
         }
     }
@@ -1086,10 +1083,12 @@ public class CField {
         mplew.write(1); // 0 = guild, 1 = team, 2 = nothing, 
         mplew.write(0); // ???
         mplew.writeInt(players.size());
-        for (Pair<Integer, Integer> pl : players) {
+        players.stream().map(pl -> {
             mplew.writeInt(pl.left);
+            return pl;
+        }).forEachOrdered(pl -> {
             mplew.write(pl.right); // team (0 =none, 1 = red, 2 = blue)
-        }
+        });
 
         return mplew.getPacket();
     }
@@ -1118,14 +1117,24 @@ public class CField {
 
         mplew.writeShort(SendPacketOpcode.PVP_RESULT.getValue());
         mplew.writeInt(flags.size());
-        for (Pair<Integer, MapleCharacter> f : flags) {
+        flags.stream().map(f -> {
             mplew.writeInt(f.right.getId());
+            return f;
+        }).map(f -> {
             mplew.writeMapleAsciiString(f.right.getName());
+            return f;
+        }).map(f -> {
             mplew.writeInt(f.left);
+            return f;
+        }).map(f -> {
             mplew.writeShort(f.right.getTeam() + 1); //??? 1 = bold
+            return f;
+        }).map(_item -> {
             mplew.writeInt(0); //??? delay 600
+            return _item;
+        }).forEachOrdered(_item -> {
             mplew.writeInt(0); //???
-        }
+        });
         mplew.writeZeroBytes(24); //BONUS: ___
         mplew.writeInt(exp);
         mplew.write(0);
@@ -1143,11 +1152,15 @@ public class CField {
 
         mplew.writeShort(SendPacketOpcode.PVP_TEAM.getValue());
         mplew.writeInt(players.size());
-        for (Pair<Integer, String> pl : players) {
+        players.stream().map(pl -> {
             mplew.writeInt(pl.left);
+            return pl;
+        }).map(pl -> {
             mplew.writeMapleAsciiString(pl.right);
+            return pl;
+        }).forEachOrdered(_item -> {
             mplew.writeShort(2660); //?
-        }
+        });
 
         return mplew.getPacket();
     }
@@ -1426,10 +1439,12 @@ public class CField {
         mplew.writeShort(SendPacketOpcode.LOGIN_WELCOME.getValue());
         mplew.write(flags == null ? 0 : flags.size());
         if (flags != null) {
-            for (Pair<String, Integer> f : flags) {
+            flags.stream().map(f -> {
                 mplew.writeMapleAsciiString(f.left);
+                return f;
+            }).forEachOrdered(f -> {
                 mplew.write(f.right);
-            }
+            });
         }
 
         return mplew.getPacket();
@@ -1622,10 +1637,12 @@ public class CField {
 
         mplew.writeShort(SendPacketOpcode.UPDATE_ENV.getValue());
         mplew.writeInt(map.getEnvironment().size());
-        for (Entry<String, Integer> mp : map.getEnvironment().entrySet()) {
+        map.getEnvironment().entrySet().stream().map(mp -> {
             mplew.writeMapleAsciiString(mp.getKey());
+            return mp;
+        }).forEachOrdered(mp -> {
             mplew.writeInt(mp.getValue());
-        }
+        });
 
         return mplew.getPacket();
     }
@@ -1777,22 +1794,44 @@ public class CField {
 
         mplew.writeShort(SendPacketOpcode.MOVE_PLATFORM.getValue());
         mplew.writeInt(map.getPlatforms().size());
-        for (MaplePlatform mp : map.getPlatforms()) {
+        map.getPlatforms().stream().map(mp -> {
             mplew.writeMapleAsciiString(mp.name);
+            return mp;
+        }).map(mp -> {
             mplew.writeInt(mp.start);
+            return mp;
+        }).map(mp -> {
             mplew.writeInt(mp.SN.size());
+            return mp;
+        }).map(mp -> {
             for (int x = 0; x < mp.SN.size(); x++) {
                 mplew.writeInt(mp.SN.get(x));
             }
+            return mp;
+        }).map(mp -> {
             mplew.writeInt(mp.speed);
+            return mp;
+        }).map(mp -> {
             mplew.writeInt(mp.x1);
+            return mp;
+        }).map(mp -> {
             mplew.writeInt(mp.x2);
+            return mp;
+        }).map(mp -> {
             mplew.writeInt(mp.y1);
+            return mp;
+        }).map(mp -> {
             mplew.writeInt(mp.y2);
+            return mp;
+        }).map(mp -> {
             mplew.writeInt(mp.x1);//?
+            return mp;
+        }).map(mp -> {
             mplew.writeInt(mp.y1);
+            return mp;
+        }).forEachOrdered(mp -> {
             mplew.writeShort(mp.r);
-        }
+        });
 
         return mplew.getPacket();
     }
@@ -1883,7 +1922,7 @@ public class CField {
             }
         }
         // SecondaryStat::DecodeForRemote
-        final List<Pair<Integer, Integer>> buffvalue = new ArrayList<Pair<Integer, Integer>>();
+        final List<Pair<Integer, Integer>> buffvalue = new ArrayList<>();
         final int[] mask = new int[GameConstants.MAX_BUFFSTAT];
         mask[0] |= DEFAULT_BUFFMASK;
         mask[1] |= 0xA00000; // 0x200000 + 0x800000
@@ -1896,23 +1935,23 @@ public class CField {
         }
         if (chr.getBuffedValue(MapleBuffStat.COMBO) != null) {
             mask[MapleBuffStat.COMBO.getPosition(true)] |= MapleBuffStat.COMBO.getValue();
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.COMBO).intValue()), 1));
+            buffvalue.add(new Pair<>(chr.getBuffedValue(MapleBuffStat.COMBO), 1));
         }
         if (chr.getBuffedValue(MapleBuffStat.WK_CHARGE) != null) {
             mask[MapleBuffStat.WK_CHARGE.getPosition(true)] |= MapleBuffStat.WK_CHARGE.getValue();
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.WK_CHARGE).intValue()), 2));
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffSource(MapleBuffStat.WK_CHARGE)), 3));
+            buffvalue.add(new Pair<>(chr.getBuffedValue(MapleBuffStat.WK_CHARGE), 2));
+            buffvalue.add(new Pair<>(chr.getBuffSource(MapleBuffStat.WK_CHARGE), 3));
         }
         if (chr.getBuffedValue(MapleBuffStat.SHADOWPARTNER) != null) {
             mask[MapleBuffStat.SHADOWPARTNER.getPosition(true)] |= MapleBuffStat.SHADOWPARTNER.getValue();
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.SHADOWPARTNER).intValue()), 2));
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffSource(MapleBuffStat.SHADOWPARTNER)), 3));
+            buffvalue.add(new Pair<>(chr.getBuffedValue(MapleBuffStat.SHADOWPARTNER), 2));
+            buffvalue.add(new Pair<>(chr.getBuffSource(MapleBuffStat.SHADOWPARTNER), 3));
         }
         //---------------------------------------------------------------
         if (chr.getBuffedValue(MapleBuffStat.MORPH) != null) {
             mask[MapleBuffStat.MORPH.getPosition(true)] |= MapleBuffStat.MORPH.getValue();
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getStatForBuff(MapleBuffStat.MORPH).getMorph(chr)), 2));
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffSource(MapleBuffStat.MORPH)), 3));
+            buffvalue.add(new Pair<>(chr.getStatForBuff(MapleBuffStat.MORPH).getMorph(chr), 2));
+            buffvalue.add(new Pair<>(chr.getBuffSource(MapleBuffStat.MORPH), 3));
         }
         if (chr.getBuffedValue(MapleBuffStat.BERSERK_FURY) != null) {
             mask[MapleBuffStat.BERSERK_FURY.getPosition(true)] |= MapleBuffStat.BERSERK_FURY.getValue();
@@ -1923,65 +1962,65 @@ public class CField {
         //---------------------------------------------------------------
         if (chr.getBuffedValue(MapleBuffStat.WIND_WALK) != null) {
             mask[MapleBuffStat.WIND_WALK.getPosition(true)] |= MapleBuffStat.WIND_WALK.getValue();
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.WIND_WALK).intValue()), 2));
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getTrueBuffSource(MapleBuffStat.WIND_WALK)), 3));
+            buffvalue.add(new Pair<>(chr.getBuffedValue(MapleBuffStat.WIND_WALK), 2));
+            buffvalue.add(new Pair<>(chr.getTrueBuffSource(MapleBuffStat.WIND_WALK), 3));
         }
         if (chr.getBuffedValue(MapleBuffStat.PYRAMID_PQ) != null) {
             mask[MapleBuffStat.PYRAMID_PQ.getPosition(true)] |= MapleBuffStat.PYRAMID_PQ.getValue();
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.PYRAMID_PQ).intValue()), 2));
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getTrueBuffSource(MapleBuffStat.PYRAMID_PQ)), 3));
+            buffvalue.add(new Pair<>(chr.getBuffedValue(MapleBuffStat.PYRAMID_PQ), 2));
+            buffvalue.add(new Pair<>(chr.getTrueBuffSource(MapleBuffStat.PYRAMID_PQ), 3));
         }
         if (chr.getBuffedValue(MapleBuffStat.SOARING) != null) {
             mask[MapleBuffStat.SOARING.getPosition(true)] |= MapleBuffStat.SOARING.getValue();
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.SOARING).intValue()), 2));
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getTrueBuffSource(MapleBuffStat.SOARING)), 3));
+            buffvalue.add(new Pair<>(chr.getBuffedValue(MapleBuffStat.SOARING), 2));
+            buffvalue.add(new Pair<>(chr.getTrueBuffSource(MapleBuffStat.SOARING), 3));
         }
         if (chr.getBuffedValue(MapleBuffStat.OWL_SPIRIT) != null) {
             mask[MapleBuffStat.OWL_SPIRIT.getPosition(true)] |= MapleBuffStat.OWL_SPIRIT.getValue();
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.OWL_SPIRIT).intValue()), 2));
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getTrueBuffSource(MapleBuffStat.OWL_SPIRIT)), 3));
+            buffvalue.add(new Pair<>(chr.getBuffedValue(MapleBuffStat.OWL_SPIRIT), 2));
+            buffvalue.add(new Pair<>(chr.getTrueBuffSource(MapleBuffStat.OWL_SPIRIT), 3));
         }
         if (chr.getBuffedValue(MapleBuffStat.FINAL_CUT) != null) {
             mask[MapleBuffStat.FINAL_CUT.getPosition(true)] |= MapleBuffStat.FINAL_CUT.getValue();
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.FINAL_CUT).intValue()), 2));
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getTrueBuffSource(MapleBuffStat.FINAL_CUT)), 3));
+            buffvalue.add(new Pair<>(chr.getBuffedValue(MapleBuffStat.FINAL_CUT), 2));
+            buffvalue.add(new Pair<>(chr.getTrueBuffSource(MapleBuffStat.FINAL_CUT), 3));
         }
         //---------------------------------------------------------------
         if (chr.getBuffedValue(MapleBuffStat.TORNADO) != null) {
             mask[MapleBuffStat.TORNADO.getPosition(true)] |= MapleBuffStat.TORNADO.getValue();
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.TORNADO).intValue()), 2));
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getTrueBuffSource(MapleBuffStat.TORNADO)), 3));
+            buffvalue.add(new Pair<>(chr.getBuffedValue(MapleBuffStat.TORNADO), 2));
+            buffvalue.add(new Pair<>(chr.getTrueBuffSource(MapleBuffStat.TORNADO), 3));
         }
         if (chr.getBuffedValue(MapleBuffStat.INFILTRATE) != null) {
             mask[MapleBuffStat.INFILTRATE.getPosition(true)] |= MapleBuffStat.INFILTRATE.getValue();
         }
         if (chr.getBuffedValue(MapleBuffStat.MECH_CHANGE) != null) {
             mask[MapleBuffStat.MECH_CHANGE.getPosition(true)] |= MapleBuffStat.MECH_CHANGE.getValue();
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.MECH_CHANGE).intValue()), 2));
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getTrueBuffSource(MapleBuffStat.MECH_CHANGE)), 3));
+            buffvalue.add(new Pair<>(chr.getBuffedValue(MapleBuffStat.MECH_CHANGE), 2));
+            buffvalue.add(new Pair<>(chr.getTrueBuffSource(MapleBuffStat.MECH_CHANGE), 3));
         }
         if (chr.getBuffedValue(MapleBuffStat.DARK_AURA) != null) {
             mask[MapleBuffStat.DARK_AURA.getPosition(true)] |= MapleBuffStat.DARK_AURA.getValue();
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.DARK_AURA).intValue()), 2));
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getTrueBuffSource(MapleBuffStat.DARK_AURA)), 3));
+            buffvalue.add(new Pair<>(chr.getBuffedValue(MapleBuffStat.DARK_AURA), 2));
+            buffvalue.add(new Pair<>(chr.getTrueBuffSource(MapleBuffStat.DARK_AURA), 3));
         }
         if (chr.getBuffedValue(MapleBuffStat.BLUE_AURA) != null) {
             mask[MapleBuffStat.BLUE_AURA.getPosition(true)] |= MapleBuffStat.BLUE_AURA.getValue();
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.BLUE_AURA).intValue()), 2));
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getTrueBuffSource(MapleBuffStat.BLUE_AURA)), 3));
+            buffvalue.add(new Pair<>(chr.getBuffedValue(MapleBuffStat.BLUE_AURA), 2));
+            buffvalue.add(new Pair<>(chr.getTrueBuffSource(MapleBuffStat.BLUE_AURA), 3));
         }
         if (chr.getBuffedValue(MapleBuffStat.YELLOW_AURA) != null) {
             mask[MapleBuffStat.YELLOW_AURA.getPosition(true)] |= MapleBuffStat.YELLOW_AURA.getValue();
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.YELLOW_AURA).intValue()), 2));
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getTrueBuffSource(MapleBuffStat.YELLOW_AURA)), 3));
+            buffvalue.add(new Pair<>(chr.getBuffedValue(MapleBuffStat.YELLOW_AURA), 2));
+            buffvalue.add(new Pair<>(chr.getTrueBuffSource(MapleBuffStat.YELLOW_AURA), 3));
         }
         if (chr.getBuffedValue(MapleBuffStat.DIVINE_SHIELD) != null) {
             mask[MapleBuffStat.DIVINE_SHIELD.getPosition(true)] |= MapleBuffStat.DIVINE_SHIELD.getValue();
         }
         if (chr.getBuffedValue(MapleBuffStat.GIANT_POTION) != null) {
             mask[MapleBuffStat.GIANT_POTION.getPosition(true)] |= MapleBuffStat.GIANT_POTION.getValue();
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.GIANT_POTION).intValue()), 2));
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getTrueBuffSource(MapleBuffStat.GIANT_POTION)), 3));
+            buffvalue.add(new Pair<>(chr.getBuffedValue(MapleBuffStat.GIANT_POTION), 2));
+            buffvalue.add(new Pair<>(chr.getTrueBuffSource(MapleBuffStat.GIANT_POTION), 3));
         }
         //---------------------------------------------------------------
         if (chr.getBuffedValue(MapleBuffStat.WATER_SHIELD) != null) {
@@ -1989,13 +2028,13 @@ public class CField {
         }
         if (chr.getBuffedValue(MapleBuffStat.DARK_METAMORPHOSIS) != null) {
             mask[MapleBuffStat.DARK_METAMORPHOSIS.getPosition(true)] |= MapleBuffStat.DARK_METAMORPHOSIS.getValue();
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.DARK_METAMORPHOSIS).intValue()), 2));
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffSource(MapleBuffStat.DARK_METAMORPHOSIS)), 3));
+            buffvalue.add(new Pair<>(chr.getBuffedValue(MapleBuffStat.DARK_METAMORPHOSIS), 2));
+            buffvalue.add(new Pair<>(chr.getBuffSource(MapleBuffStat.DARK_METAMORPHOSIS), 3));
         }
         if (chr.getBuffedValue(MapleBuffStat.SPIRIT_SURGE) != null) {
             mask[MapleBuffStat.SPIRIT_SURGE.getPosition(true)] |= MapleBuffStat.SPIRIT_SURGE.getValue();
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.SPIRIT_SURGE).intValue()), 2));
-            buffvalue.add(new Pair<Integer, Integer>(Integer.valueOf(chr.getBuffSource(MapleBuffStat.SPIRIT_SURGE)), 3));
+            buffvalue.add(new Pair<>(chr.getBuffedValue(MapleBuffStat.SPIRIT_SURGE), 2));
+            buffvalue.add(new Pair<>(chr.getBuffSource(MapleBuffStat.SPIRIT_SURGE), 3));
         }
         //if (chr.getBuffedValue(MapleBuffStat.SPIRIT_LINK) != null) { // or this?
         //    mask[MapleBuffStat.SPIRIT_LINK.getPosition(true)] |= MapleBuffStat.SPIRIT_LINK.getValue();
@@ -2010,15 +2049,15 @@ public class CField {
         for (int i = 0; i < mask.length; i++) {
             mplew.writeInt(mask[i]);
         }
-        for (Pair<Integer, Integer> i : buffvalue) {
-            if (i.right == 3) {
-                mplew.writeInt(i.left.intValue());
-            } else if (i.right == 2) {
-                mplew.writeShort(i.left.shortValue());
-            } else if (i.right == 1) {
-                mplew.write(i.left.byteValue());
+        buffvalue.stream().filter(i -> (null != i.right)).forEachOrdered(i -> {
+            switch (i.right) {
+                case 3 -> mplew.writeInt(i.left);
+                case 2 -> mplew.writeShort(i.left.shortValue());
+                case 1 -> mplew.write(i.left.byteValue());
+                default -> {
+                }
             }
-        }
+        });
         mplew.writeInt(-1);// ??
         final int CHAR_MAGIC_SPAWN = Randomizer.nextInt();
         //CHAR_MAGIC_SPAWN is really just tickCount
@@ -2238,19 +2277,27 @@ public class CField {
         mplew.writeInt(0);
         mplew.write(attackCount);
         mplew.write(0); //idk: probably does something like immobilize target		
-        for (AttackPair p : attack) {
+        attack.stream().map(p -> {
             mplew.writeInt(p.objectid);
+            return p;
+        }).map(p -> {
             mplew.writeInt(0);
             mplew.writePos(p.point);
+            return p;
+        }).forEachOrdered((var p) -> {
             mplew.write(0);
             mplew.writeInt(0);
-            for (Pair<Integer, Boolean> atk : p.attack) {
+            p.attack.stream().map(atk -> {
                 mplew.writeInt(atk.left);
+                return atk;
+            }).map(atk -> {
                 mplew.writeInt(0);
                 mplew.write(atk.right ? 1 : 0);
+                return atk;
+            }).forEachOrdered(_item -> {
                 mplew.writeShort(0); //1 = no hit
-            }
-        }
+            });
+        });
 
         return mplew.getPacket();
     }
@@ -2275,9 +2322,9 @@ public class CField {
         mplew.writeShort(SendPacketOpcode.PVP_COOL.getValue());
         mplew.writeInt(cid);
         mplew.write(attack.size());
-        for (int b : attack) {
+        attack.forEach(b -> {
             mplew.writeInt(b);
-        }
+        });
 
         return mplew.getPacket();
     }
@@ -2565,14 +2612,20 @@ public class CField {
         mplew.write(0);// familiar id?
         mplew.write(unk);
         mplew.write(attackPair.size());
-        for (Triple<Integer, Integer, List<Integer>> s : attackPair) {
+        attackPair.stream().map(s -> {
             mplew.writeInt(s.left);
+            return s;
+        }).map(s -> {
             mplew.write(s.mid);
+            return s;
+        }).map(s -> {
             mplew.write(s.right.size());
-            for (int damage : s.right) {
+            return s;
+        }).forEachOrdered(s -> {
+            s.right.forEach(damage -> {
                 mplew.writeInt(damage);
-            }
-        }
+            });
+        });
 
         return mplew.getPacket();
     }
@@ -2633,14 +2686,11 @@ public class CField {
     public static byte[] addAttackInfo(final int type, final int cid, final int tbyte, final int skill, final int level, final int display, final byte speed, final List<AttackPair> damage, final int lvl, final byte mastery, final byte unk, final int charge, final Point pos, final int ultLevel) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        if (type == 0) {
-            mplew.writeShort(SendPacketOpcode.CLOSE_RANGE_ATTACK.getValue());
-        } else if (type == 1 || type == 2) {
-            mplew.writeShort(SendPacketOpcode.RANGED_ATTACK.getValue());
-        } else if (type == 3) {
-            mplew.writeShort(SendPacketOpcode.MAGIC_ATTACK.getValue());
-        } else {
-            mplew.writeShort(SendPacketOpcode.ENERGY_ATTACK.getValue());
+        switch (type) {
+            case 0 -> mplew.writeShort(SendPacketOpcode.CLOSE_RANGE_ATTACK.getValue());
+            case 1, 2 -> mplew.writeShort(SendPacketOpcode.RANGED_ATTACK.getValue());
+            case 3 -> mplew.writeShort(SendPacketOpcode.MAGIC_ATTACK.getValue());
+            default -> mplew.writeShort(SendPacketOpcode.ENERGY_ATTACK.getValue());
         }
 
         mplew.writeInt(cid);
@@ -2664,23 +2714,25 @@ public class CField {
         mplew.write(speed);
         mplew.write(mastery); // Mastery level, magic shows 0
         mplew.writeInt(charge); // only range shows item id,rest 0		
-        for (final AttackPair oned : damage) {
-            if (oned.attack != null) {
-                mplew.writeInt(oned.objectid);
-                mplew.write(7);
-                if (skill == 4211006) {
-                    mplew.write(oned.attack.size());
-                    for (Pair<Integer, Boolean> eachd : oned.attack) {
-                        mplew.writeInt(eachd.left); //m.e. is never crit
-                    }
-                } else {
-                    for (final Pair<Integer, Boolean> eachd : oned.attack) {
-                        mplew.write(eachd.right ? 1 : 0); // highest bit set = crit
-                        mplew.writeInt(eachd.left); //m.e. is never crit
-                    }
-                }
+        damage.stream().filter(oned -> (oned.attack != null)).map(oned -> {
+            mplew.writeInt(oned.objectid);
+            return oned;
+        }).forEachOrdered(oned -> {
+            mplew.write(7);
+            if (skill == 4211006) {
+                mplew.write(oned.attack.size());
+                oned.attack.forEach(eachd -> {
+                    mplew.writeInt(eachd.left); //m.e. is never crit
+                });
+            } else {
+                oned.attack.stream().map(eachd -> {
+                    mplew.write(eachd.right ? 1 : 0); // highest bit set = crit
+                    return eachd;
+                }).forEachOrdered(eachd -> {
+                    mplew.writeInt(eachd.left); //m.e. is never crit
+                });
             }
-        }
+        });
         if (type == 1 || type == 2) { // ranged
             mplew.writePos(pos); // Position
         } else if (type == 3 && charge > 0) { // magic
@@ -3381,10 +3433,12 @@ public class CField {
 
         mplew.writeShort(SendPacketOpcode.ARIANT_SCORE_UPDATE.getValue());
         mplew.write(players.size());
-        for (MapleCharacter i : players) {
+        players.stream().map(i -> {
             mplew.writeMapleAsciiString(i.getName());
+            return i;
+        }).forEachOrdered(_item -> {
             mplew.writeInt(0); // points
-        }
+        });
 
         return mplew.getPacket();
     }
@@ -3448,20 +3502,17 @@ public class CField {
         mplew.writeShort(SendPacketOpcode.RPS_GAME.getValue());
         mplew.write(mode);
         switch (mode) {
-            case 6: { //not enough mesos
+            case 6 ->  { //not enough mesos
                 if (mesos != -1) {
                     mplew.writeInt(mesos);
                 }
-                break;
             }
-            case 8: { //open (npc)
+            case 8 ->  { //open (npc)
                 mplew.writeInt(9000019);
-                break;
             }
-            case 11: { //selection vs answer
+            case 11 ->  { //selection vs answer
                 mplew.write(selection);
                 mplew.write(answer); // FF = lose, or if selection = answer then lose ???
-                break;
             }
         }
         return mplew.getPacket();
@@ -3567,32 +3618,38 @@ public class CField {
         mplew.write(operation);
 
         switch (operation) {
-            case 9: { // Request 13 Digit AS
+            case 9 ->  { // Request 13 Digit AS
                 mplew.write(1);
                 // 0xFF = error
-                break;
             }
-            case 10: { // Open duey
+            case 10 ->  { // Open duey
                 mplew.write(0);
                 mplew.write(packages.size());
 
-                for (MapleDueyActions dp : packages) {
+                packages.stream().map(dp -> {
                     mplew.writeInt(dp.getPackageId());
-                    mplew.writeAsciiString(dp.getSender(), 13);
-                    mplew.writeInt(dp.getMesos());
-                    mplew.writeLong(PacketHelper.getTime(dp.getSentTime()));
-                    mplew.writeZeroBytes(205);
-
-                    if (dp.getItem() != null) {
-                        mplew.write(1);
-                        PacketHelper.addItemInfo(mplew, dp.getItem());
-                    } else {
-                        mplew.write(0);
-                    }
-                    //System.out.println("Package has been sent in packet: " + dp.getPackageId());
+                return dp;
+            }).map(dp -> {
+                mplew.writeAsciiString(dp.getSender(), 13);
+                return dp;
+            }).map(dp -> {
+                mplew.writeInt(dp.getMesos());
+                return dp;
+            }).map(dp -> {
+                mplew.writeLong(PacketHelper.getTime(dp.getSentTime()));
+                return dp;
+            }).forEachOrdered(dp -> {
+                mplew.writeZeroBytes(205);
+                
+                if (dp.getItem() != null) {
+                    mplew.write(1);
+                    PacketHelper.addItemInfo(mplew, dp.getItem());
+                } else {
+                    mplew.write(0);
                 }
+                //System.out.println("Package has been sent in packet: " + dp.getPackageId());
+            });
                 mplew.write(0);
-                break;
             }
         }
         return mplew.getPacket();
@@ -3628,20 +3685,26 @@ public class CField {
 
     public static void addRingInfo(MaplePacketLittleEndianWriter mplew, List<MapleRing> rings) {
         mplew.write(rings.size());
-        for (MapleRing ring : rings) {
+        rings.stream().map(ring -> {
             mplew.writeLong(ring.getRingId());
+            return ring;
+        }).map(ring -> {
             mplew.writeLong(ring.getPartnerRingId());
+            return ring;
+        }).forEachOrdered(ring -> {
             mplew.writeInt(ring.getItemId());
-        }
+        });
     }
 
     public static void addMRingInfo(MaplePacketLittleEndianWriter mplew, List<MapleRing> rings, MapleCharacter chr) {
         mplew.write(rings.size());
-        for (MapleRing ring : rings) {
+        rings.stream().map(ring -> {
             mplew.writeInt(chr.getId());
             mplew.writeInt(ring.getPartnerChrId());
+            return ring;
+        }).forEachOrdered(ring -> {
             mplew.writeInt(ring.getItemId());
-        }
+        });
     }
 
     public static byte[] getBuffBar(long millis) { //You can use the buff again _ seconds later. + bar above head

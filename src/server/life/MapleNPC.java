@@ -46,13 +46,10 @@ public class MapleNPC extends AbstractLoadedMapleLife {
 
     @Override
     public void sendSpawnData(final MapleClient client) {
-        for (int NpcID: GameConstants.getBlockedNpc()){
-            if(NpcID == getId()){
-                return;
-            }
+        for (int NpcID: GameConstants.getBlockedNpc()) {
+            if(NpcID == getId()) return;
         }
         if (getId() >= 9901000) {
-            return;
         } else {
             client.getSession().write(NPCPacket.spawnNPC(this, true));
             client.getSession().write(NPCPacket.spawnNPCRequestController(this, true));
