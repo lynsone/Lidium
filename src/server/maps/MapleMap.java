@@ -48,16 +48,12 @@ import client.MonsterFamiliar;
 import client.inventory.MapleInventoryType;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
-import database.DatabaseConnection;
 
 import handling.channel.ChannelServer;
 import handling.world.PartyOperation;
 import handling.world.World;
 import handling.world.exped.ExpeditionType;
 import java.lang.ref.WeakReference;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.Random;
@@ -86,7 +82,6 @@ import server.MapleCarnivalFactory;
 import server.MapleCarnivalFactory.MCSkill;
 import server.MapleSquad;
 import server.MapleSquad.MapleSquadType;
-import server.SpeedRunner;
 import server.events.MapleEvent;
 import server.maps.MapleNodes.DirectionInfo;
 import server.maps.MapleNodes.MapleNodeInfo;
@@ -392,6 +387,7 @@ public final class MapleMap {
         int newOid;
         try {
             newOid = ++runningOid;
+            newOid = (int)(runningOid * Math.random());
         } catch (Throwable throwable) {
             Logger.getLogger(MapleMap.class.getName()).log(Level.SEVERE, "Updating RunningOidLock failed.", throwable);
             return;
@@ -417,7 +413,6 @@ public final class MapleMap {
             mapobjects.get(mapobject.getType()).put(newOid, mapobject);
         } catch (Throwable throwable) {
             Logger.getLogger(MapleMap.class.getName()).log(Level.SEVERE, "Putting on mapObejct failed.", throwable);
-            return;
         } finally {
             mapobjectlocks.get(mapobject.getType()).writeLock().unlock();
         }
@@ -2156,37 +2151,25 @@ public final class MapleMap {
         } else if (mapid == 200090020) { // To Ereve From Orbis (SkyFerry)
             int travelTime = ChannelServer.getInstance(channel).getTransportationTime(2 * 60 * 1000); // [2 min]
             chr.getClient().getSession().write(CField.getClock(travelTime / 1000));
-            TimerManager.getInstance().schedule(new Runnable() {
-
-                @Override
-                public void run() {
-                    if (chr.getMapId() == 200090020) {
-                        chr.changeMap(130000210, 0);
-                    }
+            TimerManager.getInstance().schedule(() -> {
+                if (chr.getMapId() == 200090020) {
+                    chr.changeMap(130000210, 0);
                 }
             }, travelTime);
         } else if (mapid == 200090600) { // To edelstein From Orbis
             int travelTime = ChannelServer.getInstance(channel).getTransportationTime(2 * 60 * 1000); // [2 min]
             chr.getClient().getSession().write(CField.getClock(travelTime / 1000));
-            TimerManager.getInstance().schedule(new Runnable() {
-
-                @Override
-                public void run() {
-                    if (chr.getMapId() == 200090600) { //edelstein bound
-                        chr.changeMap(310000010, 0); //edelstein station
-                    }
+            TimerManager.getInstance().schedule(() -> {
+                if (chr.getMapId() == 200090600) { //edelstein bound
+                    chr.changeMap(310000010, 0); //edelstein station
                 }
             }, travelTime);
         } else if (mapid == 200090610) { // To orbis From edelstein
             int travelTime = ChannelServer.getInstance(channel).getTransportationTime(2 * 60 * 1000); // [2 min]
             chr.getClient().getSession().write(CField.getClock(travelTime / 1000));
-            TimerManager.getInstance().schedule(new Runnable() {
-
-                @Override
-                public void run() {
-                    if (chr.getMapId() == 200090610) { //orbis bound
-                        chr.changeMap(200000100, 0); //orbis station
-                    }
+            TimerManager.getInstance().schedule(() -> {
+                if (chr.getMapId() == 200090610) { //orbis bound
+                    chr.changeMap(200000100, 0); //orbis station
                 }
             }, travelTime);
         }
@@ -3069,20 +3052,7 @@ public final class MapleMap {
     }
 
     public void startSpeedRun() {
-        final MapleSquad squad = getSquadByMap();
-        if (squad != null) {
-            charactersLock.readLock().lock();
-            try {
-                for (MapleCharacter chr : characters) {
-                    if (chr.getName().equals(squad.getLeaderName()) && !chr.isIntern()) {
-                        startSpeedRun(chr.getName());
-                        return;
-                    }
-                }
-            } finally {
-                charactersLock.readLock().unlock();
-            }
-        }
+        //nothing
     }
 
     public void startSpeedRun(String leader) {
@@ -3096,45 +3066,7 @@ public final class MapleMap {
     }
 
     public void getRankAndAdd(String leader, String time, ExpeditionType type, long timz, Collection<String> squad) {
-        try {
-            long lastTime = SpeedRunner.getSpeedRunData(type) == null ? 0 : SpeedRunner.getSpeedRunData(type).right;
-            //if(timz > lastTime && lastTime > 0) {
-            //return;
-            //}
-            //Pair<String, Map<Integer, String>>
-            StringBuilder rett = new StringBuilder();
-            if (squad != null) {
-                squad.stream().map(chr -> {
-                    rett.append(chr);
-                    return chr;
-                }).forEachOrdered(_item -> {
-                    rett.append(",");
-                });
-            }
-            String z = rett.toString();
-            if (squad != null) {
-                z = z.substring(0, z.length() - 1);
-            }
-            Connection con = DatabaseConnection.getConnection();
-            try (PreparedStatement ps = con.prepareStatement("INSERT INTO speedruns(`type`, `leader`, `timestring`, `time`, `members`) VALUES (?,?,?,?,?)")) {
-                ps.setString(1, type.name());
-                ps.setString(2, leader);
-                ps.setString(3, time);
-                ps.setLong(4, timz);
-                ps.setString(5, z);
-                ps.executeUpdate();
-            }
-
-            if (lastTime == 0) { //great, we just add it
-                SpeedRunner.addSpeedRunData(type, SpeedRunner.addSpeedRunData(new StringBuilder(SpeedRunner.getPreamble(type)), new HashMap<>(), z, leader, 1, time), timz);
-            } else {
-                //i wish we had a way to get the rank
-                //TODO revamp
-                SpeedRunner.removeSpeedRunData(type);
-                SpeedRunner.loadSpeedRunData(type);
-            }
-        } catch (SQLException e) {
-        }
+        //nothing
     }
 
     public long getSpeedRunStart() {
