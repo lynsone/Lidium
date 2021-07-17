@@ -76,6 +76,26 @@ public class MapleLifeFactory {
         return map;
     }
 
+    public static final void loadNpcName() {
+        int nid = -1;
+        try {
+            for (MapleData c : npcStringData) {
+                nid = Integer.parseInt(c.getName());
+                String n = StringUtil.getLeftPaddedStr(nid + ".img", '0', 11);
+
+                if (npcData.getData(n) != null) {
+                    String name = MapleDataTool.getString("name", c, "MISSINGNO");
+                    if (name.contains("Maple TV") || name.contains("Baby Moon Bunny")) {
+                        continue;
+                    }
+                    npcNames.put(nid, name);
+                }
+            }
+        } catch (Exception e) { //swallow, don't add if
+            System.err.println("[loadNpcName] Error, npc: " + nid + " " + e.getLocalizedMessage());
+        }
+    }
+
     public static final void loadQuestCounts() {
         ThreadManager.getInstance().newTask(() -> {
             long start = System.currentTimeMillis();
@@ -97,21 +117,6 @@ public class MapleLifeFactory {
                             System.out.println("null questcountgroup");
                         }
                     }
-                }
-            }
-            for (Iterator<MapleData> it = npcStringData.iterator(); it.hasNext();) {
-                MapleData c = it.next();
-                int nid = Integer.parseInt(c.getName());
-                String n = StringUtil.getLeftPaddedStr(nid + ".img", '0', 11);
-                try {
-                    if (npcData.getData(n) != null) {//only thing we really have to do is check if it exists. if we wanted to, we could get the script as well :3
-                        String name = MapleDataTool.getString("name", c, "MISSINGNO");
-                        if (name.contains("Maple TV") || name.contains("Baby Moon Bunny")) {
-                            continue;
-                        }
-                        npcNames.put(nid, name);
-                    }
-                } catch (Exception e) { //swallow, don't add if
                 }
             }
             System.out.println("Quest count loaded in " + (System.currentTimeMillis() - start) + "ms.");

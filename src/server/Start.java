@@ -65,6 +65,7 @@ public class Start {
         TimerManager.getInstance().start();
         // Loading Skills -> ok
         SkillFactory.load();
+        MapleLifeFactory.loadNpcName();
 
         System.out.print("Loading World... ");
         // Start Channel Server... ok
