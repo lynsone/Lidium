@@ -165,8 +165,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             guildid = 0, fallcounter, maplepoints, NxPrepaid, NXCredit, chair, itemEffect, points, vpoints,
             rank = 1, rankMove = 0, jobRank = 1, jobRankMove = 0, marriageId, marriageItemId, dotHP, currentrep,
             totalrep, coconutteam, followid, battleshipHP, gachexp, challenge, guildContribution = 0;
-    private int killCount = 0;
-
+    public int killCount = 0;
+    public boolean burning = false;
     private Point old;
     private MonsterFamiliar summonedFamiliar;
     private int[] wishlist, rocks, savedLocations, regrocks, hyperrocks, remainingSp = new int[10];
@@ -2938,7 +2938,11 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
 
     public void leaveMap(MapleMap map) {
         resetKillCount(); //custom
-        
+        if(burning) {
+            toggleBurning();
+            dropMessage(-1, "You are no longer on fire.");
+            dropMessage(5, "You are no longer on fire.");  
+        }
         controlledLock.writeLock().lock();
         visibleMapObjectsLock.writeLock().lock();
         try {
@@ -5700,6 +5704,10 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
 
     public void setLastRes(List<LifeMovementFragment> lastres) {
         this.lastres = lastres;
+    }
+    
+    public void toggleBurning() {
+        burning = burning != true;
     }
 
     public void dropMessage(int type, String message) {

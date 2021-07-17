@@ -355,7 +355,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
     private void giveExpToCharacter(final MapleCharacter attacker, int exp, final boolean highestDamage, final int numExpSharers, final byte pty, final byte Class_Bonus_EXP_PERCENT, final byte Premium_Bonus_EXP_PERCENT, final int lastskillID) {
         attacker.addKillCount(); // this is from GMS but NOT from v111 so it is custom...
-        
+        var killCount = attacker.killCount;
         if (highestDamage) {
             if (eventInstance != null) {
                 eventInstance.monsterKilled(attacker, this);
@@ -380,6 +380,21 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 exp /= 2;
             }
             exp = (int) Math.min(Integer.MAX_VALUE, Math.round(exp * attacker.getEXPMod() * (attacker.getStat().expBuff / 100.0f) * GameConstants.getExpRateByLevel(attacker.getLevel(), map.getChannel())));
+            
+            //check burning exp and status
+            if(killCount == 30 || killCount == 100 || killCount == 200) {
+                exp = exp + (exp * killCount);
+                attacker.dropMessage(-1, "You gained " + (exp * killCount) + " bonus experience.");
+                attacker.dropMessage(5, "You gained " + (exp * killCount) + " bonus experience.");    
+            }
+            if(killCount == 200) {
+                attacker.dropMessage(-1, "You're on fire! EXP is now 1.25x higher.");
+                attacker.dropMessage(5, "You're on fire! EXP is now 1.25x higher.");
+                attacker.toggleBurning();
+            }
+            if(attacker.burning) {
+                exp = (int)Math.floor(exp * 1.25);
+            }
             //do this last just incase someone has a 2x exp card and its set to max value
             int Class_Bonus_EXP = 0;
             if (Class_Bonus_EXP_PERCENT > 0) {
@@ -393,6 +408,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             if (attacker.getStat().equippedFairy > 0 && attacker.getFairyExp() > 0) {
                 Equipment_Bonus_EXP += (int) ((exp / 100.0) * attacker.getFairyExp());
             }
+            
             if(attacker.getMap().getMonsterById(0) != null) { //Check for totems
                 System.out.println("Totem is on this map");
             } else if(attacker.getMap().getMonsterById(1) != null) {
@@ -400,6 +416,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             } else if (attacker.getMap().getMonsterById(2) != null) {
                 System.out.println("Totem is on this map");
             }
+            
             attacker.getTrait(MapleTraitType.charisma).addExp(stats.getCharismaEXP(), attacker);
             attacker.gainExpMonster(exp, true, highestDamage, pty, Class_Bonus_EXP, Equipment_Bonus_EXP, Premium_Bonus_EXP, stats.isPartyBonus(), stats.getPartyBonusRate());
         }
