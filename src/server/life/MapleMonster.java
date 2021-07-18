@@ -383,7 +383,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             
             //check burning exp and status
             if(killCount == 30 || killCount == 100 || killCount == 200) {
-                exp = exp + (exp * killCount);
+                exp = (int) exp + (exp * killCount);
+                if(exp < 0) return;
                 attacker.dropMessage(-1, "You gained " + (exp * killCount) + " bonus experience.");
                 attacker.dropMessage(5, "You gained " + (exp * killCount) + " bonus experience.");    
             }
