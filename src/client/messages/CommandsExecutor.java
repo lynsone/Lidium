@@ -229,6 +229,7 @@ public class CommandsExecutor {
         addCommand("jail", 1, JailCommand.class);
         addCommand("say", 1, SayCommand.class);
         addCommand("search", 1, SearchCommand.class);
+        addCommand("tempban", 1, TempBanCommand.class);
         //addCommand("", 1, Command.class);
         //addCommand(new String[]{"song", "music"}, 1, .class);
         commandsNameDesc.add(levelCommandsCursor);
@@ -244,6 +245,10 @@ public class CommandsExecutor {
         addCommand("listallsquads", 2, ListAllSquadsCommand.class);
         addCommand("warphere", 2, WarpHereCommand.class);
         addCommand("monitor", 2, MonitorCommand.class);
+        addCommand("ban", 2, BanCommand.class);
+        addCommand("shop", 2, ShopCommand.class);
+        addCommand("gmshop", 2, GMShopCommand.class);
+        addCommand("level", 2, LevelCommand.class);
         //addCommand("", 2, Command.class);
         commandsNameDesc.add(levelCommandsCursor);
     }
@@ -253,6 +258,7 @@ public class CommandsExecutor {
         addCommand("spawn", 3, SpawnCommand.class);
         addCommand("clearreports", 3, ClearReportsCommand.class);
         addCommand("fame", 3, FameCommand.class);
+        addCommand("unban", 3, UnbanCommand.class);
         //addCommand("", 3, Command.class);               
         commandsNameDesc.add(levelCommandsCursor);
     }
