@@ -16,7 +16,7 @@ public class UnbanCommand extends Command {
 
     @Override
     public void execute(MapleClient c, String[] splitted) {
-        if (splitted.length < 2) {
+        if (splitted.length < 1) {
             c.getPlayer().dropMessage(6, "[Syntax] !" + getCommand() + " <IGN>");
             return;
         }

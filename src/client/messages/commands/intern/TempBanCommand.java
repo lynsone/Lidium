@@ -12,7 +12,7 @@ public class TempBanCommand extends Command {
 
     @Override
     public void execute(MapleClient c, String[] splitted) {
-        if (splitted.length < 4) {
+        if (splitted.length < 3) {
             c.getPlayer().dropMessage(6, "Tempban [name] [REASON] [days]");
             StringBuilder s = new StringBuilder("Tempban reasons: ");
             for (int i = 0; i < types.length; i++) {
