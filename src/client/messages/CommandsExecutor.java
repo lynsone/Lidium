@@ -246,7 +246,8 @@ public class CommandsExecutor {
         addCommand("warphere", 2, WarpHereCommand.class);
         addCommand("monitor", 2, MonitorCommand.class);
         addCommand("ban", 2, BanCommand.class);
-        addCommand("shop", ShopCommand.class);
+        addCommand("shop", 2, ShopCommand.class);
+        addCommand("gmshop", 2, GMShopCommand.class);
         //addCommand("", 2, Command.class);
         commandsNameDesc.add(levelCommandsCursor);
     }
