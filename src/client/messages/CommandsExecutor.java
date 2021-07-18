@@ -257,7 +257,8 @@ public class CommandsExecutor {
         addCommand("spawn", 3, SpawnCommand.class);
         addCommand("clearreports", 3, ClearReportsCommand.class);
         addCommand("fame", 3, FameCommand.class);
-        addCommand("level", LevelCommand.class);
+        addCommand("level", 3, LevelCommand.class);
+        addCommand("unban", 3, UnbanCommand.class);
         //addCommand("", 3, Command.class);               
         commandsNameDesc.add(levelCommandsCursor);
     }
