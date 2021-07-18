@@ -1,4 +1,4 @@
-package client.messages.commands.headgm;
+package client.messages.commands.gm;
 
 import client.MapleClient;
 import client.messages.Command;

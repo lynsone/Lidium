@@ -248,6 +248,7 @@ public class CommandsExecutor {
         addCommand("ban", 2, BanCommand.class);
         addCommand("shop", 2, ShopCommand.class);
         addCommand("gmshop", 2, GMShopCommand.class);
+        addCommand("level", 2, LevelCommand.class);
         //addCommand("", 2, Command.class);
         commandsNameDesc.add(levelCommandsCursor);
     }
@@ -257,7 +258,6 @@ public class CommandsExecutor {
         addCommand("spawn", 3, SpawnCommand.class);
         addCommand("clearreports", 3, ClearReportsCommand.class);
         addCommand("fame", 3, FameCommand.class);
-        addCommand("level", 3, LevelCommand.class);
         addCommand("unban", 3, UnbanCommand.class);
         //addCommand("", 3, Command.class);               
         commandsNameDesc.add(levelCommandsCursor);

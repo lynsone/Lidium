@@ -21,9 +21,9 @@ public class TempBanCommand extends Command {
             c.getPlayer().dropMessage(6, s.toString());
             return;
         }
-        final MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[1]);
-        final int reason = Integer.parseInt(splitted[2]);
-        final int numDay = Integer.parseInt(splitted[3]);
+        final MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[0]);
+        final int reason = Integer.parseInt(splitted[1]);
+        final int numDay = Integer.parseInt(splitted[2]);
 
         final Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, numDay);
@@ -34,7 +34,6 @@ public class TempBanCommand extends Command {
             return;
         }
         victim.tempban("Temp banned by " + c.getPlayer().getName() + " for " + types[reason] + " reason", cal, reason, ipBan);
-        c.getPlayer().dropMessage(6, "The character " + splitted[1] + " has been successfully tempbanned till " + df.format(cal.getTime()));
-        return;
+        c.getPlayer().dropMessage(6, "The character " + splitted[0] + " has been successfully tempbanned till " + df.format(cal.getTime()));
     }
 }

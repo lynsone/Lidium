@@ -25,16 +25,16 @@ public class BanCommand extends Command {
 
         StringBuilder sb = new StringBuilder();
         if (hellban) {
-            sb.append("Banned ").append(splitted[1]).append(": ").append(StringUtil.joinStringFrom(splitted, 2));
+            sb.append("Banned ").append(splitted[0]).append(": ").append(StringUtil.joinStringFrom(splitted, 1));
         } else {
-            sb.append(c.getPlayer().getName()).append(" banned ").append(splitted[1]).append(": ").append(StringUtil.joinStringFrom(splitted, 2));
+            sb.append(c.getPlayer().getName()).append(" banned ").append(splitted[0]).append(": ").append(StringUtil.joinStringFrom(splitted, 1));
         }
-        MapleCharacter target = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[1]);
+        MapleCharacter target = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[0]);
         if (target != null) {
             if (c.getPlayer().getGMLevel() > target.getGMLevel() || c.getPlayer().isAdmin()) {
                 sb.append(" (IP: ").append(target.getClient().getSessionIPAddress()).append(")");
                 if (target.ban(sb.toString(), hellban || ipBan, false, hellban)) {
-                    c.getPlayer().dropMessage(6, "[" + getCommand() + "] Successfully banned " + splitted[1] + ".");
+                    c.getPlayer().dropMessage(6, "[" + getCommand() + "] Successfully banned " + splitted[0] + ".");
                     return;
                 } else {
                     c.getPlayer().dropMessage(6, "[" + getCommand() + "] Failed to ban.");
@@ -45,11 +45,11 @@ public class BanCommand extends Command {
                 return;
             }
         } else {
-            if (MapleCharacter.ban(splitted[1], sb.toString(), false, c.getPlayer().isAdmin() ? 250 : c.getPlayer().getGMLevel(), hellban)) {
-                c.getPlayer().dropMessage(6, "[" + getCommand() + "] Successfully offline banned " + splitted[1] + ".");
+            if (MapleCharacter.ban(splitted[0], sb.toString(), false, c.getPlayer().isAdmin() ? 250 : c.getPlayer().getGMLevel(), hellban)) {
+                c.getPlayer().dropMessage(6, "[" + getCommand() + "] Successfully offline banned " + splitted[0] + ".");
                 return;
             } else {
-                c.getPlayer().dropMessage(6, "[" + getCommand() + "] Failed to ban " + splitted[1]);
+                c.getPlayer().dropMessage(6, "[" + getCommand() + "] Failed to ban " + splitted[0]);
                 return;
             }
         }
