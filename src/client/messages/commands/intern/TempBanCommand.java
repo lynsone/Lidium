@@ -22,8 +22,22 @@ public class TempBanCommand extends Command {
             return;
         }
         final MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[0]);
-        final int reason = Integer.parseInt(splitted[1]);
-        final int numDay = Integer.parseInt(splitted[2]);
+        
+        final int numDay;
+        try {
+            numDay = Integer.parseInt(splitted[2]);
+        } catch (NumberFormatException $Exception) {
+            c.getPlayer().dropMessage(6, "Amount of days should be a number.");
+            return;
+        }
+        
+        final int reason;
+        try {
+            reason = Integer.parseInt(splitted[1]);
+        } catch (NumberFormatException $Exception) {
+            c.getPlayer().dropMessage(6, "Please select the reason by inputting the corresponding number.");
+            return;
+        }
 
         final Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, numDay);
