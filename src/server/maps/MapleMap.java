@@ -72,6 +72,7 @@ import server.life.SpawnPoint;
 import server.life.SpawnPointAreaBoss;
 import server.life.MonsterDropEntry;
 import server.life.MonsterGlobalDropEntry;
+import server.life.MonsterLevelDropEntry;
 import server.life.MapleMonsterInformationProvider;
 import tools.FileoutputUtil;
 import tools.StringUtil;
@@ -573,6 +574,32 @@ public final class MapleMap {
                 }
             }
         }
+		final List<MonsterLevelDropEntry> levelEntry = new ArrayList<>(mi.getLevelDrop());
+        Collections.shuffle(levelEntry);
+        for (final MonsterLevelDropEntry de : levelEntry) {
+            if (Randomizer.nextInt(999999) < de.chance && (de.moblevel == mob.getStats().getLevel())) {
+                if (de.questid > 0 && chr.getQuestStatus(de.questid) != 1) {
+                    continue;
+                }
+                if (de.itemId == 0) {
+                    chr.modifyCSPoints(1, (int) ((Randomizer.nextInt(cashz) + cashz + cashModifier) * (chr.getStat().cashBuff / 100.0) * chr.getCashMod()), true);
+                } else if (!gDropsDisabled) {
+                    if (droptype == 3) {
+                        pos.x = (mobpos + (d % 2 == 0 ? (40 * (d + 1) / 2) : -(40 * (d / 2))));
+                    } else {
+                        pos.x = (mobpos + ((d % 2 == 0) ? (25 * (d + 1) / 2) : -(25 * (d / 2))));
+                    }
+                    if (GameConstants.getInventoryType(de.itemId) == MapleInventoryType.EQUIP) {
+                        idrop = ii.randomizeStats((Equip) ii.getEquipById(de.itemId));
+                    } else {
+                        idrop = new Item(de.itemId, (byte) 0, (short) (de.Maximum != 1 ? Randomizer.nextInt(de.Maximum - de.Minimum) + de.Minimum : 1), (byte) 0);
+                    }
+                    idrop.setGMLog("Dropped from monster " + mob.getId() + " on " + mapid + " (Global)");
+                    spawnMobDrop(idrop, calcDropPos(pos, mob.getTruePosition()), mob, chr, de.onlySelf ? 0 : droptype, de.questid);
+                    d++;
+                }
+			}
+		}
     }
 
     public void removeMonster(final MapleMonster monster) {

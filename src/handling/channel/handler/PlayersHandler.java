@@ -63,6 +63,7 @@ import server.events.MapleEventType;
 import server.life.MapleMonsterInformationProvider;
 import server.life.MonsterDropEntry;
 import server.life.MonsterGlobalDropEntry;
+import server.life.MonsterLevelDropEntry;
 import server.maps.MapleDoor;
 import server.maps.MapleMapObject;
 import server.maps.MapleMist;
@@ -553,6 +554,11 @@ public class PlayersHandler {
             }
         }
         for (final MonsterGlobalDropEntry de : ii.getGlobalDrop()) {
+            if (de.itemId > 0 && de.questid <= 0 && !newDrops.contains(de.itemId)) {
+                newDrops.add(de.itemId);
+            }
+        }
+		for (final MonsterLevelDropEntry de : ii.getLevelDrop()) {
             if (de.itemId > 0 && de.questid <= 0 && !newDrops.contains(de.itemId)) {
                 newDrops.add(de.itemId);
             }
