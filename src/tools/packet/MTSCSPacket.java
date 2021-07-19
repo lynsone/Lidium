@@ -812,7 +812,7 @@ public class MTSCSPacket {
             for (int i = 0; i < 10; i++) {
                 mplew.writeInt(map[i]);
             }
-        } else if (vip == 3) {
+        } else if (vip == 5) {
             int[] map = chr.getHyperRocks();
             for (int i = 0; i < 13; i++) {
                 mplew.writeInt(map[i]);
