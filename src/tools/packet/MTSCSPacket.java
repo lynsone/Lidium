@@ -802,22 +802,28 @@ public class MTSCSPacket {
         mplew.writeShort(SendPacketOpcode.TROCK_LOCATIONS.getValue());
         mplew.write(delete ? 2 : 3);
         mplew.write(vip);
-        if (vip == 1) {
+
+        switch (vip) {
+        case 1 -> {
             int[] map = chr.getRegRocks();
             for (int i = 0; i < 5; i++) {
                 mplew.writeInt(map[i]);
             }
-        } else if (vip == 2) {
+        }
+        case 2 -> {
             int[] map = chr.getRocks();
             for (int i = 0; i < 10; i++) {
                 mplew.writeInt(map[i]);
             }
-        } else if (vip == 5) {
+        }
+        case 3, 5 -> {
             int[] map = chr.getHyperRocks();
             for (int i = 0; i < 13; i++) {
                 mplew.writeInt(map[i]);
             }
         }
+        }
+       
 
         return mplew.getPacket();
     }
