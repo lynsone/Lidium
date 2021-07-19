@@ -194,37 +194,43 @@ public class PlayerHandler {
         final byte addrem = slea.readByte();
         final byte vip = slea.readByte();
 
-        if (vip == 1) { // Regular rocks
-            if (addrem == 0) {
-                chr.deleteFromRegRocks(slea.readInt());
-            } else if (addrem == 1) {
-                if (!FieldLimitType.VipRock.check(chr.getMap().getFieldLimit())) {
-                    chr.addRegRockMap();
-                } else {
-                    chr.dropMessage(1, "This map is not available to enter for the list.");
+        switch (vip) {
+            case 1 -> { // regular
+                if (addrem == 0) {
+                    chr.deleteFromRegRocks(slea.readInt());
+                } else if (addrem == 1) {
+                    if (!FieldLimitType.VipRock.check(chr.getMap().getFieldLimit())) {
+                        chr.addRegRockMap();
+                    } else {
+                        chr.dropMessage(1, "This map is not available to enter for the list.");
+                    }
                 }
             }
-        } else if (vip == 2) { // VIP Rock
-            if (addrem == 0) {
-                chr.deleteFromRocks(slea.readInt());
-            } else if (addrem == 1) {
-                if (!FieldLimitType.VipRock.check(chr.getMap().getFieldLimit())) {
-                    chr.addRockMap();
-                } else {
-                    chr.dropMessage(1, "This map is not available to enter for the list.");
+            case 2 -> { // VIP
+                if (addrem == 0) {
+                    chr.deleteFromRocks(slea.readInt());
+                } else if (addrem == 1) {
+                    if (!FieldLimitType.VipRock.check(chr.getMap().getFieldLimit())) {
+                        chr.addRockMap();
+                    } else {
+                        chr.dropMessage(1, "This map is not available to enter for the list.");
+                    }
                 }
             }
-        } else if (vip == 5) { // Hyper Rocks
-            if (addrem == 0) {
-                chr.deleteFromHyperRocks(slea.readInt());
-            } else if (addrem == 1) {
-                if (!FieldLimitType.VipRock.check(chr.getMap().getFieldLimit())) {
-                    chr.addHyperRockMap();
-                } else {
-                    chr.dropMessage(1, "This map is not available to enter for the list.");
+
+            case 3, 5 -> {// Hyper
+                if (addrem == 0) {
+                    chr.deleteFromHyperRocks(slea.readInt());
+                } else if (addrem == 1) {
+                    if (!FieldLimitType.VipRock.check(chr.getMap().getFieldLimit())) {
+                        chr.addHyperRockMap();
+                    } else {
+                        chr.dropMessage(1, "This map is not available to enter for the list.");
+                    }
                 }
             }
         }
+
         c.getSession().write(MTSCSPacket.OnMapTransferResult(chr, vip, addrem == 0));
     }
 
