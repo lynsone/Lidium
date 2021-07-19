@@ -637,9 +637,9 @@ public class MapleClient implements Serializable {
                 ps.close();
                 return -1;
             }
+            final int accid = rs.getInt(1);
             rs.close();
             ps.close();
-            final int accid = rs.getInt(1);
 
             ps = con.prepareStatement("UPDATE accounts SET banned = 0, banreason = '' WHERE id = ?");
             ps.setInt(1, accid);

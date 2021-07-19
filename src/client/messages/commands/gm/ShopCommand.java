@@ -22,6 +22,7 @@ public class ShopCommand extends Command {
 
         if (shop.getShop(shopId) == null) {
             c.getPlayer().dropMessage(5, "Couldn't find a shop with that ID.");
+            return;
         }
 
         shop.getShop(shopId).sendShop(c);
