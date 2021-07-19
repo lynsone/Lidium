@@ -47,6 +47,7 @@ public class MapleMonsterInformationProvider {
     private static final MapleMonsterInformationProvider instance = new MapleMonsterInformationProvider();
     private final Map<Integer, List<MonsterDropEntry>> drops = new HashMap<>();
     private final List<MonsterGlobalDropEntry> globaldrops = new ArrayList<>();
+	private final List<MonsterLevelDropEntry> leveldrops = new ArrayList<MonsterLevelDropEntry>();
     private static final MapleDataProvider stringDataWZ = MapleDataProviderFactory
             .getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz"));
     private static final MapleData mobStringData = stringDataWZ.getData("MonsterBook.img");
@@ -58,6 +59,10 @@ public class MapleMonsterInformationProvider {
     public List<MonsterGlobalDropEntry> getGlobalDrop() {
         return globaldrops;
     }
+	
+	public List<MonsterLevelDropEntry> getLevelDrop() {
+        return leveldrops;
+	}
 
     public void load() {
 
@@ -79,6 +84,17 @@ public class MapleMonsterInformationProvider {
             rs.close();
             ps.close();
             //
+			ps = con.prepareStatement("SELECT * FROM drop_data_level WHERE chance > 0");
+            rs = ps.executeQuery();
+            
+            while (rs.next()) {
+            leveldrops.add(new MonsterLevelDropEntry(rs.getInt("itemid"), rs.getInt("chance"),
+                        rs.getInt("moblevel"), rs.getByte("dropType"), rs.getInt("minimum_quantity"),
+                        rs.getInt("maximum_quantity"), rs.getInt("questid")));
+            }
+            rs.close();
+            ps.close();
+			//
             ps = con.prepareStatement("SELECT * FROM drop_data");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -262,6 +278,7 @@ public class MapleMonsterInformationProvider {
     public void clearDrops() {
         drops.clear();
         globaldrops.clear();
+		leveldrops.clear();
         load();
         addExtra();
     }
