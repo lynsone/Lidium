@@ -30,11 +30,10 @@ public class WhoDropsCommand extends Command {
         }
 
         String searchString = player.getLastCommandMessage();
-        //System.out.println("Búsquedad: " + searchString);
         String output = "Restults for " + searchString + "\r\n";
         Iterator<ItemInformation> listIterator = MapleItemInformationProvider.getInstance().getItemDataByName(searchString).iterator();
         if (listIterator.hasNext()) {
-            //int count = 1;
+           
             while (listIterator.hasNext() /*&& count <= 3*/) {
                 ItemInformation data = listIterator.next();
 
@@ -59,7 +58,7 @@ public class WhoDropsCommand extends Command {
                     return;
                 }
                 output += "\r\n\r\n";
-                //count++;
+               
             }
         } else {
             player.dropMessage(5, "The item you searched for doesn't exist.");
