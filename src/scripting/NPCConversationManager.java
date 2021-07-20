@@ -106,7 +106,11 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         super(c, npc, questid);
         this.script = script;
         this.type = type;
-        this.iv = iv;       
+        this.iv = iv;
+    }
+
+    public NPCConversationManager(MapleClient c) {
+        super(c, 0, 0);
     }
 
     public Invocable getIv() {
@@ -124,8 +128,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public byte getType() {
         return type;
     }
-    
-    public String getScript(){
+
+    public String getScript() {
         return script;
     }
 

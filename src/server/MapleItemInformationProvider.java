@@ -1086,7 +1086,7 @@ public class MapleItemInformationProvider {
         if (i == null) {
             return false;
         }
-        
+
         return ((i.flag & 0x200) != 0 || (i.flag & 0x400) != 0 || GameConstants.isDropRestricted(itemId)) && (itemId == 3012000 || itemId == 3012015 || itemId / 10000 != 301) && itemId != 2041200 && itemId != 5640000 && itemId != 4170023 && itemId != 2040124 && itemId != 2040125 && itemId != 2040126 && itemId != 2040211 && itemId != 2040212 && itemId != 2040227 && itemId != 2040228 && itemId != 2040229 && itemId != 2040230 && itemId != 1002926 && itemId != 1002906 && itemId != 1002927;
     }
 
@@ -1481,5 +1481,13 @@ public class MapleItemInformationProvider {
             }
         }
         dataCache.put(itemId, ret);
+    }
+
+    public ArrayList<ItemInformation> getItemDataByName(String name) {
+        ArrayList<ItemInformation> ret = new ArrayList<>();
+        MapleItemInformationProvider.getInstance().getAllItems().stream().filter(itemPair -> (itemPair.name.toLowerCase().contains(name.toLowerCase()))).forEachOrdered(itemPair -> {
+            ret.add(itemPair);
+        });
+        return ret;
     }
 }

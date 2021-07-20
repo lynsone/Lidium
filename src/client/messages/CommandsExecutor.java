@@ -209,6 +209,8 @@ public class CommandsExecutor {
         addCommand("togglesmega", 0, ToggleSmegaCommand.class);
         addCommand("fm", 0, FMCommand.class);
         addCommand("uptime", 0, UpTimeCommand.class);
+        addCommand("whodrops", 0, WhoDropsCommand.class);
+
         //addCommand("", 0, Command.class);
         commandsNameDesc.add(levelCommandsCursor);
     }
@@ -280,7 +282,7 @@ public class CommandsExecutor {
         addCommand("reloadmap", 4, ReloadMapCommand.class);
         addCommand("reloadops", 4, ReloadOpsCommand.class);
         addCommand("reloadportal", 4, ReloadPortalCommand.class);
-        addCommand("reloadshops", 4, ReloadShopsCommand.class);   
+        addCommand("reloadshops", 4, ReloadShopsCommand.class);
         addCommand("npc", 4, NpcCommand.class);
         addCommand("setsubcategory", 4, SetSubCategoryCommand.class);
         addCommand("ap", 4, ApCommand.class);
@@ -291,13 +293,13 @@ public class CommandsExecutor {
     private void registerLv5Commands() {
         levelCommandsCursor = new Pair<>((List<String>) new ArrayList<String>(), (List<String>) new ArrayList<String>());
         addCommand("servermessage", 5, ServerMessageCommand.class);
-        addCommand("playernpc", 5, PlayerNpcCommand.class);  
-        addCommand("offlineplayernpc", 5, OfflinePlayerNpcCommand.class);  
+        addCommand("playernpc", 5, PlayerNpcCommand.class);
+        addCommand("offlineplayernpc", 5, OfflinePlayerNpcCommand.class);
         addCommand("toggleoffence", 5, ToggleOffenceCommand.class);
         addCommand("mesorate", 5, MesoRateCommand.class);
-        addCommand("droprate", 5, DropRateCommand.class);  
-        addCommand("exprate", 5, ExpRateCommand.class);  
-        addCommand("setgmlevel", 5, SetGMLevelCommand.class);  
+        addCommand("droprate", 5, DropRateCommand.class);
+        addCommand("exprate", 5, ExpRateCommand.class);
+        addCommand("setgmlevel", 5, SetGMLevelCommand.class);
         addCommand("travelrate", 5, TravelRateCommand.class);
         //addCommand("", 5, Command.class);             
         commandsNameDesc.add(levelCommandsCursor);
