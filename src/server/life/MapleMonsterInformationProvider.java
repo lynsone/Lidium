@@ -47,10 +47,10 @@ public class MapleMonsterInformationProvider {
     private static final MapleMonsterInformationProvider instance = new MapleMonsterInformationProvider();
     private final Map<Integer, List<MonsterDropEntry>> drops = new HashMap<>();
     private final List<MonsterGlobalDropEntry> globaldrops = new ArrayList<>();
-	private final List<MonsterLevelDropEntry> leveldrops = new ArrayList<MonsterLevelDropEntry>();
-    private static final MapleDataProvider stringDataWZ = MapleDataProviderFactory
-            .getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz"));
+    private final List<MonsterLevelDropEntry> leveldrops = new ArrayList<MonsterLevelDropEntry>();
+    private static final MapleDataProvider stringDataWZ = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz"));
     private static final MapleData mobStringData = stringDataWZ.getData("MonsterBook.img");
+    private final Map<Integer, String> mobNameCache = new HashMap<>();
 
     public static MapleMonsterInformationProvider getInstance() {
         return instance;
@@ -59,10 +59,10 @@ public class MapleMonsterInformationProvider {
     public List<MonsterGlobalDropEntry> getGlobalDrop() {
         return globaldrops;
     }
-	
-	public List<MonsterLevelDropEntry> getLevelDrop() {
+
+    public List<MonsterLevelDropEntry> getLevelDrop() {
         return leveldrops;
-	}
+    }
 
     public void load() {
 
@@ -84,17 +84,17 @@ public class MapleMonsterInformationProvider {
             rs.close();
             ps.close();
             //
-			ps = con.prepareStatement("SELECT * FROM drop_data_level WHERE chance > 0");
+            ps = con.prepareStatement("SELECT * FROM drop_data_level WHERE chance > 0");
             rs = ps.executeQuery();
-            
+
             while (rs.next()) {
-            leveldrops.add(new MonsterLevelDropEntry(rs.getInt("itemid"), rs.getInt("chance"),
+                leveldrops.add(new MonsterLevelDropEntry(rs.getInt("itemid"), rs.getInt("chance"),
                         rs.getInt("moblevel"), rs.getByte("dropType"), rs.getInt("minimum_quantity"),
                         rs.getInt("maximum_quantity"), rs.getInt("questid")));
             }
             rs.close();
             ps.close();
-			//
+            //
             ps = con.prepareStatement("SELECT * FROM drop_data");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -278,7 +278,7 @@ public class MapleMonsterInformationProvider {
     public void clearDrops() {
         drops.clear();
         globaldrops.clear();
-		leveldrops.clear();
+        leveldrops.clear();
         load();
         addExtra();
     }
@@ -322,4 +322,18 @@ public class MapleMonsterInformationProvider {
     // or invincible or onlyNormalAttack or friendly or dropitemperiod > 0 or cp > 0
     // or point > 0 or fixeddamage > 0 or selfd > 0 or mobType != null and
     // mobType.charat(0) == 7 or PDRate <= 0
+
+    public String getMobNameFromId(int id) {
+
+        String mobName = mobNameCache.get(id);
+        if (mobName == null) {
+            MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File("wz/String.wz"));
+            MapleData mobData = dataProvider.getData("Mob.img");
+
+            mobName = MapleDataTool.getString(mobData.getChildByPath(id + "/name"), "");
+            mobNameCache.put(id, mobName);
+        }
+
+        return mobName;
+    }
 }

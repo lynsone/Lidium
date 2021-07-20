@@ -101,8 +101,8 @@ public abstract class AbstractPlayerInteraction {
 
     public final EventInstanceManager getEventInstance() {
         return c.getPlayer().getEventInstance();
-    }    
-    
+    }
+
     public boolean partyHasItem(int itemid, int quantity) {
         var party = getParty();
         if (party == null) {
@@ -118,7 +118,7 @@ public abstract class AbstractPlayerInteraction {
         }
         return true;
     }
-    
+
     public String getPlayersMissingItem(int itemid, int quantity) {
         var party = getParty();
         ArrayList<String> PlayerNames = new ArrayList<>(6);
@@ -137,7 +137,7 @@ public abstract class AbstractPlayerInteraction {
         String[] array = PlayerNames.toArray(new String[0]);
         return Arrays.toString(array).replace("[", "").replace("]", "");
     }
-        
+
     public final void warp(final int map) {
         final MapleMap mapz = getWarpMap(map);
         try {
@@ -891,11 +891,18 @@ public abstract class AbstractPlayerInteraction {
         getClient().removeClickedNPC();
         NPCScriptManager.getInstance().start(getClient(), id);
     }
-    
-    public final void openNpc(final int id, final String script){
+
+    public final void openNpc(final int id, final String script) {
         getClient().removeClickedNPC();
         NPCScriptManager.getInstance().dispose(getClient());
         NPCScriptManager.getInstance().start(getClient(), id, script);
+    }
+
+    public void npcTalk(int npcid, String message) {
+        id = npcid;
+        c.removeClickedNPC();
+        NPCScriptManager.getInstance().dispose(c);
+        c.getSession().write(NPCPacket.getNPCTalk(npcid, (byte) 0, message, "00 00", (byte) 0));
     }
 
     public final void openNpc(final MapleClient cg, final int id) {

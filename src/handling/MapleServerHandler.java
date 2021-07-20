@@ -613,7 +613,7 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
 
     public static final void handlePacket(final RecvPacketOpcode header, final LittleEndianAccessor slea,
             final MapleClient c, final boolean cs) throws Exception {
-        System.out.println(header);
+        // System.out.println(header);
         switch (header) {
             case PONG:
                 c.pongReceived();

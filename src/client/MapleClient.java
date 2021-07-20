@@ -66,6 +66,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.mina.common.IoSession;
+import scripting.AbstractPlayerInteraction;
+import scripting.NPCConversationManager;
 
 import server.quest.MapleQuest;
 import tools.packet.CField;
@@ -99,7 +101,7 @@ public class MapleClient implements Serializable {
     private final transient Lock npc_mutex = new ReentrantLock();
     private long lastNpcClick = 0;
     private final static Lock login_mutex = new ReentrantLock(true);
-    private boolean isPicEnable=false;
+    private boolean isPicEnable = false;
 
     public MapleClient(MapleAESOFB send, MapleAESOFB receive, IoSession session) {
         this.send = send;
@@ -187,9 +189,9 @@ public class MapleClient implements Serializable {
             }
         } catch (SQLException e) {
             System.err.println("error loading characters internal");
-        }finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception ignore) {
@@ -216,9 +218,9 @@ public class MapleClient implements Serializable {
             con.close();
         } catch (SQLException e) {
             System.err.println("error loading characters internal");
-        }finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception ignore) {
@@ -272,10 +274,9 @@ public class MapleClient implements Serializable {
             con.close();
         } catch (SQLException ex) {
             System.err.println("Error checking ip bans" + ex);
-        }
-        finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception ignore) {
@@ -316,12 +317,12 @@ public class MapleClient implements Serializable {
                 ps.close();
             }
             con.close();
-            
+
         } catch (SQLException ex) {
             System.err.println("Error checking mac bans" + ex);
-        }finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception ignore) {
@@ -353,10 +354,9 @@ public class MapleClient implements Serializable {
                     }
                 }
                 ps.close();
-            }
-            finally{
+            } finally {
                 try {
-                    if(con!=null && !con.isClosed()){
+                    if (con != null && !con.isClosed()) {
                         con.close();
                     }
                 } catch (Exception ignore) {
@@ -416,9 +416,9 @@ public class MapleClient implements Serializable {
             con.close();
         } catch (SQLException e) {
             System.err.println("Error banning MACs" + e);
-        }finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception ignore) {
@@ -472,7 +472,7 @@ public class MapleClient implements Serializable {
                         final String passhash = rs.getString("password");
                         final String salt = rs.getString("salt");
                         final String oldSession = rs.getString("SessionIP");
-                        this.isPicEnable=rs.getBoolean("PicEnabled");
+                        this.isPicEnable = rs.getBoolean("PicEnabled");
                         accountName = login;
                         accId = rs.getInt("id");
                         secondPassword = rs.getString("2ndpassword");
@@ -486,7 +486,6 @@ public class MapleClient implements Serializable {
                         gender = rs.getByte("gender");
 
                         //final boolean admin = rs.getInt("gm") > 1;
-
                         if (secondPassword != null && salt2 != null) {
                             secondPassword = LoginCrypto.rand_r(secondPassword);
                         }
@@ -531,8 +530,8 @@ public class MapleClient implements Serializable {
                                     loggedIn = false;
                                     loginok = 4;
                                 }
-                                if(updatePasswordHash){                                 
-                                    if(updatePasswordHash){
+                                if (updatePasswordHash) {
+                                    if (updatePasswordHash) {
                                         PreparedStatement pss = con.prepareStatement("UPDATE `accounts` SET `password` = ?, `salt` = ? WHERE id = ?");
                                         try {
                                             final String newSalt = LoginCrypto.makeSalt();
@@ -542,9 +541,9 @@ public class MapleClient implements Serializable {
                                             pss.executeUpdate();
                                             pss.close();
                                         } finally {
-                                            pss.close();                                         
+                                            pss.close();
                                         }
-                                    }        
+                                    }
                                 }
                             }
                         }
@@ -555,9 +554,9 @@ public class MapleClient implements Serializable {
             con.close();
         } catch (SQLException e) {
             System.err.println("ERROR" + e);
-        }finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (SQLException ignore) {
@@ -594,9 +593,9 @@ public class MapleClient implements Serializable {
                 }
             } catch (SQLException e) {
                 return false;
-            }finally{
+            } finally {
                 try {
-                    if(con!=null && !con.isClosed()){
+                    if (con != null && !con.isClosed()) {
                         con.close();
                     }
                 } catch (Exception ignore) {
@@ -615,9 +614,9 @@ public class MapleClient implements Serializable {
             }
         } catch (SQLException e) {
             System.err.println("Error while unbanning" + e);
-        }finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception ignore) {
@@ -649,9 +648,9 @@ public class MapleClient implements Serializable {
         } catch (SQLException e) {
             System.err.println("Error while unbanning" + e);
             return -2;
-        }finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception ignore) {
@@ -681,9 +680,9 @@ public class MapleClient implements Serializable {
             con.close();
         } catch (SQLException e) {
             System.err.println("Error saving MACs" + e);
-        }finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception ignore) {
@@ -711,9 +710,9 @@ public class MapleClient implements Serializable {
             }
         } catch (SQLException e) {
             System.err.println("error updating login state" + e);
-        }finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception ignore) {
@@ -743,9 +742,9 @@ public class MapleClient implements Serializable {
             con.close();
         } catch (SQLException e) {
             System.err.println("error updating login state" + e);
-        }finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception ignore) {
@@ -784,9 +783,9 @@ public class MapleClient implements Serializable {
         } catch (SQLException e) {
             loggedIn = false;
             throw new DatabaseException("error getting login state", e);
-        }finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception ignore) {
@@ -1046,10 +1045,9 @@ public class MapleClient implements Serializable {
             return canlogin;
         } catch (final SQLException e) {
             System.out.println("Failed in checking IP address for client.");
-        }
-        finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception ignore) {
@@ -1138,9 +1136,9 @@ public class MapleClient implements Serializable {
             return 0;
         } catch (SQLException e) {
             FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
-        }finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception ignore) {
@@ -1273,9 +1271,9 @@ public class MapleClient implements Serializable {
             return ret;
         } catch (final SQLException e) {
             System.err.println("findAccIdForCharacterName SQL error");
-        }finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception ignore) {
@@ -1310,6 +1308,10 @@ public class MapleClient implements Serializable {
 
     public final void setIdleTask(final ScheduledFuture<?> idleTask) {
         this.idleTask = idleTask;
+    }
+
+    public NPCConversationManager getAbstractPlayerInteraction() {
+        return new NPCConversationManager(this);
     }
 
     protected static final class CharNameAndId {
@@ -1354,10 +1356,9 @@ public class MapleClient implements Serializable {
             }
             con.close();
         } catch (SQLException sqlE) {
-        }
-        finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception ignore) {
@@ -1383,9 +1384,9 @@ public class MapleClient implements Serializable {
             }
         } catch (SQLException sqlE) {
             return false;
-        }finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception ignore) {
@@ -1450,9 +1451,9 @@ public class MapleClient implements Serializable {
         } catch (SQLException e) {
             System.err.println("Error while unbanning" + e);
             return -2;
-        }finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception ignore) {
@@ -1499,9 +1500,9 @@ public class MapleClient implements Serializable {
         } catch (SQLException e) {
             System.err.println("Error while unbanning" + e);
             return -2;
-        }finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception ignore) {
@@ -1558,9 +1559,9 @@ public class MapleClient implements Serializable {
             return ret;
         } catch (SQLException e) {
             throw new DatabaseException("error getting create", e);
-        }finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception ignore) {
@@ -1579,7 +1580,7 @@ public class MapleClient implements Serializable {
     public boolean isLocalhost() {
         return ServerConstants.Use_Localhost;
     }
-    
+
     public boolean isPicEnable() {
         return isPicEnable;
     }
@@ -1590,22 +1591,22 @@ public class MapleClient implements Serializable {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con=DatabaseConnection.getConnection();
+            con = DatabaseConnection.getConnection();
             pst = con.prepareStatement("UPDATE accounts set PicEnabled=? WHERE id=?");
             pst.setBoolean(1, isPicEnable);
             pst.setInt(2, getAccID());
-            updated = pst.executeUpdate()>0;
+            updated = pst.executeUpdate() > 0;
             pst.close();
             con.close();
         } catch (SQLException e) {
             e.printStackTrace();
             updated = false;
-        }finally{
+        } finally {
             try {
-                if(pst!= null && !pst.isClosed()){
+                if (pst != null && !pst.isClosed()) {
                     pst.close();
                 }
-                if(con!= null && !con.isClosed()){
+                if (con != null && !con.isClosed()) {
                     con.close();
                 }
             } catch (Exception e) {
@@ -1614,8 +1615,8 @@ public class MapleClient implements Serializable {
         }
         return updated;
     }
-    
-    public void setGMLevel(int level){
+
+    public void setGMLevel(int level) {
         gm = level > 4 ? true : false;
     }
 }
