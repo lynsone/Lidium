@@ -83,7 +83,7 @@ public class MapleMonsterInformationProvider {
             }
             rs.close();
             ps.close();
-            //
+            /*
             ps = con.prepareStatement("SELECT * FROM drop_data_level WHERE chance > 0");
             rs = ps.executeQuery();
 
@@ -94,7 +94,7 @@ public class MapleMonsterInformationProvider {
             }
             rs.close();
             ps.close();
-            //
+            */
             ps = con.prepareStatement("SELECT * FROM drop_data");
             rs = ps.executeQuery();
             while (rs.next()) {
