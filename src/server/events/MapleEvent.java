@@ -147,12 +147,12 @@ public abstract class MapleEvent {
 
     public void reset() {
         isRunning = true;
-	playerCount = 0;
+	    playerCount = 0;
     }
 
     public void unreset() {
         isRunning = false;
-	playerCount = 0;
+	    playerCount = 0;
     }
 
     public static final void setEvent(final ChannelServer cserv, final boolean auto) {
@@ -162,7 +162,7 @@ public abstract class MapleEvent {
                 if (e.isRunning) {
                     for (int i : e.type.mapids) {
                         if (cserv.getEvent() == i) {
-			    World.Broadcast.broadcastMessage(CWvsContext.serverNotice(0, "Entries for the event are now closed!"));
+			                World.Broadcast.broadcastMessage(CWvsContext.serverNotice(0, "Entries for the event are now closed!"));
                             e.broadcast(CWvsContext.serverNotice(0, "The event will start in 30 seconds!"));
                             e.broadcast(CField.getClock(30));
                             TimerManager.getInstance().schedule(new Runnable() {
@@ -209,7 +209,7 @@ public abstract class MapleEvent {
                 for (int i : e.type.mapids) {
                     if (chr.getMapId() == i) {
                         e.startEvent();
-			setEvent(chr.getClient().getChannelServer(), false);
+			            setEvent(chr.getClient().getChannelServer(), false);
                         chr.dropMessage(5, String.valueOf(t) + " has been started.");
                     }
                 }
@@ -228,7 +228,7 @@ public abstract class MapleEvent {
         }
         cserv.setEvent(cserv.getEvent(event).type.mapids[0]);
         cserv.getEvent(event).reset();
-        World.Broadcast.broadcastMessage(CWvsContext.serverNotice(0, "Hello " + cserv.getServerName() + "! Let's play a " + StringUtil.makeEnumHumanReadable(event.name()) + " event in channel " + cserv.getChannel() + "! Change to channel " + cserv.getChannel() + " and use @event command!"));
+        World.Broadcast.broadcastMessage(CWvsContext.serverNotice(0, "Hello " + cserv.getServerName() + "! Let's play a " + StringUtil.makeEnumHumanReadable(event.name()) + " event. use @joinevent command!"));
         return "";
     }
 }

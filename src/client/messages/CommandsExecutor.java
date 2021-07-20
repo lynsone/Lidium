@@ -210,6 +210,7 @@ public class CommandsExecutor {
         addCommand("fm", 0, FMCommand.class);
         addCommand("uptime", 0, UpTimeCommand.class);
         addCommand("whodrops", 0, WhoDropsCommand.class);
+        addCommand("joinevent", 0, JoinEventCommand.class);
 
         //addCommand("", 0, Command.class);
         commandsNameDesc.add(levelCommandsCursor);
@@ -251,6 +252,10 @@ public class CommandsExecutor {
         addCommand("shop", 2, ShopCommand.class);
         addCommand("gmshop", 2, GMShopCommand.class);
         addCommand("level", 2, LevelCommand.class);
+        addCommand("startevent", 2, StartEventCommand.class);
+        addCommand("scheduleevent", 2, ScheduleEventCommand.class);
+        addCommand("endevent", 2, EndEventCommand.class);
+        addCommand("askox", 2, AskOXCommand.class);
         //addCommand("", 2, Command.class);
         commandsNameDesc.add(levelCommandsCursor);
     }
