@@ -1637,6 +1637,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                     }
                 }
             }
+			/*
             if (changed_extendedSlots) {
                 deleteWhereCharacterId(con, "DELETE FROM extendedSlots WHERE characterid = ?");
                 for (int i : extendedSlots) {
@@ -1649,6 +1650,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                     }
                 }
             }
+			*/
             changed_wishlist = false;
             changed_trocklocations = false;
             changed_regrocklocations = false;
