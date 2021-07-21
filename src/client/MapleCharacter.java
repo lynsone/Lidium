@@ -1241,15 +1241,13 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
 
             con.commit();
         } catch (DatabaseException | SQLException e) {
-            e.printStackTrace();
             FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
             System.err.println("[charsave] Error saving character data");
             try {
                 con.rollback();
             } catch (SQLException ex) {
-                e.printStackTrace();
                 FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, ex);
-                System.err.println("[charsave] Error Rolling Back");
+                System.err.println("[charsave] Error Rolling Back... "+ ex);
             }
         } finally {
             try {
@@ -1269,8 +1267,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 }
             } catch (SQLException e) {
                 FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
-                System.err.println("[charsave] Error going back to autocommit mode");
-                e.printStackTrace();
+                System.err.println("[charsave] Error going back to autocommit mode... " + e);
             }
         }
     }
@@ -1671,16 +1668,13 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             con.commit();
             System.out.println("Character " + getName() + " saved @ " + new Date());
         } catch (DatabaseException | SQLException e) {
-            e.printStackTrace();
             FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
-            System.err.println(MapleClient.getLogMessage(this, "[charsave] Error saving character data") + e);
+            System.err.println(MapleClient.getLogMessage(this, "[charsave] Error saving character data" ) + e);
             try {
                 con.rollback();
             } catch (SQLException ex) {
-                ex.printStackTrace();
-
                 FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, ex);
-                System.err.println(MapleClient.getLogMessage(this, "[charsave] Error Rolling Back") + e);
+                System.err.println(MapleClient.getLogMessage(this, "[charsave] Error Rolling Back... ") + ex);
             }
         } finally {
             try {
