@@ -231,8 +231,7 @@ public class MapleGuild implements java.io.Serializable {
 
             level = calculateLevel();
         } catch (SQLException se) {
-            System.err.println("unable to read guild information from sql");
-            se.printStackTrace();
+            System.err.println("unable to read guild information from sql... " + se);
         }
     }
 
@@ -243,7 +242,7 @@ public class MapleGuild implements java.io.Serializable {
     public static final void loadAll() {
         ThreadManager.getInstance().newTask(() -> {
             long start = System.currentTimeMillis();
-            Map<Integer, Map<Integer, MapleBBSReply>> replies = new LinkedHashMap<Integer, Map<Integer, MapleBBSReply>>();
+            Map<Integer, Map<Integer, MapleBBSReply>> replies = new LinkedHashMap<>();
             try {
                 Connection con = DatabaseConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement("SELECT * FROM bbs_replies");
@@ -252,7 +251,7 @@ public class MapleGuild implements java.io.Serializable {
                     final int tID = rs.getInt("threadid");
                     Map<Integer, MapleBBSReply> reply = replies.get(tID);
                     if (reply == null) {
-                        reply = new HashMap<Integer, MapleBBSReply>();
+                        reply = new HashMap<>();
                         replies.put(tID, reply);
                     }
                     reply.put(reply.size(), new MapleBBSReply(reply.size(), rs.getInt("postercid"), rs.getString("content"), rs.getLong("timestamp")));
@@ -276,7 +275,7 @@ public class MapleGuild implements java.io.Serializable {
     }
 
     public static final void loadAll(Object toNotify) {
-        Map<Integer, Map<Integer, MapleBBSReply>> replies = new LinkedHashMap<Integer, Map<Integer, MapleBBSReply>>();
+        Map<Integer, Map<Integer, MapleBBSReply>> replies = new LinkedHashMap<>();
 
         try {
             Connection con = DatabaseConnection.getConnection();
@@ -286,7 +285,7 @@ public class MapleGuild implements java.io.Serializable {
                 final int tID = rs.getInt("threadid");
                 Map<Integer, MapleBBSReply> reply = replies.get(tID);
                 if (reply == null) {
-                    reply = new HashMap<Integer, MapleBBSReply>();
+                    reply = new HashMap<>();
                     replies.put(tID, reply);
                 }
                 reply.put(reply.size(), new MapleBBSReply(reply.size(), rs.getInt("postercid"), rs.getString("content"), rs.getLong("timestamp")));
@@ -306,8 +305,7 @@ public class MapleGuild implements java.io.Serializable {
                 return;
             }
         } catch (SQLException se) {
-            System.err.println("unable to read guild information from sql");
-            se.printStackTrace();
+            System.err.println("unable to read guild information from sql... " + se);
         }
         AtomicInteger FinishedThreads = new AtomicInteger(0);
         GuildLoad.Execute(toNotify);
@@ -315,7 +313,7 @@ public class MapleGuild implements java.io.Serializable {
             try {
                 toNotify.wait();
             } catch (InterruptedException ex) {
-                ex.printStackTrace();
+                System.err.println(ex);
             }
         }
         while (FinishedThreads.incrementAndGet() != GuildLoad.NumSavingThreads) {
@@ -323,7 +321,7 @@ public class MapleGuild implements java.io.Serializable {
                 try {
                     toNotify.wait();
                 } catch (InterruptedException ex) {
-                    ex.printStackTrace();
+                    System.err.println(ex);
                 }
             }
         }
@@ -369,35 +367,35 @@ public class MapleGuild implements java.io.Serializable {
                     ps.execute();
                     ps.close();
 
-                    final PreparedStatement pse = con.prepareStatement("INSERT INTO bbs_replies (`threadid`, `postercid`, `timestamp`, `content`, `guildid`) VALUES (?, ?, ?, ?, ?)");
-                    ps = con.prepareStatement("INSERT INTO bbs_threads(`postercid`, `name`, `timestamp`, `icon`, `startpost`, `guildid`, `localthreadid`) VALUES(?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
-                    ps.setInt(6, id);
-                    for (MapleBBSThread bb : bbs.values()) {
-                        ps.setInt(1, bb.ownerID);
-                        ps.setString(2, bb.name);
-                        ps.setLong(3, bb.timestamp);
-                        ps.setInt(4, bb.icon);
-                        ps.setString(5, bb.text);
-                        ps.setInt(7, bb.localthreadID);
-                        ps.execute();
-                        final ResultSet rs = ps.getGeneratedKeys();
-                        if (!rs.next()) {
+                    try (PreparedStatement pse = con.prepareStatement("INSERT INTO bbs_replies (`threadid`, `postercid`, `timestamp`, `content`, `guildid`) VALUES (?, ?, ?, ?, ?)")) {
+                        ps = con.prepareStatement("INSERT INTO bbs_threads(`postercid`, `name`, `timestamp`, `icon`, `startpost`, `guildid`, `localthreadid`) VALUES(?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                        ps.setInt(6, id);
+                        for (MapleBBSThread bb : bbs.values()) {
+                            ps.setInt(1, bb.ownerID);
+                            ps.setString(2, bb.name);
+                            ps.setLong(3, bb.timestamp);
+                            ps.setInt(4, bb.icon);
+                            ps.setString(5, bb.text);
+                            ps.setInt(7, bb.localthreadID);
+                            ps.execute();
+                            final ResultSet rs = ps.getGeneratedKeys();
+                            if (!rs.next()) {
+                                rs.close();
+                                continue;
+                            }
+                            final int ourId = rs.getInt(1);
                             rs.close();
-                            continue;
+                            pse.setInt(5, id);
+                            for (MapleBBSReply r : bb.replies.values()) {
+                                pse.setInt(1, ourId);
+                                pse.setInt(2, r.ownerID);
+                                pse.setLong(3, r.timestamp);
+                                pse.setString(4, r.content);
+                                pse.addBatch();
+                            }
                         }
-                        final int ourId = rs.getInt(1);
-                        rs.close();
-                        pse.setInt(5, id);
-                        for (MapleBBSReply r : bb.replies.values()) {
-                            pse.setInt(1, ourId);
-                            pse.setInt(2, r.ownerID);
-                            pse.setLong(3, r.timestamp);
-                            pse.setString(4, r.content);
-                            pse.addBatch();
-                        }
+                        pse.executeBatch();
                     }
-                    pse.executeBatch();
-                    pse.close();
                     ps.close();
                 }
                 if (changed_skills) {
@@ -450,8 +448,7 @@ public class MapleGuild implements java.io.Serializable {
                 broadcast(GuildPacket.guildDisband(id));
             }
         } catch (SQLException se) {
-            System.err.println("Error saving guild to SQL");
-            se.printStackTrace();
+            System.err.println("Error saving guild to SQL... " + se);
         }
     }
 
@@ -541,7 +538,7 @@ public class MapleGuild implements java.io.Serializable {
 
         lock.readLock().lock();
         try {
-            for (MapleGuildCharacter mgc : members) {
+            members.forEach(mgc -> {
                 if (bcop == BCOp.DISBAND) {
                     if (mgc.isOnline()) {
                         World.Guild.setGuildAndRank(mgc.getId(), 0, 5, 0, 5);
@@ -555,7 +552,7 @@ public class MapleGuild implements java.io.Serializable {
                         World.Broadcast.sendGuildPacket(mgc.getId(), packet, exceptionId, id);
                     }
                 }
-            }
+            });
         } finally {
             lock.readLock().unlock();
         }
@@ -566,7 +563,7 @@ public class MapleGuild implements java.io.Serializable {
         if (!bDirty) {
             return;
         }
-        final List<Integer> mem = new LinkedList<Integer>();
+        final List<Integer> mem = new LinkedList<>();
         final Iterator<MapleGuildCharacter> toRemove = members.iterator();
         while (toRemove.hasNext()) {
             MapleGuildCharacter mgc = toRemove.next();
@@ -678,8 +675,7 @@ public class MapleGuild implements java.io.Serializable {
             ps.close();
             return ret;
         } catch (SQLException se) {
-            System.err.println("SQL THROW");
-            se.printStackTrace();
+            System.err.println("SQL THROW... " + se);
             return 0;
         }
         finally{
@@ -785,7 +781,7 @@ public class MapleGuild implements java.io.Serializable {
         if (allianceid <= 0) {
             return;
         }
-        for (final MapleGuildCharacter mgc : members) {
+        members.forEach(mgc -> {
             byte newRank = 3;
             if (this.leader == mgc.getId()) {
                 newRank = (byte) (leader ? 1 : 2);
@@ -796,7 +792,7 @@ public class MapleGuild implements java.io.Serializable {
                 setOfflineGuildStatus(this.id, (byte) mgc.getGuildRank(), mgc.getGuildContribution(), (byte) newRank, mgc.getId());
             }
             mgc.setAllianceRank((byte) newRank);
-        }
+        });
         World.Alliance.sendGuild(allianceid);
     }
 
@@ -849,11 +845,11 @@ public class MapleGuild implements java.io.Serializable {
             this.leader = cid;
             try {
                 Connection con = DatabaseConnection.getConnection();
-                PreparedStatement ps = con.prepareStatement("UPDATE guilds SET leader = ? WHERE guildid = ?");
-                ps.setInt(1, cid);
-                ps.setInt(2, id);
-                ps.execute();
-                ps.close();
+                try (PreparedStatement ps = con.prepareStatement("UPDATE guilds SET leader = ? WHERE guildid = ?")) {
+                    ps.setInt(1, cid);
+                    ps.setInt(2, id);
+                    ps.execute();
+                }
             } catch (SQLException e) {
                 System.err.println("Saving leaderid ERROR" + e);
             }
@@ -909,9 +905,7 @@ public class MapleGuild implements java.io.Serializable {
     }
 
     public final void changeRankTitle(final String[] ranks) {
-        for (int i = 0; i < 5; i++) {
-            rankTitles[i] = ranks[i];
-        }
+        System.arraycopy(ranks, 0, rankTitles, 0, 5);
         broadcast(GuildPacket.rankTitleChange(id, ranks));
     }
 
@@ -938,8 +932,7 @@ public class MapleGuild implements java.io.Serializable {
             ps.execute();
             ps.close();
         } catch (SQLException e) {
-            System.err.println("Saving guild logo / BG colo ERROR");
-            e.printStackTrace();
+            System.err.println("Saving guild logo / BG colo ERROR... " + e);
         }
     }
 
@@ -973,8 +966,7 @@ public class MapleGuild implements java.io.Serializable {
             ps.execute();
             ps.close();
         } catch (SQLException e) {
-            System.err.println("Saving guild capacity ERROR");
-            e.printStackTrace();
+            System.err.println("Saving guild capacity ERROR... " + e);
         }
         return true;
     }
@@ -1081,18 +1073,30 @@ public class MapleGuild implements java.io.Serializable {
     public final void addMemberData(final MaplePacketLittleEndianWriter mplew) {
         mplew.write(members.size());
 
-        for (final MapleGuildCharacter mgc : members) {
+        members.forEach(mgc -> {
             mplew.writeInt(mgc.getId());
-        }
-        for (final MapleGuildCharacter mgc : members) {
+        });
+        members.stream().map(mgc -> {
             mplew.writeAsciiString(mgc.getName(), 13);
+            return mgc;
+        }).map(mgc -> {
             mplew.writeInt(mgc.getJobId()); //-1 = ??
+            return mgc;
+        }).map(mgc -> {
             mplew.writeInt(mgc.getLevel()); //-1 = ??
+            return mgc;
+        }).map(mgc -> {
             mplew.writeInt(mgc.getGuildRank());
+            return mgc;
+        }).map(mgc -> {
             mplew.writeInt(mgc.isOnline() ? 1 : 0);
+            return mgc;
+        }).map(mgc -> {
             mplew.writeInt(mgc.getAllianceRank());
+            return mgc;
+        }).forEachOrdered(mgc -> {
             mplew.writeInt(mgc.getGuildContribution());
-        }
+        });
     }
 
     // null indicates successful invitation being sent
@@ -1120,7 +1124,7 @@ public class MapleGuild implements java.io.Serializable {
     }
 
     public final List<MapleBBSThread> getBBS() {
-        final List<MapleBBSThread> ret = new ArrayList<MapleBBSThread>(bbs.values());
+        final List<MapleBBSThread> ret = new ArrayList<>(bbs.values());
         Collections.sort(ret, new MapleBBSThread.ThreadComparator());
         return ret;
     }
@@ -1184,8 +1188,7 @@ public class MapleGuild implements java.io.Serializable {
             ps.executeUpdate();
             ps.close();
         } catch (SQLException se) {
-            System.out.println("SQLException: " + se.getLocalizedMessage());
-            se.printStackTrace();
+            System.err.println("SQLException: " + se.getLocalizedMessage());
         }
     }
 }
