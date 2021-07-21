@@ -18,11 +18,10 @@ public class StarterKitCommand extends Command {
             return;
         }
 
-        // Starter kit items and mesos.
-        MapleInventoryManipulator.addById(c, 2000000, (short) 200, "Gained from starter kit."); // 100 red pot
-        MapleInventoryManipulator.addById(c, 2000003, (short) 200, "Gained from starter kit."); // 100 blue pot
+        // Starter kit items.
+        MapleInventoryManipulator.addById(c, 2000000, (short) 200, "Gained from starter kit."); // 200 red pot
+        MapleInventoryManipulator.addById(c, 2000003, (short) 200, "Gained from starter kit."); // 200 blue pot
         MapleInventoryManipulator.addById(c, 1002602, (short) 1, "Gained from starter kit."); // 1 blue maple bandana
-        player.gainMeso(50000, true); // small loan of 50,000.
 
         player.setClaimedStarterKit(true);
         player.dropMessage(6, "You've successfully claimed your starter pack.");
