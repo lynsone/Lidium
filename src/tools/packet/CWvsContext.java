@@ -1260,14 +1260,16 @@ public class CWvsContext {
             mplew.write(80);
             mplew.writeInt(npcid);
             mplew.writeInt(all.size());
+            int i = 1;
             for (GuildRankingInfo info : all) {
-                mplew.writeShort(0);
+                mplew.writeShort(i);
                 mplew.writeMapleAsciiString(info.getName());
                 mplew.writeInt(info.getGP());
                 mplew.writeInt(info.getLogo());
                 mplew.writeInt(info.getLogoColor());
                 mplew.writeInt(info.getLogoBg());
                 mplew.writeInt(info.getLogoBgColor());
+                i++;
             }
 
             return mplew.getPacket();
