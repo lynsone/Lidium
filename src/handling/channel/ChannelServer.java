@@ -102,14 +102,14 @@ public class ChannelServer {
         if (!events.isEmpty()) {
             return;
         }
-        events.put(MapleEventType.CokePlay, new MapleCoconut(channel, MapleEventType.CokePlay)); // yep, coconut. same
+        // events.put(MapleEventType.CokePlay, new MapleCoconut(channel, MapleEventType.CokePlay)); // yep, coconut. same
                                                                                                  // shit
-        events.put(MapleEventType.Coconut, new MapleCoconut(channel, MapleEventType.Coconut));
-        events.put(MapleEventType.Fitness, new MapleFitness(channel, MapleEventType.Fitness));
-        events.put(MapleEventType.OlaOla, new MapleOla(channel, MapleEventType.OlaOla));
+        // events.put(MapleEventType.Coconut, new MapleCoconut(channel, MapleEventType.Coconut));
+        // events.put(MapleEventType.Fitness, new MapleFitness(channel, MapleEventType.Fitness));
+        // events.put(MapleEventType.OlaOla, new MapleOla(channel, MapleEventType.OlaOla));
         events.put(MapleEventType.OxQuiz, new MapleOxQuiz(channel, MapleEventType.OxQuiz));
-        events.put(MapleEventType.Snowball, new MapleSnowball(channel, MapleEventType.Snowball));
-        events.put(MapleEventType.Survival, new MapleSurvival(channel, MapleEventType.Survival));
+        // events.put(MapleEventType.Snowball, new MapleSnowball(channel, MapleEventType.Snowball));
+        // events.put(MapleEventType.Survival, new MapleSurvival(channel, MapleEventType.Survival));
     }
 
     public final void run_startup_configurations() {
