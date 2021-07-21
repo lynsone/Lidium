@@ -44,19 +44,19 @@ public class ShutdownServer implements ShutdownServerMBean {
     @Override
     public void run() {
         if (mode == 0) {
-            int ret = 0;
             World.Broadcast.broadcastMessage(
                     CWvsContext.serverNotice(0, "The world is going to shutdown soon. Please log off safely."));
             for (ChannelServer cs : ChannelServer.getAllInstances()) {
                 cs.setShutdown();
                 cs.setServerMessage("The world is going to shutdown soon. Please log off safely.");
-                ret += cs.closeAllMerchant();
+                cs.closeAllMerchant();
             }
             World.Guild.save();
             World.Alliance.save();
             World.Family.save();
             System.out.println("Shutdown 1 has completed.");
             mode++;
+            run();
         } else if (mode == 1) {
             mode++;
             System.out.println("Shutdown 2 commencing...");
