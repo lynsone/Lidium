@@ -1071,8 +1071,9 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 ret.stats.recalcPVPRank(ret);
             }
         } catch (SQLException ess) {
-            System.out.println("Failed to load character..");
+            System.err.println("Failed to load character... " + ess);
             FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, ess);
+            System.exit(0);
         } finally {
             try {
                 if (ps != null) {
