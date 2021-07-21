@@ -48,36 +48,36 @@ public class MapleDataTool {
     }
 
     public static double getDouble(MapleData data) {
-        return ((Double) data.getData()).doubleValue();
+        return ((Double) data.getData());
     }
 
     public static float getFloat(MapleData data) {
-        return ((Float) data.getData()).floatValue();
+        return ((Float) data.getData());
     }
 
     public static float getFloat(MapleData data, float def) {
         if (data == null || data.getData() == null) {
             return def;
         } else {
-            return ((Float) data.getData()).floatValue();
+            return ((Float) data.getData());
         }
     }
 
     public static int getInt(MapleData data) {
-        return ((Integer) data.getData()).intValue();
+        return ((Integer) data.getData());
     }
 
     public static int getInt(MapleData data, int def) {
         if (data == null || data.getData() == null) {
             return def;
         } else {
-            if (data.getType() == MapleDataType.STRING) {
-                return Integer.parseInt(getString(data));
-            } else if (data.getType() == MapleDataType.SHORT) {
-                return Integer.valueOf(((Short) data.getData()).shortValue());
-            } else {
-                return ((Integer) data.getData()).intValue();
-            }
+            if (null == data.getType()) {
+                return ((Integer) data.getData());
+            } else return switch (data.getType()) {
+                case STRING -> Integer.parseInt(getString(data));
+                case SHORT -> Integer.valueOf(((Short) data.getData()));
+                default -> ((Integer) data.getData());
+            };
         }
     }
 

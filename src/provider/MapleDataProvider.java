@@ -53,15 +53,15 @@ public class MapleDataProvider {
     public MapleData getData(String path) {
         File dataFile = new File(root, path + ".xml");
         File imageDataDir = new File(root, path);
-        /*		if (!dataFile.exists()) {
-        throw new RuntimeException("Datafile " + path + " does not exist in " + root.getAbsolutePath());
-        }*/
+        if (!dataFile.exists()) {
+        System.err.println("Datafile " + path + " does not exist in " + root.getAbsolutePath());
+        }
         FileInputStream fis;
         try {
             fis = new FileInputStream(dataFile);
         } catch (FileNotFoundException e) {
+            System.err.println("Datafile " + path + " does not exist in " + root.getAbsolutePath());
             return null;
-//            throw new RuntimeException("Datafile " + path + " does not exist in " + root.getAbsolutePath());
         }
         final MapleData domMapleData;
         try {
@@ -70,7 +70,8 @@ public class MapleDataProvider {
             try {
                 fis.close();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.err.println(e);
+                //throw new RuntimeException(e);
             }
         }
         return domMapleData;
