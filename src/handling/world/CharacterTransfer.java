@@ -74,6 +74,7 @@ public class CharacterTransfer implements Externalizable {
     public final Map<Integer, Object> Quest = new LinkedHashMap<Integer, Object>(); // Questid instead of MapleQuest, as it's huge. Cant be transporting MapleQuest.java
     public Map<Integer, String> InfoQuest;
     public final Map<Integer, SkillEntry> Skills = new LinkedHashMap<Integer, SkillEntry>(); // Skillid instead of Skill.java, as it's huge. Cant be transporting Skill.java and MapleStatEffect.java
+    public boolean claimedStarterKit = false;
     /*Start of Custom Feature*/
  /*All custom shit declare here*/
     public int reborns, apstorage;
@@ -121,6 +122,7 @@ public class CharacterTransfer implements Externalizable {
         /*Start of Custom Feature*/
         this.reborns = chr.getReborns();
         this.apstorage = chr.getAPS();
+        this.claimedStarterKit = chr.getClaimedStarterKit();
         /*End of Custom Feature*/
         this.skinColor = chr.getSkinColor();
         this.job = chr.getJob();
@@ -320,6 +322,7 @@ public class CharacterTransfer implements Externalizable {
         /*Start of Custom Feature*/
         this.reborns = in.readInt();
         this.apstorage = in.readInt();
+        this.claimedStarterKit = in.readBoolean();
         /*End of Custom Feature*/
 
         final int mbooksize = in.readShort();
@@ -525,6 +528,7 @@ public class CharacterTransfer implements Externalizable {
         /*Start of Custom Feature*/
         out.writeInt(this.reborns);
         out.writeInt(this.apstorage);
+        out.writeBoolean(this.claimedStarterKit);
         /*End of Custom Feature*/
 
         out.writeShort(this.mbook.size());
