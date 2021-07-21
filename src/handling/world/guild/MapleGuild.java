@@ -267,8 +267,7 @@ public class MapleGuild implements java.io.Serializable {
                 rs.close();
                 ps.close();
             } catch (SQLException se) {
-                System.err.println("unable to read guild information from sql");
-                se.printStackTrace();
+                System.err.println("unable to read guild information from sql... " + se);
             }
             System.out.println("Guilds loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
