@@ -211,6 +211,7 @@ public class CommandsExecutor {
         addCommand("uptime", 0, UpTimeCommand.class);
         addCommand("whodrops", 0, WhoDropsCommand.class);
         addCommand("joinevent", 0, JoinEventCommand.class);
+        addCommand("starterkit", 0, StarterKitCommand.class);
 
         //addCommand("", 0, Command.class);
         commandsNameDesc.add(levelCommandsCursor);

@@ -237,6 +237,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
  /* All custom shit declare here */
     private int reborns, apstorage;
     private String commandtext;
+    private boolean claimedStarterKit;
 
     /* End of Custom Feature */
     private MapleCharacter(final boolean ChannelServer) {
@@ -346,6 +347,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             }
             questinfo = new LinkedHashMap<>();
             pets = new ArrayList<>();
+            claimedStarterKit = false;
         }
     }
 
@@ -362,6 +364,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         ret.fame = 0;
         ret.accountid = client.getAccID();
         ret.buddylist = new BuddyList((byte) 20);
+        ret.claimedStarterKit = false;
 
         ret.stats.str = 12;
         ret.stats.dex = 5;
@@ -645,6 +648,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             /* Start of Custom Features */
             ret.reborns = rs.getInt("reborns");
             ret.apstorage = rs.getInt("apstorage");
+            ret.claimedStarterKit = rs.getInt("claimedStarterKit") == 1 ? true : false;
             /* End of Custom Features */
             for (MapleTrait t : ret.traits.values()) {
                 t.setExp(rs.getInt(t.getType().name()));
@@ -1285,7 +1289,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             con.setAutoCommit(false);
 
             ps = con.prepareStatement(
-                    "UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, demonMarking = ?, map = ?, meso = ?, hpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, pets = ?, subcategory = ?, marriageId = ?, currentrep = ?, totalrep = ?, gachexp = ?, fatigue = ?, charm = ?, charisma = ?, craft = ?, insight = ?, sense = ?, will = ?, totalwins = ?, totallosses = ?, pvpExp = ?, pvpPoints = ?, reborns = ?, apstorage = ?, name = ? WHERE id = ?",
+                    "UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, demonMarking = ?, map = ?, meso = ?, hpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, pets = ?, subcategory = ?, marriageId = ?, currentrep = ?, totalrep = ?, gachexp = ?, fatigue = ?, charm = ?, charisma = ?, craft = ?, insight = ?, sense = ?, will = ?, totalwins = ?, totallosses = ?, pvpExp = ?, pvpPoints = ?, reborns = ?, apstorage = ?, claimedStarterKit = ?, name = ? WHERE id = ?",
                     Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, level);
             ps.setInt(2, fame);
@@ -1369,9 +1373,10 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             /* Start of Custom Features */
             ps.setInt(44, reborns);
             ps.setInt(45, apstorage);
+            ps.setInt(46, claimedStarterKit ? 1 : 0);
             /* End of Custom Features */
-            ps.setString(46, name);
-            ps.setInt(47, id);
+            ps.setString(47, name);
+            ps.setInt(48, id);
             if (ps.executeUpdate() < 1) {
                 ps.close();
                 throw new DatabaseException("Character not in database (" + id + ")");
@@ -7738,6 +7743,18 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
 
     public void gainAPS(int aps) {
         apstorage += aps;
+    }
+
+    public void setClaimedStarterKit(boolean hasSet) {
+        this.claimedStarterKit = hasSet;
+    }
+
+    public boolean getClaimedStarterKit() {
+        return claimedStarterKit;
+    }
+
+    public boolean hasClaimedStarterKit() {
+        return claimedStarterKit;
     }
 
     public void doReborn() {
