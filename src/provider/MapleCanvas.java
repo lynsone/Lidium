@@ -59,7 +59,8 @@ public class MapleCanvas {
                 width = image.getWidth();
                 height = image.getHeight();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.err.println(e);
+                //throw new RuntimeException(e);
             }
         }
     }

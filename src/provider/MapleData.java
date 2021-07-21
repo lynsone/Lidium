@@ -27,11 +27,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -51,12 +49,9 @@ public class MapleData implements MapleDataEntity, Iterable<MapleData> {
     public MapleData(final FileInputStream fis, final File imageDataDir) {
         try {
             this.node = documentBuilderFactory.newDocumentBuilder().parse(fis).getFirstChild();
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        } catch (SAXException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            //throw new RuntimeException(e);
+            System.err.println(e);
         }
         this.imageDataDir = imageDataDir;
     }
@@ -67,12 +62,12 @@ public class MapleData implements MapleDataEntity, Iterable<MapleData> {
         }
 
         Node myNode = node;
-        for (int x = 0; x < segments.length; x++) {
+        for (String segment : segments) {
             NodeList childNodes = myNode.getChildNodes();
             boolean foundChild = false;
             for (int i = 0; i < childNodes.getLength(); i++) {
                 final Node childNode = childNodes.item(i);
-                if (childNode != null && childNode.getAttributes() != null && childNode.getAttributes().getNamedItem("name") != null && childNode.getNodeType() == Node.ELEMENT_NODE && childNode.getAttributes().getNamedItem("name").getNodeValue().equals(segments[x])) {
+                if (childNode != null && childNode.getAttributes() != null && childNode.getAttributes().getNamedItem("name") != null && childNode.getNodeType() == Node.ELEMENT_NODE && childNode.getAttributes().getNamedItem("name").getNodeValue().equals(segment)) {
                     myNode = childNode;
                     foundChild = true;
                     break;
@@ -88,7 +83,7 @@ public class MapleData implements MapleDataEntity, Iterable<MapleData> {
     }
 
     public List<MapleData> getChildren() {
-        final List<MapleData> ret = new ArrayList<MapleData>();
+        final List<MapleData> ret = new ArrayList<>();
         final NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             final Node childNode = childNodes.item(i);
@@ -105,26 +100,25 @@ public class MapleData implements MapleDataEntity, Iterable<MapleData> {
         final NamedNodeMap attributes = node.getAttributes();
         final MapleDataType type = getType();
         switch (type) {
-            case DOUBLE: {
-                return Double.valueOf(Double.parseDouble(attributes.getNamedItem("value").getNodeValue()));
+            case DOUBLE -> {
+                return Double.parseDouble(attributes.getNamedItem("value").getNodeValue());
             }
-            case FLOAT: {
-                return Float.valueOf(Float.parseFloat(attributes.getNamedItem("value").getNodeValue()));
+            case FLOAT -> {
+                return Float.parseFloat(attributes.getNamedItem("value").getNodeValue());
             }
-            case INT: {
-                return Integer.valueOf(Integer.parseInt(attributes.getNamedItem("value").getNodeValue()));
+            case INT -> {
+                return Integer.parseInt(attributes.getNamedItem("value").getNodeValue());
             }
-            case SHORT: {
-                return Short.valueOf(Short.parseShort(attributes.getNamedItem("value").getNodeValue()));
+            case SHORT -> {
+                return Short.parseShort(attributes.getNamedItem("value").getNodeValue());
             }
-            case STRING:
-            case UOL: {
+            case STRING, UOL -> {
                 return attributes.getNamedItem("value").getNodeValue();
             }
-            case VECTOR: {
+            case VECTOR -> {
                 return new Point(Integer.parseInt(attributes.getNamedItem("x").getNodeValue()), Integer.parseInt(attributes.getNamedItem("y").getNodeValue()));
             }
-            case CANVAS: {
+            case CANVAS -> {
                 return new MapleCanvas(Integer.parseInt(attributes.getNamedItem("width").getNodeValue()), Integer.parseInt(attributes.getNamedItem("height").getNodeValue()), new File(imageDataDir, getName() + ".png"));
             }
         }
@@ -133,30 +127,45 @@ public class MapleData implements MapleDataEntity, Iterable<MapleData> {
 
     public final MapleDataType getType() {
         final String nodeName = node.getNodeName();
-        if (nodeName.equals("imgdir")) {
-            return MapleDataType.PROPERTY;
-        } else if (nodeName.equals("canvas")) {
-            return MapleDataType.CANVAS;
-        } else if (nodeName.equals("convex")) {
-            return MapleDataType.CONVEX;
-        } else if (nodeName.equals("sound")) {
-            return MapleDataType.SOUND;
-        } else if (nodeName.equals("uol")) {
-            return MapleDataType.UOL;
-        } else if (nodeName.equals("double")) {
-            return MapleDataType.DOUBLE;
-        } else if (nodeName.equals("float")) {
-            return MapleDataType.FLOAT;
-        } else if (nodeName.equals("int")) {
-            return MapleDataType.INT;
-        } else if (nodeName.equals("short")) {
-            return MapleDataType.SHORT;
-        } else if (nodeName.equals("string")) {
-            return MapleDataType.STRING;
-        } else if (nodeName.equals("vector")) {
-            return MapleDataType.VECTOR;
-        } else if (nodeName.equals("null")) {
-            return MapleDataType.IMG_0x00;
+        switch (nodeName) {
+            case "imgdir" -> {
+                return MapleDataType.PROPERTY;
+            }
+            case "canvas" -> {
+                return MapleDataType.CANVAS;
+            }
+            case "convex" -> {
+                return MapleDataType.CONVEX;
+            }
+            case "sound" -> {
+                return MapleDataType.SOUND;
+            }
+            case "uol" -> {
+                return MapleDataType.UOL;
+            }
+            case "double" -> {
+                return MapleDataType.DOUBLE;
+            }
+            case "float" -> {
+                return MapleDataType.FLOAT;
+            }
+            case "int" -> {
+                return MapleDataType.INT;
+            }
+            case "short" -> {
+                return MapleDataType.SHORT;
+            }
+            case "string" -> {
+                return MapleDataType.STRING;
+            }
+            case "vector" -> {
+                return MapleDataType.VECTOR;
+            }
+            case "null" -> {
+                return MapleDataType.IMG_0x00;
+            }
+            default -> {
+            }
         }
         return null;
     }
