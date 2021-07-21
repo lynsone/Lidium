@@ -11,11 +11,6 @@ function start() {
 			cm.dispose();
 			return;
 		}
-		if (cm.getPlayer().getClient().getChannel() != 7 && cm.getPlayer().getClient().getChannel() != 8 && cm.getPlayer().getClient().getChannel() != 9) {
-			cm.sendOk("Von Leon may only be attempted on channel 7,8,9.");
-			cm.dispose();
-			return;
-		}
     var em = cm.getEventManager("VonLeonBattle");
 
     if (em == null) {
