@@ -4389,7 +4389,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 if (con != null && !con.isClosed()) {
                     con.close();
                 }
-            } catch (Exception ignore) {
+            } catch (SQLException e) {
+                System.err.println(e);
             }
         }
 
@@ -4445,7 +4446,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 if (con != null && !con.isClosed()) {
                     con.close();
                 }
-            } catch (Exception ignore) {
+            } catch (Exception e) {
+                System.err.println(e);
             }
         }
         client.getSession().close();
@@ -4530,7 +4532,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 if (con != null && !con.isClosed()) {
                     con.close();
                 }
-            } catch (Exception ignore) {
+            } catch (SQLException e) {
+                System.err.println(e);
             }
         }
         return false;
@@ -5125,7 +5128,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 if (con != null && !con.isClosed()) {
                     con.close();
                 }
-            } catch (Exception ignore) {
+            } catch (Exception e) {
+                System.err.println(e);
             }
         }
         // MapleFamily.setOfflineFamilyStatus(familyid, seniorid, junior1, junior2,
@@ -5423,7 +5427,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 if (con != null && !con.isClosed()) {
                     con.close();
                 }
-            } catch (Exception ignore) {
+            } catch (Exception e) {
+                System.err.println(e);
             }
         }
     }
@@ -7439,9 +7444,9 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 if (getTotalSkillLevel(divine) > 0) {
                     final MapleStatEffect divineShield = divine.getEffect(getTotalSkillLevel(divine));
                     if (divineShield.makeChanceResult()) {
-                        if (attacke instanceof MapleMonster) {// if (attacke instanceof MapleMonster mapleMonster) {
+                        if (attacke instanceof MapleMonster mapleMonster) {// if (attacke instanceof MapleMonster mapleMonster) {
 
-                            final MapleMonster attacker = (MapleMonster) attacke; // final MapleMonster attacker =
+                            final MapleMonster attacker = mapleMonster; // final MapleMonster attacker =
                             // mapleMonster;
                             final int theDmg = (int) (divineShield.getDamage() * getStat().getCurrentMaxBaseDamage()
                                     / 100.0);
@@ -7462,8 +7467,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                     if (divineShield.makeChanceResult()) {
                         client.getSession().write(CField.skillCooldown(divine.getId(), divineShield.getCooldown(this)));
                         addCooldown(divine.getId(), System.currentTimeMillis(), divineShield.getCooldown(this) * 1000);
-                        if (attacke instanceof MapleMonster) {// if (attacke instanceof MapleMonster mapleMonster) {
-                            final MapleMonster attacker = (MapleMonster) attacke;
+                        if (attacke instanceof MapleMonster mapleMonster) {// if (attacke instanceof MapleMonster mapleMonster) {
+                            final MapleMonster attacker = mapleMonster;
                             final int theDmg = (int) (divineShield.getDamage() * getStat().getCurrentMaxBaseDamage()
                                     / 100.0);
                             attacker.damage(this, theDmg, true);
@@ -7487,8 +7492,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                     long bouncedamage = (long) (damage * bouncedam_ / 100);
                     long bouncer = (long) (damage * damr / 100);
                     damage -= bouncer;
-                    if (attacke instanceof MapleMonster) {
-                        final MapleMonster attacker = (MapleMonster) attacke;
+                    if (attacke instanceof MapleMonster mapleMonster) {
+                        final MapleMonster attacker = mapleMonster;
                         bouncedamage = Math.min(bouncedamage, attacker.getMobMaxHp() / 10);
                         attacker.damage(this, bouncedamage, true);
                         getMap().broadcastMessage(this, MobPacket.damageMonster(attacker.getObjectId(), bouncedamage),
@@ -7523,8 +7528,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                             if (sum.getTruePosition().distanceSq(getTruePosition()) < 400000.0
                                     && (sum.getSkill() == 4111007 || sum.getSkill() == 4211007)) {
                                 final List<Pair<Integer, Integer>> allDamage = new ArrayList<>();
-                                if (attacke instanceof MapleMonster) {
-                                    final MapleMonster attacker = (MapleMonster) attacke;
+                                if (attacke instanceof MapleMonster mapleMonster) {
+                                    final MapleMonster attacker = mapleMonster;
                                     final int theDmg = (int) (SkillFactory.getSkill(sum.getSkill())
                                             .getEffect(sum.getSkillLevel()).getX() * damage / 100.0);
                                     allDamage.add(new Pair<>(attacker.getObjectId(), theDmg));

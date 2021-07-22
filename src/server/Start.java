@@ -52,7 +52,8 @@ public class Start {
                 if (con != null && !con.isClosed()) {
                     con.close();
                 }
-            } catch (Exception ignore) {
+            } catch (SQLException e) {
+                System.err.println(e);
             }
         }
         System.out.println("Starting " + ServerProperties.getProperty("net.sf.odinms.login.serverName") + " v"

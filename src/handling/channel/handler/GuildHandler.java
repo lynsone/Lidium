@@ -47,7 +47,7 @@ public class GuildHandler {
         }
     }
 
-    private static final boolean isGuildNameAcceptable(final String name) {
+    private static boolean isGuildNameAcceptable(final String name) {
         if (name.length() < 3 || name.length() > 12) {
             return false;
         }
@@ -59,7 +59,7 @@ public class GuildHandler {
         return true;
     }
 
-    private static final void updateGuildInfo(final MapleCharacter mc) {
+    private static void updateGuildInfo(final MapleCharacter mc) {
         if (mc.getMap() == null) {
             return;
         }
@@ -84,7 +84,8 @@ public class GuildHandler {
         }
 
         switch (slea.readByte()) { //AFTERSHOCK: most are +1
-            case 0x02: // Create guild
+            case 0x02 -> {
+                // Create guild
                 if (c.getPlayer().getGuildId() > 0 || c.getPlayer().getMapId() != 200000301) {
                     c.getPlayer().dropMessage(1, "You cannot create a new Guild while in one.");
                     return;
@@ -114,8 +115,9 @@ public class GuildHandler {
                 World.Guild.gainGP(c.getPlayer().getGuildId(), 500, c.getPlayer().getId());
                 //c.getPlayer().dropMessage(1, "You have successfully created a Guild.");
                 updateGuildInfo(c.getPlayer());
-                break;
-            case 0x05: // invitation
+            }
+            case 0x05 -> {
+                // invitation
                 if (c.getPlayer().getGuildId() <= 0 || c.getPlayer().getGuildRank() > 2) { // 1 == guild master, 2 == jr
                     return;
                 }
@@ -129,20 +131,20 @@ public class GuildHandler {
                 if (mgr != null) {
                     c.getSession().write(mgr.getPacket());
                 } else {
-                    invited.put(name, new Pair<Integer, Long>(c.getPlayer().getGuildId(), currentTime + (20 * 60000))); //20 mins expire
+                    invited.put(name, new Pair<>(c.getPlayer().getGuildId(), currentTime + (20 * 60000))); //20 mins expire
                 }
-                break;
-            case 0x06: // accepted guild invitation
+            }
+            case 0x06 -> {
+                // accepted guild invitation
                 if (c.getPlayer().getGuildId() > 0) {
                     return;
                 }
-                guildId = slea.readInt();
+                int guildId = slea.readInt();
                 int cid = slea.readInt();
-
                 if (cid != c.getPlayer().getId()) {
                     return;
                 }
-                name = c.getPlayer().getName().toLowerCase();
+                String name = c.getPlayer().getName().toLowerCase();
                 Pair<Integer, Long> gid = invited.remove(name);
                 if (gid != null && guildId == gid.left) {
                     c.getPlayer().setGuildId(guildId);
@@ -155,35 +157,34 @@ public class GuildHandler {
                     }
                     c.getSession().write(GuildPacket.showGuildInfo(c.getPlayer()));
                     final MapleGuild gs = World.Guild.getGuild(guildId);
-                    for (byte[] pack : World.Alliance.getAllianceInfo(gs.getAllianceId(), true)) {
-                        if (pack != null) {
-                            c.getSession().write(pack);
-                        }
-                    }
+                    World.Alliance.getAllianceInfo(gs.getAllianceId(), true).stream().filter(pack -> (pack != null)).forEachOrdered(pack -> {
+                        c.getSession().write(pack);
+                    });
                     c.getPlayer().saveGuildStatus();
                     updateGuildInfo(c.getPlayer());
                 }
-                break;
-            case 0x07: // leaving
-                cid = slea.readInt();
-                name = slea.readMapleAsciiString();
-
+            }
+            case 0x07 -> {
+                // leaving
+                int cid = slea.readInt();
+                String name = slea.readMapleAsciiString();
                 if (cid != c.getPlayer().getId() || !name.equals(c.getPlayer().getName()) || c.getPlayer().getGuildId() <= 0) {
                     return;
                 }
                 World.Guild.leaveGuild(c.getPlayer().getMGC());
                 c.getSession().write(GuildPacket.showGuildInfo(null));
-                break;
-            case 0x08: // Expel
-                cid = slea.readInt();
-                name = slea.readMapleAsciiString();
-
+            }
+            case 0x08 -> {
+                // Expel
+                int cid = slea.readInt();
+                String name = slea.readMapleAsciiString();
                 if (c.getPlayer().getGuildRank() > 2 || c.getPlayer().getGuildId() <= 0) {
                     return;
                 }
                 World.Guild.expelMember(c.getPlayer().getMGC(), name, cid);
-                break;
-            case 0x0e: // Guild rank titles change
+            }
+            case 0x0e -> {
+                // Guild rank titles change
                 if (c.getPlayer().getGuildId() <= 0 || c.getPlayer().getGuildRank() != 1) {
                     return;
                 }
@@ -193,18 +194,18 @@ public class GuildHandler {
                 }
 
                 World.Guild.changeRankTitle(c.getPlayer().getGuildId(), ranks);
-                break;
-            case 0x0f: // Rank change
-                cid = slea.readInt();
+            }
+            case 0x0f -> {
+                // Rank change
+                int cid = slea.readInt();
                 byte newRank = slea.readByte();
-
                 if ((newRank <= 1 || newRank > 5) || c.getPlayer().getGuildRank() > 2 || (newRank <= 2 && c.getPlayer().getGuildRank() != 1) || c.getPlayer().getGuildId() <= 0) {
                     return;
                 }
-
                 World.Guild.changeRank(c.getPlayer().getGuildId(), cid, newRank);
-                break;
-            case 0x10: // guild emblem change
+            }
+            case 0x10 -> {
+                // guild emblem change
                 if (c.getPlayer().getGuildId() <= 0 || c.getPlayer().getGuildRank() != 1 || c.getPlayer().getMapId() != 200000301) {
                     return;
                 }
@@ -222,15 +223,17 @@ public class GuildHandler {
 
                 c.getPlayer().gainMeso(-1500000, true, true);
                 updateGuildInfo(c.getPlayer());
-                break;
-            case 0x11: // guild notice change
+            }
+            case 0x11 -> {
+                // guild notice change
                 final String notice = slea.readMapleAsciiString();
                 if (notice.length() > 100 || c.getPlayer().getGuildId() <= 0 || c.getPlayer().getGuildRank() > 2) {
                     return;
                 }
                 World.Guild.setGuildNotice(c.getPlayer().getGuildId(), notice);
-                break;
-            case 0x1d: //guild skill purchase
+            }
+            case 0x1d -> {
+                //guild skill purchase
                 Skill skilli = SkillFactory.getSkill(slea.readInt());
                 if (c.getPlayer().getGuildId() <= 0 || skilli == null || skilli.getId() < 91000000) {
                     return;
@@ -246,13 +249,14 @@ public class GuildHandler {
                 if (World.Guild.purchaseSkill(c.getPlayer().getGuildId(), skillid.getSourceId(), c.getPlayer().getName(), c.getPlayer().getId())) {
                     c.getPlayer().gainMeso(-skillid.getPrice(), true);
                 }
-                break;
-            case 0x1e: //guild skill activation
-                skilli = SkillFactory.getSkill(slea.readInt());
+            }
+            case 0x1e -> {
+                //guild skill activation
+                Skill skilli = SkillFactory.getSkill(slea.readInt());
                 if (c.getPlayer().getGuildId() <= 0 || skilli == null) {
                     return;
                 }
-                eff = World.Guild.getSkillLevel(c.getPlayer().getGuildId(), skilli.getId());
+                int eff = World.Guild.getSkillLevel(c.getPlayer().getGuildId(), skilli.getId());
                 if (eff <= 0) {
                     return;
                 }
@@ -263,14 +267,16 @@ public class GuildHandler {
                 if (World.Guild.activateSkill(c.getPlayer().getGuildId(), skillii.getSourceId(), c.getPlayer().getName())) {
                     c.getPlayer().gainMeso(-skillii.getExtendPrice(), true);
                 }
-                break;
-            case 0x1f: //guild leader change
-                cid = slea.readInt();
+            }
+            case 0x1f -> {
+                //guild leader change
+                int cid = slea.readInt();
                 if (c.getPlayer().getGuildId() <= 0 || c.getPlayer().getGuildRank() > 1) {
                     return;
                 }
                 World.Guild.setGuildLeader(c.getPlayer().getGuildId(), cid);
-                break;
+            }
         }
-    }
+        //AFTERSHOCK: most are +1
+            }
 }

@@ -35,7 +35,7 @@ public class DatabaseConnection {
                 denies++;
 
                 if (denies == 3) {
-                    sqle.printStackTrace();
+                    System.err.println(sqle);
                     break;
                 }
             }
@@ -48,7 +48,7 @@ public class DatabaseConnection {
             Class.forName("com.mysql.cj.jdbc.Driver"); // touch the mysql driver
         } catch (ClassNotFoundException e) {
             System.out.println("[SEVERE] SQL Driver Not Found. Consider death by clams.");
-            e.printStackTrace();
+            System.err.println(e);
         }
 
     }

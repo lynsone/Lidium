@@ -236,9 +236,6 @@ public class DamageParse {
                             }
                         }
                     }
-                    if (player == null) { // o_O
-                        return;
-                    }
                     totDamageToOneMonster += eachd;
                     //force the miss even if they dont miss. popular wz edit
                     if ((eachd == 0 || monster.getId() == 9700021) && player.getPyramidSubway() != null) { //miss
@@ -254,15 +251,7 @@ public class DamageParse {
                 // pickpocket
                 if (player.getBuffedValue(MapleBuffStat.PICKPOCKET) != null) {
                     switch (attack.skill) {
-                        case 0:
-                        case 4001334:
-                        case 4201005:
-                        case 4211002:
-                        case 4211004:
-                        case 4221003:
-                        case 4221007:
-                            handlePickPocket(player, monster, oned);
-                            break;
+                        case 0, 4001334, 4201005, 4211002, 4211004, 4221003, 4221007 -> handlePickPocket(player, monster, oned);
                     }
                 }
 
@@ -281,29 +270,8 @@ public class DamageParse {
                     }
                     player.onAttack(monster.getMobMaxHp(), monster.getMobMaxMp(), attack.skill, monster.getObjectId(), totDamage);
                     switch (attack.skill) {
-                        case 14001004:
-                        case 14111002:
-                        case 14111005:
-                        case 4301001:
-                        case 4311002:
-                        case 4311003:
-                        case 4331000:
-                        case 4331004:
-                        case 4331005:
-                        case 4341002:
-                        case 4341004:
-                        case 4341005:
-                        case 4331006:
-                        case 4341009:
-                        case 4221007: // Boomerang Stab
-                        case 4221001: // Assasinate
-                        case 4211002: // Assulter
-                        case 4201005: // Savage Blow
-                        case 4001002: // Disorder
-                        case 4001334: // Double Stab
-                        case 4121007: // Triple Throw
-                        case 4111005: // Avenger
-                        case 4001344: { // Lucky Seven
+                        case 14001004, 14111002, 14111005, 4301001, 4311002, 4311003, 4331000, 4331004, 4331005, 4341002, 4341004, 4341005, 4331006, 4341009, 4221007, 4221001, 4211002, 4201005, 4001002, 4001334, 4121007, 4111005, 4001344 -> {
+                            // Lucky Seven
                             // Venom
                             int[] skills = {4120005, 4220005, 4340001, 14110004};
                             for (int i : skills) {
@@ -316,29 +284,13 @@ public class DamageParse {
                                     break;
                                 }
                             }
-
-                            break;
                         }
-                        case 4201004: { //steal
+                        case 4201004 -> {
+                            //steal
                             monster.handleSteal(player);
-                            break;
                         }
-                        //case 21101003: // body pressure
-                        case 21000002: // Double attack
-                        case 21100001: // Triple Attack
-                        case 21100002: // Pole Arm Push
-                        case 21100004: // Pole Arm Smash
-                        case 21110002: // Full Swing
-                        case 21110003: // Pole Arm Toss
-                        case 21110004: // Fenrir Phantom
-                        case 21110006: // Whirlwind
-                        case 21110007: // (hidden) Full Swing - Double Attack
-                        case 21110008: // (hidden) Full Swing - Triple Attack
-                        case 21120002: // Overswing
-                        case 21120005: // Pole Arm finale
-                        case 21120006: // Tempest
-                        case 21120009: // (hidden) Overswing - Double Attack
-                        case 21120010: { // (hidden) Overswing - Triple Attack
+                        case 21000002, 21100001, 21100002, 21100004, 21110002, 21110003, 21110004, 21110006, 21110007, 21110008, 21120002, 21120005, 21120006, 21120009, 21120010 -> {
+                            // (hidden) Overswing - Triple Attack
                             if (player.getBuffedValue(MapleBuffStat.WK_CHARGE) != null && !monster.getStats().isBoss()) {
                                 final MapleStatEffect eff = player.getStatForBuff(MapleBuffStat.WK_CHARGE);
                                 if (eff != null) {
@@ -352,11 +304,34 @@ public class DamageParse {
                                     monster.applyStatus(player, new MonsterStatusEffect(MonsterStatus.NEUTRALISE, 1, eff.getSourceId(), null, false), false, eff.getX() * 1000, true, eff);
                                 }
                             }
-                            break;
                         }
-                        default: //passives attack bonuses
-                            break;
+                        default -> {
+                        }
                     }
+                    // Boomerang Stab
+                    // Assasinate
+                    // Assulter
+                    // Savage Blow
+                    // Disorder
+                    // Double Stab
+                    // Triple Throw
+                    // Avenger
+                    //case 21101003: // body pressure
+                    // Double attack
+                    // Triple Attack
+                    // Pole Arm Push
+                    // Pole Arm Smash
+                    // Full Swing
+                    // Pole Arm Toss
+                    // Fenrir Phantom
+                    // Whirlwind
+                    // (hidden) Full Swing - Double Attack
+                    // (hidden) Full Swing - Triple Attack
+                    // Overswing
+                    // Pole Arm finale
+                    // Tempest
+                    // (hidden) Overswing - Double Attack
+                    //passives attack bonuses
                     if (totDamageToOneMonster > 0) {
                         Item weapon_ = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11);
                         if (weapon_ != null) {
@@ -572,18 +547,14 @@ public class DamageParse {
                     player.onAttack(monster.getMobMaxHp(), monster.getMobMaxMp(), attack.skill, monster.getObjectId(), totDamage);
                     // effects, reversed after bigbang
                     switch (attack.skill) {
-                        case 2221003:
-                            monster.setTempEffectiveness(Element.ICE, effect.getDuration());
-                            break;
-                        case 2121003:
-                            monster.setTempEffectiveness(Element.FIRE, effect.getDuration());
-                            break;
+                        case 2221003 -> monster.setTempEffectiveness(Element.ICE, effect.getDuration());
+                        case 2121003 -> monster.setTempEffectiveness(Element.FIRE, effect.getDuration());
                     }
                     if (effect != null && effect.getMonsterStati().size() > 0) {
                         if (effect.makeChanceResult()) {
-                            for (Map.Entry<MonsterStatus, Integer> z : effect.getMonsterStati().entrySet()) {
+                            effect.getMonsterStati().entrySet().forEach(z -> {
                                 monster.applyStatus(player, new MonsterStatusEffect(z.getKey(), z.getValue(), theSkill.getId(), null, false), effect.isPoison(), effect.getDuration(), true, effect);
-                            }
+                            });
                         }
                     }
                     if (eaterLevel > 0) {
@@ -606,7 +577,7 @@ public class DamageParse {
         }
     }
 
-    private static final double CalculateMaxMagicDamagePerHit(final MapleCharacter chr, final Skill skill, final MapleMonster monster, final MapleMonsterStats mobstats, final PlayerStats stats, final Element elem, final Integer sharpEye, final double maxDamagePerMonster, final MapleStatEffect attackEffect) {
+    private static double CalculateMaxMagicDamagePerHit(final MapleCharacter chr, final Skill skill, final MapleMonster monster, final MapleMonsterStats mobstats, final PlayerStats stats, final Element elem, final Integer sharpEye, final double maxDamagePerMonster, final MapleStatEffect attackEffect) {
         final int dLevel = Math.max(mobstats.getLevel() - chr.getLevel(), 0) * 2;
         int HitRate = Math.min((int) Math.floor(Math.sqrt(stats.getAccuracy())) - (int) Math.floor(Math.sqrt(mobstats.getEva())) + 100, 100);
         if (dLevel > HitRate) {
@@ -619,14 +590,10 @@ public class DamageParse {
         double elemMaxDamagePerMob;
         int CritPercent = sharpEye;
         final ElementalEffectiveness ee = monster.getEffectiveness(elem);
-        switch (ee) {
-            case IMMUNE:
-                elemMaxDamagePerMob = 1;
-                break;
-            default:
-                elemMaxDamagePerMob = ElementalStaffAttackBonus(elem, maxDamagePerMonster * ee.getValue(), stats);
-                break;
-        }
+        elemMaxDamagePerMob = switch (ee) {
+            case IMMUNE -> 1;
+            default -> ElementalStaffAttackBonus(elem, maxDamagePerMonster * ee.getValue(), stats);
+        };
         // Calculate monster magic def
         // Min damage = (MIN before defense) - MDEF*.6
         // Max damage = (MAX before defense) - MDEF*.5
@@ -652,24 +619,13 @@ public class DamageParse {
         elemMaxDamagePerMob += (elemMaxDamagePerMob * chr.getDamageIncrease(monster.getObjectId()) / 100.0);
         if (GameConstants.isBeginnerJob(skill.getId() / 10000)) {
             switch (skill.getId() % 10000) {
-                case 1000:
-                    elemMaxDamagePerMob = 40;
-                    break;
-                case 1020:
-                    elemMaxDamagePerMob = 1;
-                    break;
-                case 1009:
-                    elemMaxDamagePerMob = (monster.getStats().isBoss() ? monster.getMobMaxHp() / 30 * 100 : monster.getMobMaxHp());
-                    break;
+                case 1000 -> elemMaxDamagePerMob = 40;
+                case 1020 -> elemMaxDamagePerMob = 1;
+                case 1009 -> elemMaxDamagePerMob = (monster.getStats().isBoss() ? monster.getMobMaxHp() / 30 * 100 : monster.getMobMaxHp());
             }
         }
         switch (skill.getId()) {
-            case 32001000:
-            case 32101000:
-            case 32111002:
-            case 32121002:
-                elemMaxDamagePerMob *= 1.5;
-                break;
+            case 32001000, 32101000, 32111002, 32121002 -> elemMaxDamagePerMob *= 1.5;
         }
         if (elemMaxDamagePerMob > 999999) {
             elemMaxDamagePerMob = 999999;
@@ -680,30 +636,22 @@ public class DamageParse {
         return elemMaxDamagePerMob;
     }
 
-    private static final double ElementalStaffAttackBonus(final Element elem, double elemMaxDamagePerMob, final PlayerStats stats) {
-        switch (elem) {
-            case FIRE:
-                return (elemMaxDamagePerMob / 100) * (stats.element_fire + stats.getElementBoost(elem));
-            case ICE:
-                return (elemMaxDamagePerMob / 100) * (stats.element_ice + stats.getElementBoost(elem));
-            case LIGHTING:
-                return (elemMaxDamagePerMob / 100) * (stats.element_light + stats.getElementBoost(elem));
-            case POISON:
-                return (elemMaxDamagePerMob / 100) * (stats.element_psn + stats.getElementBoost(elem));
-            default:
-                return (elemMaxDamagePerMob / 100) * (stats.def + stats.getElementBoost(elem));
-        }
+    private static double ElementalStaffAttackBonus(final Element elem, double elemMaxDamagePerMob, final PlayerStats stats) {
+        return switch (elem) {
+            case FIRE -> (elemMaxDamagePerMob / 100) * (stats.element_fire + stats.getElementBoost(elem));
+            case ICE -> (elemMaxDamagePerMob / 100) * (stats.element_ice + stats.getElementBoost(elem));
+            case LIGHTING -> (elemMaxDamagePerMob / 100) * (stats.element_light + stats.getElementBoost(elem));
+            case POISON -> (elemMaxDamagePerMob / 100) * (stats.element_psn + stats.getElementBoost(elem));
+            default -> (elemMaxDamagePerMob / 100) * (stats.def + stats.getElementBoost(elem));
+        };
     }
 
     private static void handlePickPocket(final MapleCharacter player, final MapleMonster mob, AttackPair oned) {
-        final int maxmeso = player.getBuffedValue(MapleBuffStat.PICKPOCKET).intValue();
+        final int maxmeso = player.getBuffedValue(MapleBuffStat.PICKPOCKET);
 
-        for (final Pair<Integer, Boolean> eachde : oned.attack) {
-            final Integer eachd = eachde.left;
-            if (player.getStat().pickRate >= 100 || Randomizer.nextInt(99) < player.getStat().pickRate) {
-                player.getMap().spawnMesoDrop(Math.min((int) Math.max(((double) eachd / (double) 20000) * (double) maxmeso, (double) 1), maxmeso), new Point((int) (mob.getTruePosition().getX() + Randomizer.nextInt(100) - 50), (int) (mob.getTruePosition().getY())), mob, player, false, (byte) 0);
-            }
-        }
+        oned.attack.stream().map(eachde -> eachde.left).filter(eachd -> (player.getStat().pickRate >= 100 || Randomizer.nextInt(99) < player.getStat().pickRate)).forEachOrdered(eachd -> {
+            player.getMap().spawnMesoDrop(Math.min((int) Math.max(((double) eachd / (double) 20000) * (double) maxmeso, (double) 1), maxmeso), new Point((int) (mob.getTruePosition().getX() + Randomizer.nextInt(100) - 50), (int) (mob.getTruePosition().getY())), mob, player, false, (byte) 0);
+        });
     }
 
     private static double CalculateMaxWeaponDamagePerHit(final MapleCharacter player, final MapleMonster monster, final AttackInfo attack, final Skill theSkill, final MapleStatEffect attackEffect, double maximumDamageToMonster, final Integer CriticalDamagePercent) {
@@ -720,7 +668,7 @@ public class DamageParse {
             return 999999;
         }
 
-        List<Element> elements = new ArrayList<Element>();
+        List<Element> elements = new ArrayList<>();
         boolean defined = false;
         int CritPercent = CriticalDamagePercent;
         int PDRate = monster.getStats().getPDRate();
@@ -732,60 +680,52 @@ public class DamageParse {
             elements.add(theSkill.getElement());
             if (GameConstants.isBeginnerJob(theSkill.getId() / 10000)) {
                 switch (theSkill.getId() % 10000) {
-                    case 1000:
+                    case 1000 -> {
                         maximumDamageToMonster = 40;
                         defined = true;
-                        break;
-                    case 1020:
+                    }
+                    case 1020 -> {
                         maximumDamageToMonster = 1;
                         defined = true;
-                        break;
-                    case 1009:
+                    }
+                    case 1009 -> {
                         maximumDamageToMonster = (monster.getStats().isBoss() ? monster.getMobMaxHp() / 30 * 100 : monster.getMobMaxHp());
                         defined = true;
-                        break;
+                    }
                 }
             }
             switch (theSkill.getId()) {
-                case 1311005:
-                    PDRate = (monster.getStats().isBoss() ? PDRate : 0);
-                    break;
-                case 3221001:
-                case 33101001:
+                case 1311005 -> PDRate = (monster.getStats().isBoss() ? PDRate : 0);
+                case 3221001, 33101001 -> {
                     maximumDamageToMonster *= attackEffect.getMobCount();
                     defined = true;
-                    break;
-                case 3101005:
-                    defined = true; //can go past 500000
-                    break;
-                case 32001000:
-                case 32101000:
-                case 32111002:
-                case 32121002:
-                    maximumDamageToMonster *= 1.5;
-                    break;
-                case 3221007: //snipe
-                case 23121003:
-                case 1221009: //BLAST FK
-                case 4331003: //Owl Spirit
+                }
+                case 3101005 -> defined = true; //can go past 500000
+                case 32001000, 32101000, 32111002, 32121002 -> maximumDamageToMonster *= 1.5;
+                case 3221007, 23121003, 1221009, 4331003 -> {
+                    //Owl Spirit
                     if (!monster.getStats().isBoss()) {
                         maximumDamageToMonster = (monster.getMobMaxHp());
                         defined = true;
                     }
-                    break;
-                case 1221011://Heavens Hammer
-                case 21120006: //Combo Tempest
+                }
+                case 1221011, 21120006 -> {
+                    //Combo Tempest
                     maximumDamageToMonster = (monster.getStats().isBoss() ? 500000 : (monster.getHp() - 1));
                     defined = true;
-                    break;
-                case 3211006: //Sniper Strafe
+                }
+                case 3211006 -> {
+                    //Sniper Strafe
                     if (monster.getStatusSourceID(MonsterStatus.FREEZE) == 3211003) { //blizzard in effect
                         defined = true;
                         maximumDamageToMonster = 999999;
                     }
-                    break;
+                }
             }
-        }
+            //snipe
+            //BLAST FK
+            //Heavens Hammer
+                    }
         double elementalMaxDamagePerMonster = maximumDamageToMonster;
         if (player.getJob() == 311 || player.getJob() == 312 || player.getJob() == 321 || player.getJob() == 322) {
             //FK mortal blow
@@ -816,30 +756,15 @@ public class DamageParse {
                 int chargeSkillId = player.getBuffSource(MapleBuffStat.WK_CHARGE);
 
                 switch (chargeSkillId) {
-                    case 1211003:
-                    case 1211004:
-                        elements.add(Element.FIRE);
-                        break;
-                    case 1211005:
-                    case 1211006:
-                    case 21111005:
-                        elements.add(Element.ICE);
-                        break;
-                    case 1211007:
-                    case 1211008:
-                    case 15101006:
-                        elements.add(Element.LIGHTING);
-                        break;
-                    case 1221003:
-                    case 1221004:
-                    case 11111007:
-                        elements.add(Element.HOLY);
-                        break;
-                    case 12101005:
-                        //elements.clear(); //neutral
-                        break;
+                    case 1211003, 1211004 -> elements.add(Element.FIRE);
+                    case 1211005, 1211006, 21111005 -> elements.add(Element.ICE);
+                    case 1211007, 1211008, 15101006 -> elements.add(Element.LIGHTING);
+                    case 1221003, 1221004, 11111007 -> elements.add(Element.HOLY);
+                    case 12101005 -> {
+                    }
                 }
-            }
+                //elements.clear(); //neutral
+                            }
             if (player.getBuffedValue(MapleBuffStat.LIGHTNING_CHARGE) != null) {
                 elements.add(Element.LIGHTING);
             }
@@ -849,26 +774,15 @@ public class DamageParse {
             if (elements.size() > 0) {
                 double elementalEffect;
 
-                switch (attack.skill) {
-                    case 3211003:
-                    case 3111003: // inferno and blizzard
-                        elementalEffect = attackEffect.getX() / 100.0;
-                        break;
-                    default:
-                        elementalEffect = (0.5 / elements.size());
-                        break;
-                }
+                elementalEffect = switch (attack.skill) {
+                    case 3211003, 3111003 -> attackEffect.getX() / 100.0;
+                    default -> 0.5 / elements.size();
+                }; // inferno and blizzard
                 for (Element element : elements) {
                     switch (monster.getEffectiveness(element)) {
-                        case IMMUNE:
-                            elementalMaxDamagePerMonster = 1;
-                            break;
-                        case WEAK:
-                            elementalMaxDamagePerMonster *= (1.0 + elementalEffect + player.getStat().getElementBoost(element));
-                            break;
-                        case STRONG:
-                            elementalMaxDamagePerMonster *= (1.0 - elementalEffect - player.getStat().getElementBoost(element));
-                            break;
+                        case IMMUNE -> elementalMaxDamagePerMonster = 1;
+                        case WEAK -> elementalMaxDamagePerMonster *= (1.0 + elementalEffect + player.getStat().getElementBoost(element));
+                        case STRONG -> elementalMaxDamagePerMonster *= (1.0 - elementalEffect - player.getStat().getElementBoost(element));
                     }
                 }
             }
@@ -908,13 +822,11 @@ public class DamageParse {
         if (rate <= 1) {
             return attack; //lol
         }
-        for (AttackPair p : attack.allDamage) {
-            if (p.attack != null) {
-                for (Pair<Integer, Boolean> eachd : p.attack) {
-                    eachd.left /= rate; //too ex.
-                }
-            }
-        }
+        attack.allDamage.stream().filter(p -> (p.attack != null)).forEachOrdered(p -> {
+            p.attack.forEach(eachd -> {
+                eachd.left /= rate; //too ex.
+            });
+        });
         return attack;
     }
 
@@ -922,7 +834,7 @@ public class DamageParse {
         if (attack.skill != 4211006 && attack.skill != 3211003 && attack.skill != 4111004) { //blizz + shadow meso + m.e no crits
             final int CriticalRate = chr.getStat().passive_sharpeye_rate() + (effect == null ? 0 : effect.getCr());
             final boolean shadow = chr.getBuffedValue(MapleBuffStat.SHADOWPARTNER) != null && (type == 1 || type == 2);
-            final List<Integer> damages = new ArrayList<Integer>(), damage = new ArrayList<Integer>();
+            final List<Integer> damages = new ArrayList<>(), damage = new ArrayList<>();
             int hit, toCrit, mid_att;
             for (AttackPair p : attack.allDamage) {
                 if (p.attack != null) {
@@ -1002,7 +914,7 @@ public class DamageParse {
 
         int damage, oid;
         List<Pair<Integer, Boolean>> allDamageNumbers;
-        ret.allDamage = new ArrayList<AttackPair>();
+        ret.allDamage = new ArrayList<>();
 
         for (int i = 0; i < ret.targets; i++) {
             oid = lea.readInt();
@@ -1014,15 +926,15 @@ public class DamageParse {
             //}
             lea.skip(14); // [1] Always 6?, [3] unk, [4] Pos1, [4] Pos2, [2] seems to change randomly for some attack
 
-            allDamageNumbers = new ArrayList<Pair<Integer, Boolean>>();
+            allDamageNumbers = new ArrayList<>();
 
             for (int j = 0; j < ret.hits; j++) {
                 damage = lea.readInt();
-                allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false));
+                allDamageNumbers.add(new Pair<>(damage, false));
                 //System.out.println("parseDmgMa Damage: " + damage);
             }
             lea.skip(4); // CRC of monster [Wz Editing]
-            ret.allDamage.add(new AttackPair(Integer.valueOf(oid), allDamageNumbers));
+            ret.allDamage.add(new AttackPair(oid, allDamageNumbers));
         }
         ret.position = lea.readPos();
 
@@ -1071,7 +983,7 @@ public class DamageParse {
         ret.lastAttackTickCount = lea.readInt(); // Ticks
         lea.skip(4); //0
 
-        ret.allDamage = new ArrayList<AttackPair>();
+        ret.allDamage = new ArrayList<>();
 
         if (ret.skill == 4211006) { // Meso Explosion
             return parseMesoExplosion(lea, ret, chr);
@@ -1089,15 +1001,15 @@ public class DamageParse {
             //}
             lea.skip(14); // [1] Always 6?, [3] unk, [4] Pos1, [4] Pos2, [2] seems to change randomly for some attack
 
-            allDamageNumbers = new ArrayList<Pair<Integer, Boolean>>();
+            allDamageNumbers = new ArrayList<>();
 
             for (int j = 0; j < ret.hits; j++) {
                 damage = lea.readInt();
                 //System.out.println("parseDmgM Damage: " + damage);
-                allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false));
+                allDamageNumbers.add(new Pair<>(damage, false));
             }
             lea.skip(4); // CRC of monster [Wz Editing]
-            ret.allDamage.add(new AttackPair(Integer.valueOf(oid), allDamageNumbers));
+            ret.allDamage.add(new AttackPair(oid, allDamageNumbers));
         }
         ret.position = lea.readPos();
         return ret;
@@ -1119,18 +1031,13 @@ public class DamageParse {
         lea.skip(10); // ORDER [2] byte on bigbang [4] bytes on v.79, [4] bytes on v.80, [1] byte on v.82
 
         switch (ret.skill) {
-            case 3121004: // Hurricane
-            case 3221001: // Pierce
-            case 5221004: // Rapidfire
-            case 13111002: // Cygnus Hurricane
-            case 33121009:
-            case 35001001:
-            case 35101009:
-            case 23121000:
-            case 5311002:
+            case 3121004, 3221001, 5221004, 13111002, 33121009, 35001001, 35101009, 23121000, 5311002 -> // Hurricane
                 lea.skip(4); // extra 4 bytes
-                break;
         }
+        // Hurricane
+        // Pierce
+        // Rapidfire
+        // Cygnus Hurricane
         ret.charge = -1;
         ret.unk = lea.readByte();
         ret.display = lea.readUShort();
@@ -1151,7 +1058,7 @@ public class DamageParse {
 
         int damage, oid;
         List<Pair<Integer, Boolean>> allDamageNumbers;
-        ret.allDamage = new ArrayList<AttackPair>();
+        ret.allDamage = new ArrayList<>();
 
         for (int i = 0; i < ret.targets; i++) {
             oid = lea.readInt();
@@ -1163,16 +1070,16 @@ public class DamageParse {
             //}
             lea.skip(14); // [1] Always 6?, [3] unk, [4] Pos1, [4] Pos2, [2] seems to change randomly for some attack
 
-            allDamageNumbers = new ArrayList<Pair<Integer, Boolean>>();
+            allDamageNumbers = new ArrayList<>();
             for (int j = 0; j < ret.hits; j++) {
                 damage = lea.readInt();
-                allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false));
+                allDamageNumbers.add(new Pair<>(damage, false));
                 //System.out.println("parseDmgR Hit " + j + " from " + i + " to mobid " + oid + ", damage " + damage);
             }
             lea.skip(4); // CRC of monster [Wz Editing]
 //	    System.out.println(tools.HexTool.toString(lea.read(4)));
 
-            ret.allDamage.add(new AttackPair(Integer.valueOf(oid), allDamageNumbers));
+            ret.allDamage.add(new AttackPair(oid, allDamageNumbers));
         }
         lea.skip(4);
         ret.position = lea.readPos();
@@ -1187,7 +1094,7 @@ public class DamageParse {
             lea.skip(4);
             bullets = lea.readByte();
             for (int j = 0; j < bullets; j++) {
-                ret.allDamage.add(new AttackPair(Integer.valueOf(lea.readInt()), null));
+                ret.allDamage.add(new AttackPair(lea.readInt(), null));
                 lea.skip(1);
             }
             lea.skip(2); // 8F 02
@@ -1206,18 +1113,18 @@ public class DamageParse {
             //}
             lea.skip(12);
             bullets = lea.readByte();
-            allDamageNumbers = new ArrayList<Pair<Integer, Boolean>>();
+            allDamageNumbers = new ArrayList<>();
             for (int j = 0; j < bullets; j++) {
-                allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(lea.readInt()), false)); //m.e. never crits
+                allDamageNumbers.add(new Pair<>(lea.readInt(), false)); //m.e. never crits
             }
-            ret.allDamage.add(new AttackPair(Integer.valueOf(oid), allDamageNumbers));
+            ret.allDamage.add(new AttackPair(oid, allDamageNumbers));
             lea.skip(4); // C3 8F 41 94, 51 04 5B 01
         }
         lea.skip(4);
         bullets = lea.readByte();
 
         for (int j = 0; j < bullets; j++) {
-            ret.allDamage.add(new AttackPair(Integer.valueOf(lea.readInt()), null));
+            ret.allDamage.add(new AttackPair(lea.readInt(), null));
             lea.skip(2);
         }
         // 8F 02/ 63 02

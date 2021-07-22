@@ -113,19 +113,17 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
     public static void reloadLoggedIPs() {
         // IPLoggingLock.writeLock().lock();
         // try {
-        for (FileWriter fw : logIPMap.values()) {
-            if (fw != null) {
-                try {
-                    fw.write("=== Closing Log ===");
-                    fw.write(nl);
-                    fw.flush(); // Just in case.
-                    fw.close();
-                } catch (IOException ex) {
-                    System.out.println("Error closing Packet Log.");
-                    System.out.println(ex);
-                }
+        logIPMap.values().stream().filter(fw -> (fw != null)).forEachOrdered(fw -> {
+            try {
+                fw.write("=== Closing Log ===");
+                fw.write(nl);
+                fw.flush(); // Just in case.
+                fw.close();
+            } catch (IOException ex) {
+                System.out.println("Error closing Packet Log.");
+                System.out.println(ex);
             }
-        }
+        });
         logIPMap.clear();
         try {
             if (!loggedIPs.exists()) {
@@ -386,7 +384,7 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 return;
             }
         }
-        tracker.put(address, new Pair<Long, Byte>(System.currentTimeMillis(), count));
+        tracker.put(address, new Pair<>(System.currentTimeMillis(), count));
         // End of IP checking.
         String IP = address.substring(address.indexOf('/') + 1, address.length());
         if (channel > -1) {
@@ -552,12 +550,12 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 }
                 try {
                     if (c.getPlayer() != null && c.isMonitored() && !blocked.contains(recv)) {
-                        FileWriter fw = new FileWriter(new File("MonitorLogs/" + c.getPlayer().getName() + "_log.txt"),
-                                true);
-                        fw.write(String.valueOf(recv) + " (" + Integer.toHexString(header_num) + ") Handled: \r\n"
-                                + slea.toString() + "\r\n");
-                        fw.flush();
-                        fw.close();
+                        try (FileWriter fw = new FileWriter(new File("MonitorLogs/" + c.getPlayer().getName() + "_log.txt"),
+                                true)) {
+                            fw.write(String.valueOf(recv) + " (" + Integer.toHexString(header_num) + ") Handled: \r\n"
+                                    + slea.toString() + "\r\n");
+                            fw.flush();
+                        }
                     }
                     // no login packets
                     if (Log_Packets && !blocked.contains(recv) && !sBlocked.contains(recv) && (cs || channel > -1)) {
@@ -579,21 +577,16 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                         fw.write(nl);
                         fw.flush();
                     }
-                } catch (NegativeArraySizeException e) {
+                } catch (NegativeArraySizeException | ArrayIndexOutOfBoundsException e) {
                     // swallow, no one cares
                     if (!ServerConstants.Use_Fixed_IV) {
                         FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
                         FileoutputUtil.log(FileoutputUtil.PacketEx_Log,
                                 "Packet: " + header_num + "\n" + slea.toString(true));
                     }
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    // swallow, no one cares
-                    if (!ServerConstants.Use_Fixed_IV) {
-                        FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
-                        FileoutputUtil.log(FileoutputUtil.PacketEx_Log,
-                                "Packet: " + header_num + "\n" + slea.toString(true));
-                    }
-                } catch (Exception e) {
+                }
+                // swallow, no one cares
+                 catch (Exception e) {
                     FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
                     FileoutputUtil.log(FileoutputUtil.PacketEx_Log,
                             "Packet: " + header_num + "\n" + slea.toString(true));
@@ -697,13 +690,13 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 }
                 short type = slea.readShort();
                 String type_str = "Unknown?!";
-                if (type == 0x01) {
-                    type_str = "SendBackupPacket";
-                } else if (type == 0x02) {
-                    type_str = "Crash Report";
-                } else if (type == 0x03) {
-                    type_str = "Exception";
+            switch (type) {
+                case 0x01 -> type_str = "SendBackupPacket";
+                case 0x02 -> type_str = "Crash Report";
+                case 0x03 -> type_str = "Exception";
+                default -> {
                 }
+            }
                 int unk = slea.readInt();
                 if (unk == 0) { // i don't wanna log error code 0 stuffs, (usually some bounceback to login)
                     return;
@@ -713,6 +706,8 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 FileoutputUtil.log("ErrorCodes.rtf", "Client sent crashing packet: Type: " + type_str + "; Error code: "
                         + unk + "; Length: " + data_length + "; Packet: " + slea.toString());
                 break;
+
+
             case ENABLE_SPECIAL_CREATION:
                 c.getSession().write(LoginPacket.enableSpecialCreation(c.getAccID(), true));
                 break;
