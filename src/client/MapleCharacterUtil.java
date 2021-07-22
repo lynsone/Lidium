@@ -25,11 +25,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Connection;
-import tools.Pair;
 import tools.Triple;
 import java.util.regex.Pattern;
 
 import database.DatabaseConnection;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 
 public class MapleCharacterUtil {
 
@@ -37,10 +38,7 @@ public class MapleCharacterUtil {
     private static final Pattern petPattern = Pattern.compile("[a-zA-Z0-9]{4,12}");
 
     public static final boolean canCreateChar(final String name, final boolean gm) {
-	if (getIdByName(name) != -1 || !isEligibleCharName(name, gm)) {
-	    return false;
-	}
-        return true;
+        return !(getIdByName(name) != -1 || !isEligibleCharName(name, gm));
     }
 	
     public static final boolean isEligibleCharName(final String name, final boolean gm) {
@@ -54,7 +52,7 @@ public class MapleCharacterUtil {
             return false;
         }
         for (String z : GameConstants.RESERVED) {
-            if (name.indexOf(z) != -1) {
+            if (name.contains(z)) {
                 return false;
             }
         }
@@ -64,7 +62,7 @@ public class MapleCharacterUtil {
     public static final boolean canChangePetName(final String name) {
         if (petPattern.matcher(name).matches()) {
             for (String z : GameConstants.RESERVED) {
-                if (name.indexOf(z) != -1) {
+                if (name.contains(z)) {
                     return false;
                 }
             }
@@ -85,18 +83,17 @@ public class MapleCharacterUtil {
     public static final int getIdByName(final String name) {
         Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT id FROM characters WHERE name = ?");
-            ps.setString(1, name);
-            final ResultSet rs = ps.executeQuery();
-
-            if (!rs.next()) {
-                rs.close();
-                ps.close();
-                return -1;
+            final int id;
+            try (PreparedStatement ps = con.prepareStatement("SELECT id FROM characters WHERE name = ?")) {
+                ps.setString(1, name);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        rs.close();
+                        ps.close();
+                        return -1;
+                    }   id = rs.getInt("id");
+                }
             }
-            final int id = rs.getInt("id");
-            rs.close();
-            ps.close();
 
             return id;
         } catch (SQLException e) {
@@ -115,34 +112,33 @@ public class MapleCharacterUtil {
         try {
             PreparedStatement ps = con.prepareStatement("SELECT * from accounts where id = ?");
             ps.setInt(1, accid);
-            final ResultSet rs = ps.executeQuery();
-
-            if (!rs.next()) {
-                rs.close();
-                ps.close();
-                return -1;
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    rs.close();
+                    ps.close();
+                    return -1;
+                }
+                String secondPassword = rs.getString("2ndpassword");
+                final String salt2 = rs.getString("salt2");
+                if (secondPassword != null && salt2 != null) {
+                    secondPassword = LoginCrypto.rand_r(secondPassword);
+                } else if (secondPassword == null && salt2 == null) {
+                    rs.close();
+                    ps.close();
+                    return 0;
+                }
+                if (!check_ifPasswordEquals(secondPassword, password, salt2)) {
+                    rs.close();
+                    ps.close();
+                    return 1;
+                }
             }
-            String secondPassword = rs.getString("2ndpassword");
-            final String salt2 = rs.getString("salt2");
-            if (secondPassword != null && salt2 != null) {
-                secondPassword = LoginCrypto.rand_r(secondPassword);
-            } else if (secondPassword == null && salt2 == null) {
-                rs.close();
-                ps.close();
-                return 0;
-            }
-            if (!check_ifPasswordEquals(secondPassword, password, salt2)) {
-                rs.close();
-                ps.close();
-                return 1;
-            }
-            rs.close();
             ps.close();
 
             String SHA1hashedsecond;
             try {
                 SHA1hashedsecond = LoginCryptoLegacy.encodeSHA1(newpassword);
-            } catch (Exception e) {
+            } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
                 return -2;
             }
             ps = con.prepareStatement("UPDATE accounts set 2ndpassword = ?, salt2 = ? where id = ?");
@@ -162,7 +158,7 @@ public class MapleCharacterUtil {
         }
     }
 
-    private static final boolean check_ifPasswordEquals(final String passhash, final String pwd, final String salt) {
+    private static boolean check_ifPasswordEquals(final String passhash, final String pwd, final String salt) {
         // Check if the passwords are correct here. :B
         if (LoginCryptoLegacy.isLegacyPassword(passhash) && LoginCryptoLegacy.checkPassword(pwd, passhash)) {
             // Check if a password upgrade is needed.
@@ -180,45 +176,45 @@ public class MapleCharacterUtil {
         try {
 
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM characters WHERE name = ? AND world = ?");
-            ps.setString(1, name);
-            ps.setInt(2, world);
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
-                rs.close();
-                ps.close();
-                return null;
+            Triple<Integer, Integer, Integer> id;
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM characters WHERE name = ? AND world = ?")) {
+                ps.setString(1, name);
+                ps.setInt(2, world);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        rs.close();
+                        ps.close();
+                        return null;
+                    }   id = new Triple<Integer, Integer, Integer>(rs.getInt("id"), rs.getInt("accountid"), rs.getInt("gender"));
+                }
             }
-            Triple<Integer, Integer, Integer> id = new Triple<Integer, Integer, Integer>(rs.getInt("id"), rs.getInt("accountid"), rs.getInt("gender"));
-            rs.close();
-            ps.close();
             return id;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            System.err.println(e);
         }
         return null;
     }
 
     public static void setNXCodeUsed(String name, String code) throws SQLException {
         Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement("UPDATE nxcode SET `user` = ?, `valid` = 0 WHERE code = ?");
-        ps.setString(1, name);
-        ps.setString(2, code);
-        ps.execute();
-        ps.close();
+        try (PreparedStatement ps = con.prepareStatement("UPDATE nxcode SET `user` = ?, `valid` = 0 WHERE code = ?")) {
+            ps.setString(1, name);
+            ps.setString(2, code);
+            ps.execute();
+        }
     }
 
     public static void sendNote(String to, String name, String msg, int fame) {
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("INSERT INTO notes (`to`, `from`, `message`, `timestamp`, `gift`) VALUES (?, ?, ?, ?, ?)");
-            ps.setString(1, to);
-            ps.setString(2, name);
-            ps.setString(3, msg);
-            ps.setLong(4, System.currentTimeMillis());
-            ps.setInt(5, fame);
-            ps.executeUpdate();
-            ps.close();
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO notes (`to`, `from`, `message`, `timestamp`, `gift`) VALUES (?, ?, ?, ?, ?)")) {
+                ps.setString(1, to);
+                ps.setString(2, name);
+                ps.setString(3, msg);
+                ps.setLong(4, System.currentTimeMillis());
+                ps.setInt(5, fame);
+                ps.executeUpdate();
+            }
         } catch (SQLException e) {
             System.err.println("Unable to send note" + e);
         }
@@ -227,14 +223,14 @@ public class MapleCharacterUtil {
     public static Triple<Boolean, Integer, Integer> getNXCodeInfo(String code) throws SQLException {
 	Triple<Boolean, Integer, Integer> ret = null;
         Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement("SELECT `valid`, `type`, `item` FROM nxcode WHERE code LIKE ?");
-        ps.setString(1, code);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            ret = new Triple<Boolean, Integer, Integer>(rs.getInt("valid") > 0, rs.getInt("type"), rs.getInt("item"));
+        try (PreparedStatement ps = con.prepareStatement("SELECT `valid`, `type`, `item` FROM nxcode WHERE code LIKE ?")) {
+            ps.setString(1, code);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    ret = new Triple<>(rs.getInt("valid") > 0, rs.getInt("type"), rs.getInt("item"));
+                }
+            }
         }
-        rs.close();
-        ps.close();
         return ret;
     }
 }

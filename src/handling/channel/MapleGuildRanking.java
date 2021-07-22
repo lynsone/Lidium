@@ -60,20 +60,19 @@ public class MapleGuildRanking {
         ranks.clear();
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM guilds ORDER BY `GP` DESC LIMIT 50");
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                final GuildRankingInfo rank = new GuildRankingInfo(rs.getString("name"), rs.getInt("GP"),
-                        rs.getInt("logo"), rs.getInt("logoColor"), rs.getInt("logoBG"), rs.getInt("logoBGColor"));
-
-                ranks.add(rank);
+            ResultSet rs;
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM guilds ORDER BY `GP` DESC LIMIT 50")) {
+                rs = ps.executeQuery();
+                while (rs.next()) {
+                    final GuildRankingInfo rank = new GuildRankingInfo(rs.getString("name"), rs.getInt("GP"),
+                            rs.getInt("logo"), rs.getInt("logoColor"), rs.getInt("logoBG"), rs.getInt("logoBGColor"));
+                    
+                    ranks.add(rank);
+                }
             }
-            ps.close();
             rs.close();
         } catch (SQLException e) {
-            System.err.println("Error handling guildRanking");
-            e.printStackTrace();
+            System.err.println("Error handling guildRanking... " + e);
         }
     }
 

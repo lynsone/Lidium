@@ -83,202 +83,131 @@ public class Skill {
             ret.pullTarget = MapleDataTool.getInt("pullTarget", inf, 0) > 0;
         }
         final MapleData effect = data.getChildByPath("effect");
-        if (skillType == 2) {
-            isBuff = true;
-        } else if (skillType == 3) { //final attack
-            ret.animation = new ArrayList<Integer>();
-            ret.animation.add(0);
-            isBuff = effect != null;
-        } else {
-            MapleData action_ = data.getChildByPath("action");
-            final MapleData hit = data.getChildByPath("hit");
-            final MapleData ball = data.getChildByPath("ball");
-
-            boolean action = false;
-            if (action_ == null) {
-                if (data.getChildByPath("prepare/action") != null) {
-                    action_ = data.getChildByPath("prepare/action");
-                    action = true;
-                }
+        switch (skillType) {
+            case 2 -> isBuff = true;
+            case 3 -> {
+                //final attack
+                ret.animation = new ArrayList<>();
+                ret.animation.add(0);
+                isBuff = effect != null;
             }
-            isBuff = effect != null && hit == null && ball == null;
-            if (action_ != null) {
-                String d = null;
-                if (action) { //prepare
-                    d = MapleDataTool.getString(action_, null);
-                } else {
-                    d = MapleDataTool.getString("0", action_, null);
-                }
-                if (d != null) {
-                    isBuff |= d.equals("alert2");
-                    final MapleData dd = delayData.getChildByPath(d);
-                    if (dd != null) {
-                        for (MapleData del : dd) {
-                            ret.delay += Math.abs(MapleDataTool.getInt("delay", del, 0));
-                        }
-                        if (ret.delay > 30) { //then, faster(2) = (10+2)/16 which is basically 3/4
-                            ret.delay = (int) Math.round(ret.delay * 11.0 / 16.0); //fastest(1) lolol
-                            ret.delay -= (ret.delay % 30); //round to 30ms
-                        }
+            default -> {
+                MapleData action_ = data.getChildByPath("action");
+                final MapleData hit = data.getChildByPath("hit");
+                final MapleData ball = data.getChildByPath("ball");
+                boolean action = false;
+                if (action_ == null) {
+                    if (data.getChildByPath("prepare/action") != null) {
+                        action_ = data.getChildByPath("prepare/action");
+                        action = true;
                     }
-                    if (SkillFactory.getDelay(d) != null) { //this should return true always
-                        ret.animation = new ArrayList<Integer>();
-                        ret.animation.add(SkillFactory.getDelay(d));
-                        if (!action) {
-                            for (MapleData ddc : action_) {
-                                if (!MapleDataTool.getString(ddc, d).equals(d)) {
-                                    String c = MapleDataTool.getString(ddc);
-                                    if (SkillFactory.getDelay(c) != null) {
-                                        ret.animation.add(SkillFactory.getDelay(c));
+                }
+                isBuff = effect != null && hit == null && ball == null;
+                if (action_ != null) {
+                    String d = null;
+                    if (action) { //prepare
+                        d = MapleDataTool.getString(action_, null);
+                    } else {
+                        d = MapleDataTool.getString("0", action_, null);
+                    }
+                    if (d != null) {
+                        isBuff |= d.equals("alert2");
+                        final MapleData dd = delayData.getChildByPath(d);
+                        if (dd != null) {
+                            for (MapleData del : dd) {
+                                ret.delay += Math.abs(MapleDataTool.getInt("delay", del, 0));
+                            }
+                            if (ret.delay > 30) { //then, faster(2) = (10+2)/16 which is basically 3/4
+                                ret.delay = (int) Math.round(ret.delay * 11.0 / 16.0); //fastest(1) lolol
+                                ret.delay -= (ret.delay % 30); //round to 30ms
+                            }
+                        }
+                        if (SkillFactory.getDelay(d) != null) { //this should return true always
+                            ret.animation = new ArrayList<>();
+                            ret.animation.add(SkillFactory.getDelay(d));
+                            if (!action) {
+                                for (MapleData ddc : action_) {
+                                    if (!MapleDataTool.getString(ddc, d).equals(d)) {
+                                        String c = MapleDataTool.getString(ddc);
+                                        if (SkillFactory.getDelay(c) != null) {
+                                            ret.animation.add(SkillFactory.getDelay(c));
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
-            switch (id) {
-                case 2301002: // heal is alert2 but not overtime...
-                case 2111003: // poison mist
-                case 12111005: // Flame Gear
-                case 22161003:
-                case 32121006:
-                case 11076:
-                case 2111002: // explosion
-                case 4211001: // chakra
-                case 2121001: // Big bang
-                case 2221001: // Big bang
-                case 2321001: // Big bang
-                case 1076:
-                    isBuff = false;
-                    break;
-                case 1004: // monster riding
-                case 10001004:
-                case 20001004:
-                case 20011004:
-                case 80001000:
-                case 1026:
-                case 10001026:
-                case 20001026:
-                case 20011026:
-                case 20021026:
-                case 30001026:
-                case 30011026:
-                case 93:
-                case 10000093:
-                case 20000093:
-                case 20010093:
-                case 20020093:
-                case 30000093:
-                case 30010093:
-                case 9101004: // hide is a buff -.- atleast for us o.o"
-                case 1111002: // combo
-                case 4211003: // pickpocket
-                case 4111001: // mesoup
-                case 15111002: // Super Transformation
-                case 5111005: // Transformation
-                case 5121003: // Super Transformation
-                case 13111005: // Alabtross
-                case 21000000: // Aran Combo
-                case 21101003: // Body Pressure
-                case 5211001: // Pirate octopus summon
-                case 5211002:
-                case 5220002: // wrath of the octopi
-                case 5001005: //dash
-                case 15001003:
-                case 5211006: //homing beacon
-                case 5220011: //bullseye
-                case 5110001: //energy charge
-                case 15100004:
-                case 5121009: //speed infusion
-                case 15111005:
-
-                case 22121001: //element reset
-                case 22131001: //magic shield
-                case 22141002: //magic booster
-                case 2311006: //magic booster
-                case 22151002: //killer wing
-                case 22151003: //magic resist
-                case 22161002: //imprint
-                case 22171000: //maple warrior
-                case 22171004: //hero will
-                case 22181000: //onyx blessing
-                case 22181004:
-                case 22161004:
-                case 22181003: //soul stone
+                switch (id) {
+                    case 2301002, 2111003, 12111005, 22161003, 32121006, 11076, 2111002, 4211001, 2121001, 2221001, 2321001, 1076 -> // heal is alert2 but not overtime...
+                        isBuff = false;
+                    case 1004, 10001004, 20001004, 20011004, 80001000, 1026, 10001026, 20001026, 20011026, 20021026, 30001026, 30011026, 93, 10000093, 20000093, 20010093, 20020093, 30000093, 30010093, 9101004, 1111002, 4211003, 4111001, 15111002, 5111005, 5121003, 13111005, 21000000, 21101003, 5211001, 5211002, 5220002, 5001005, 15001003, 5211006, 5220011, 5110001, 15100004, 5121009, 15111005, 22121001, 22131001, 22141002, 2311006, 22151002, 22151003, 22161002, 22171000, 22171004, 22181000, 22181004, 22161004, 22181003, 4331003, 15101006, 15111006, 4321000, 1320009, 35120000, 35001002, 9001004, 4341002, 32001003, 32120000, 32111012, 32110000, 32101003, 32120001, 35101007, 35121006, 35001001, 35101009, 35121005, 35121013, 35111004, 33111003, 1211009, 1111007, 1311007, 32121003, 5111007, 5211007, 5311005, 5320007, 35111013, 32111006, 5120011, 5220012, 1220013, 33101006, 32110007, 32110008, 32110009, 32111005, 31121005, 35121003, 35121009, 35121010, 35111005, 35111001, 35111010, 35111009, 35111011, 35111002, 35101005, 3120006, 3220005, 2121009, 2120010, 2221009, 2220010, 2321010, 2320011, 5321003, 5321004, 80001089, 24101005, 24121009, 24121008 -> // poison mist
+                        // maple warrior
+                        isBuff = true;
+                }
+                // heal is alert2 but not overtime...
+                // poison mist
+                // Flame Gear
+                // explosion
+                // chakra
+                // Big bang
+                // Big bang
+                // Big bang
+                // monster riding
+                // hide is a buff -.- atleast for us o.o"
+                // combo
+                // pickpocket
+                // mesoup
+                // Super Transformation
+                // Transformation
+                // Super Transformation
+                // Alabtross
+                // Aran Combo
+                // Body Pressure
+                // Pirate octopus summon
+                // wrath of the octopi
+                //dash
+                //homing beacon
+                //bullseye
+                //energy charge
+                //speed infusion
+                //element reset
+                //magic shield
+                //magic booster
+                //magic booster
+                //killer wing
+                //magic resist
+                //imprint
+                //maple warrior
+                //hero will
+                //onyx blessing
+                //soul stone
                 //case 22121000:
                 //case 22141003:
                 //case 22151001:
                 //case 22161002:
-                case 4331003: //owl spirit
-                case 15101006: //spark
-                case 15111006: //spark
-                case 4321000: //tornado spin
-                case 1320009: //beholder's buff.. passive
-                case 35120000:
-                case 35001002: //TEMP. mech
-                case 9001004: // hide
-                case 4341002:
-
-                case 32001003: //dark aura
-                case 32120000:
-                case 32111012: //blue aura
-                case 32110000:
-                case 32101003: //yellow aura
-                case 32120001:
-                case 35101007: //perfect armor
-                case 35121006: //satellite safety
-                case 35001001: //flame
-                case 35101009:
-                case 35121005: //missile
-                case 35121013:
-                case 35111004: //siege
-                case 33111003: //puppet ?
-                case 1211009:
-                case 1111007:
-                case 1311007: //magic,armor,atk crash
-                case 32121003: //twister
-                case 5111007:
-                case 5211007:
-                case 5311005:
-                case 5320007:
-                case 35111013: //dice
-                case 32111006:
-                case 5120011:
-                case 5220012:
-                case 1220013:
-                case 33101006: //jaguar oshi
-                case 32110007:
-                case 32110008:
-                case 32110009:
-                case 32111005:
-                case 31121005:		
-                case 35121003:
-                case 35121009:
-                case 35121010:
-                case 35111005:
-                case 35111001:
-                case 35111010:
-                case 35111009:
-                case 35111011:
-                case 35111002:
-                case 35101005:
-                case 3120006:
-                case 3220005:
-                case 2121009:
-                case 2120010:
-                case 2221009:
-                case 2220010:
-                case 2321010:
-                case 2320011:
-                case 5321003:
-                case 5321004:
-                case 80001089:				
-				case 24101005: // booster
-				case 24121009: // hero's will
-				case 24121008: // maple warrior
-                    isBuff = true;
-                    break;
+                //owl spirit
+                //spark
+                //spark
+                //tornado spin
+                //beholder's buff.. passive
+                //TEMP. mech
+                // hide
+                //dark aura
+                //blue aura
+                //yellow aura
+                //perfect armor
+                //satellite safety
+                //flame
+                //missile
+                //siege
+                //puppet ?
+                //magic,armor,atk crash
+                //twister
+                //dice
+                //jaguar oshi
+                // booster
+                // hero's will
             }
         }
         ret.chargeskill = data.getChildByPath("keydown") != null;
@@ -300,16 +229,16 @@ public class Skill {
         }
         final MapleData level2 = data.getChildByPath("PVPcommon");
         if (level2 != null) {
-            ret.pvpEffects = new ArrayList<MapleStatEffect>();
+            ret.pvpEffects = new ArrayList<>();
             for (int i = 1; i <= ret.trueMax; i++) {
                 ret.pvpEffects.add(MapleStatEffect.loadSkillEffectFromData(level2, id, isBuff, i, "x"));
             }
         }
         final MapleData reqDataRoot = data.getChildByPath("req");
         if (reqDataRoot != null) {
-            for (final MapleData reqData : reqDataRoot.getChildren()) {
-                ret.requiredSkill.add(new Pair<Integer, Byte>(Integer.parseInt(reqData.getName()), (byte) MapleDataTool.getInt(reqData, 1)));
-            }
+            reqDataRoot.getChildren().forEach(reqData -> {
+                ret.requiredSkill.add(new Pair<>(Integer.parseInt(reqData.getName()), (byte) MapleDataTool.getInt(reqData, 1)));
+            });
         }
         ret.animationTime = 0;
         if (effect != null) {
