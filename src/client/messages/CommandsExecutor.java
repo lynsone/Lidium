@@ -234,6 +234,7 @@ public class CommandsExecutor {
         addCommand("say", 1, SayCommand.class);
         addCommand("search", 1, SearchCommand.class);
         addCommand("tempban", 1, TempBanCommand.class);
+        addCommand("warpto", 1, WarpToCommand.class);
         //addCommand("", 1, Command.class);
         //addCommand(new String[]{"song", "music"}, 1, .class);
         commandsNameDesc.add(levelCommandsCursor);
