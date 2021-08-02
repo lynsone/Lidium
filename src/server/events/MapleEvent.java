@@ -177,8 +177,7 @@ public abstract class MapleEvent {
     }
 
     public static final void mapLoad(final MapleCharacter chr, final int channel) {
-        /*
-        for (MapleEventType t : MapleEventType.values()) {
+        for (var t : MapleEventType.values()) {
         final MapleEvent e = ChannelServer.getInstance(channel).getEvent(t);
         if(e == null) return;
         if (e.isRunning) {
@@ -190,13 +189,11 @@ public abstract class MapleEvent {
         e.onMapLoad(chr);
         if (i == 0) { // first map
         e.incrementPlayerCount();
+                }
+            }
         }
-        }
-        }
-        }
-        }
-         */
-        // screw this entire thing for now. who even uses hardcoded events?
+    }
+    }
     }
 
     public static final void onStartEvent(final MapleCharacter chr) {
