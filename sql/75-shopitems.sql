@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS `shopitems`;
+
+
 CREATE TABLE IF NOT EXISTS `shopitems` (
   `shopitemid` int(10) UNSIGNED NOT NULL,
   `shopid` int(10) UNSIGNED NOT NULL DEFAULT 0,
@@ -16,6 +19,10 @@ CREATE TABLE IF NOT EXISTS `shopitems` (
 --
 -- shopitems data.
 --
+
+ALTER TABLE `shopitems`
+  ADD PRIMARY KEY (`shopitemid`),
+  ADD KEY `shopid` (`shopid`);
 
 INSERT IGNORE INTO `shopitems` (`shopitemid`, `shopid`, `itemid`, `price`, `position`, `reqitem`, `reqitemq`, `rank`, `buyable`, `category`, `minLevel`, `expiration`) VALUES
 (1, 1, 1302000, 50, 1, 0, 0, 0, 0, 0, 0, 0),
@@ -2561,6 +2568,4 @@ INSERT IGNORE INTO shopitems (`shopid`, `itemid`, `price`, `position`) values --
 (1337, 2040710, 1, 103),
 (1337, 2040711, 1, 104);
 
-ALTER TABLE `shopitems`
-  ADD PRIMARY KEY (`shopitemid`),
-  ADD KEY `shopid` (`shopid`);
+
