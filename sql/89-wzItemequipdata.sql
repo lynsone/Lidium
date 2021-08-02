@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS `wz_itemequipdata`;
+
 CREATE TABLE IF NOT EXISTS `wz_itemequipdata` (
   `id` int(11) NOT NULL,
   `itemid` int(11) NOT NULL,
@@ -6,6 +8,8 @@ CREATE TABLE IF NOT EXISTS `wz_itemequipdata` (
   `value` int(11) NOT NULL DEFAULT 0
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
+ALTER TABLE `wz_itemequipdata`
+  ADD PRIMARY KEY (`id`);
 --
 -- Wz item equip data data.
 --
@@ -53055,6 +53059,3 @@ INSERT IGNORE INTO `wz_itemequipdata` (`id`, `itemid`, `itemLevel`, `key`, `valu
 (106018, 1702345, -1, 'cash', 1),
 (106019, 1702348, -1, 'cash', 1),
 (106020, 1702360, -1, 'cash', 1);
-
-ALTER TABLE `wz_itemequipdata`
-  ADD PRIMARY KEY (`id`);
