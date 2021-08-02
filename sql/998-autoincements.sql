@@ -95,9 +95,10 @@ ALTER TABLE `drop_data_global`
 --
 -- AUTO_INCREMENT de la tabla `dueyequipment`
 --
+/* what's going on here?
 ALTER TABLE `drop_data_level`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1000;
-
+*/
 --
 -- AUTO_INCREMENT de la tabla `dueyequipment`
 --
