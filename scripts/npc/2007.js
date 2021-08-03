@@ -1,10 +1,12 @@
 var status = -1;
 
+/*
 function start() {
     cm.warp(104000000);
     cm.sendPlayerToNpc("Ah, finally here!");
     cm.dispose();
 }
+*/
 
 /*
 function action(mode, type, selection) {
