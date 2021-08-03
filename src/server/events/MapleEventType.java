@@ -29,8 +29,7 @@ public enum MapleEventType {
     //OlaOla(new int[]{109030001, 109030002, 109030003}),
     OxQuiz(new int[]{109020001}),
     //Survival(new int[]{809040000, 809040100}),
-    Snowball(new int[]{109060000}),
-    Boats(new int[]{104020111}); //just using one
+    Snowball(new int[]{109060000});
     public int[] mapids;
 
     private MapleEventType(int[] mapids) {
