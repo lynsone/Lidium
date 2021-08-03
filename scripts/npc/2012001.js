@@ -39,7 +39,8 @@ function action(mode, type, selection) {
             return;
         }
         cm.gainItem(TICKET_TO_ELLINIA, -1);
-        cm.warp(200000112, 0);
+        //cm.warp(200000112, 0);
+		cm.warp(101000300, 0);
         cm.dispose();
     }
 }

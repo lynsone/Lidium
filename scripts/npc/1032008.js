@@ -23,7 +23,8 @@ function action(mode, type, selection) {
     }
     var em = cm.getEventManager("Boats");
     if (em.getProperty("entry") == "true") {
-        cm.warp(104020111);
+        //cm.warp(104020111);
+		cm.warp(200000100);
         cm.gainItem(TICKET_TO_ORBIS, -1);
         cm.dispose();
     } else {

@@ -39,7 +39,8 @@ function action(mode, type, selection) {
         }
     } else if (status == 1) {
         cm.gainItem(TICKET_TO_LUDI, -1);
-        cm.warp(200000122, 0);
+        //cm.warp(200000122, 0);
+		cm.warp(220000110, 0);
         cm.dispose();
     }
 }
