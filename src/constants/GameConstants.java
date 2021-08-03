@@ -3023,13 +3023,8 @@ public class GameConstants {
     }
 
     public static int getCustomSpawnID(int summoner, int def) {
-        switch (summoner) {
-            case 9400589:
-            case 9400748: //MV
-                return 9400706; //jr
-            default:
-                return def;
-        }
+        //do nothing
+        return -1;
     }
 
     public static boolean canForfeit(int questid) {
