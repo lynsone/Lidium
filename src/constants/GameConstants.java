@@ -347,12 +347,13 @@ public class GameConstants {
             job -= (job / 1000) * 1000;
         }
         job /= 100;
-        if (job == 4) { // For some reason dagger/ claw is 8.. IDK
-            job *= 2;
-        } else if (job == 3) {
-            job += 1;
-        } else if (job == 5) {
-            job += 11; // 16
+        switch (job) {
+            case 4 -> // For some reason dagger/ claw is 8.. IDK
+                job *= 2;
+            case 3 -> job += 1;
+            case 5 -> job += 11; // 16
+            default -> {
+            }
         }
         return job;
     }
@@ -426,49 +427,71 @@ public class GameConstants {
         int cat = itemId / 10000;
         cat = cat % 100;
         switch (cat) { // 39, 50, 51 ??
-            case 30:
+            case 30 -> {
                 return MapleWeaponType.SWORD1H;
-            case 31:
+            }
+            case 31 -> {
                 return MapleWeaponType.AXE1H;
-            case 32:
+            }
+            case 32 -> {
                 return MapleWeaponType.BLUNT1H;
-            case 33:
+            }
+            case 33 -> {
                 return MapleWeaponType.DAGGER;
-            case 34:
+            }
+            case 34 -> {
                 return MapleWeaponType.KATARA;
-            case 35:
+            }
+            case 35 -> {
                 return MapleWeaponType.MAGIC_ARROW; // can be magic arrow or cards
-            case 36:
+            }
+            case 36 -> {
                 return MapleWeaponType.CANE;
-            case 37:
+            }
+            case 37 -> {
                 return MapleWeaponType.WAND;
-            case 38:
+            }
+            case 38 -> {
                 return MapleWeaponType.STAFF;
-            case 40:
+            }
+            case 40 -> {
                 return MapleWeaponType.SWORD2H;
-            case 41:
+            }
+            case 41 -> {
                 return MapleWeaponType.AXE2H;
-            case 42:
+            }
+            case 42 -> {
                 return MapleWeaponType.BLUNT2H;
-            case 43:
+            }
+            case 43 -> {
                 return MapleWeaponType.SPEAR;
-            case 44:
+            }
+            case 44 -> {
                 return MapleWeaponType.POLE_ARM;
-            case 45:
+            }
+            case 45 -> {
                 return MapleWeaponType.BOW;
-            case 46:
+            }
+            case 46 -> {
                 return MapleWeaponType.CROSSBOW;
-            case 47:
+            }
+            case 47 -> {
                 return MapleWeaponType.CLAW;
-            case 48:
+            }
+            case 48 -> {
                 return MapleWeaponType.KNUCKLE;
-            case 49:
+            }
+            case 49 -> {
                 return MapleWeaponType.GUN;
-            case 52:
+            }
+            case 52 -> {
                 return MapleWeaponType.DUAL_BOW;
-            case 53:
+            }
+            case 53 -> {
                 return MapleWeaponType.CANNON;
+            }
         }
+        // 39, 50, 51 ??
         //System.out.println("Found new Weapon: " + cat + ", ItemId: " + itemId);
         return MapleWeaponType.NOT_A_WEAPON;
     }
@@ -523,23 +546,10 @@ public class GameConstants {
     }
 
     public static boolean isTwoHanded(final int itemId) {
-        switch (getWeaponType(itemId)) {
-            case AXE2H:
-            case GUN:
-            case KNUCKLE:
-            case BLUNT2H:
-            case BOW:
-            case CLAW:
-            case CROSSBOW:
-            case POLE_ARM:
-            case SPEAR:
-            case SWORD2H:
-            case CANNON:
-                //case DUAL_BOW: //magic arrow
-                return true;
-            default:
-                return false;
-        }
+        return switch (getWeaponType(itemId)) {
+            case AXE2H, GUN, KNUCKLE, BLUNT2H, BOW, CLAW, CROSSBOW, POLE_ARM, SPEAR, SWORD2H, CANNON -> true;
+            default -> false;
+        }; //case DUAL_BOW: //magic arrow
     }
 
     public static boolean isTownScroll(final int id) {
@@ -627,25 +637,25 @@ public class GameConstants {
 
     public static int getAttackDelay(final int id, final Skill skill) {
         switch (id) { // Assume it's faster(2)
-            case 3121004: // Storm of Arrow
-            case 23121000:
-            case 33121009:
-            case 13111002: // Storm of Arrow
-            case 5221004: // Rapidfire
-            case 5201006: // Recoil shot/ Back stab shot
-            case 35121005:
-            case 35111004:
-            case 35121013:
+            case 3121004, 23121000, 33121009, 13111002, 5221004, 5201006, 35121005, 35111004, 35121013 -> // Storm of Arrow
+            {
                 return 40; //reason being you can spam with final assaulter
-            case 14111005:
-            case 4121007:
-            case 5221007:
+            }
+            case 14111005, 4121007, 5221007 -> {
                 return 99; //skip duh chek
-            case 0: // Normal Attack, TODO delay for each weapon type
-            case 31001006: //Demon slayer normal attack
-            case 31001007: //Demon slayer normal attack 2    
+            }
+            case 0, 31001006, 31001007 -> {
+                //Demon slayer normal attack 2    
                 return 570;
+            }
         }
+        // Assume it's faster(2)
+        // Storm of Arrow
+        // Storm of Arrow
+        // Rapidfire
+        // Recoil shot/ Back stab shot
+        // Normal Attack, TODO delay for each weapon type
+        //Demon slayer normal attack
         if (skill != null && skill.getSkillType() == 3) {
             return 0; //final attack
         }
@@ -1998,38 +2008,12 @@ public class GameConstants {
 
     public static MonsterStatus getStatFromWeapon(final int itemid) {
         switch (itemid) {
-            case 1302109:
-            case 1312041:
-            case 1322067:
-            case 1332083:
-            case 1372048:
-            case 1382064:
-            case 1402055:
-            case 1412037:
-            case 1422041:
-            case 1432052:
-            case 1442073:
-            case 1452064:
-            case 1462058:
-            case 1472079:
-            case 1482035:
+            case 1302109, 1312041, 1322067, 1332083, 1372048, 1382064, 1402055, 1412037, 1422041, 1432052, 1442073, 1452064, 1462058, 1472079, 1482035 -> {
                 return MonsterStatus.DARKNESS;
-            case 1302108:
-            case 1312040:
-            case 1322066:
-            case 1332082:
-            case 1372047:
-            case 1382063:
-            case 1402054:
-            case 1412036:
-            case 1422040:
-            case 1432051:
-            case 1442072:
-            case 1452063:
-            case 1462057:
-            case 1472078:
-            case 1482036:
+            }
+            case 1302108, 1312040, 1322066, 1332082, 1372047, 1382063, 1402054, 1412036, 1422040, 1432051, 1442072, 1452063, 1462057, 1472078, 1482036 -> {
                 return MonsterStatus.SPEED;
+            }
         }
         return null;
     }
@@ -2234,117 +2218,116 @@ public class GameConstants {
 
     public static int getLinkedMountItem(final int sourceid) {
         switch (sourceid % 1000) {
-            case 1:
-            case 24:
-            case 25:
+            case 1, 24, 25 -> {
                 return 1018;
-            case 2:
-            case 26:
+            }
+            case 2, 26 -> {
                 return 1019;
-            case 3:
+            }
+            case 3 -> {
                 return 1025;
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-            case 8:
+            }
+            case 4, 5, 6, 7, 8 -> {
                 return (sourceid % 1000) + 1023;
-            case 9:
-            case 10:
-            case 11:
+            }
+            case 9, 10, 11 -> {
                 return (sourceid % 1000) + 1024;
-            case 12:
+            }
+            case 12 -> {
                 return 1042;
-            case 13:
+            }
+            case 13 -> {
                 return 1044;
-            case 14:
+            }
+            case 14 -> {
                 return 1049;
-            case 15:
-            case 16:
-            case 17:
+            }
+            case 15, 16, 17 -> {
                 return (sourceid % 1000) + 1036;
-            case 18:
-            case 19:
+            }
+            case 18, 19 -> {
                 return (sourceid % 1000) + 1045;
-            case 20:
+            }
+            case 20 -> {
                 return 1072;
-            case 21:
+            }
+            case 21 -> {
                 return 1084;
-            case 22:
+            }
+            case 22 -> {
                 return 1089;
-            case 23:
+            }
+            case 23 -> {
                 return 1106;
-            case 29:
+            }
+            case 29 -> {
                 return 1151;
-            case 30:
-            case 50:
+            }
+            case 30, 50 -> {
                 return 1054;
-            case 31:
-            case 51:
+            }
+            case 31, 51 -> {
                 return 1069;
-            case 32:
+            }
+            case 32 -> {
                 return 1138;
-            case 45:
-            case 46:
-            case 47:
-            case 48:
-            case 49:
+            }
+            case 45, 46, 47, 48, 49 -> {
                 return (sourceid % 1000) + 1009;
-            case 52:
+            }
+            case 52 -> {
                 return 1070;
-            case 53:
+            }
+            case 53 -> {
                 return 1071;
-            case 54:
+            }
+            case 54 -> {
                 return 1096;
-            case 55:
+            }
+            case 55 -> {
                 return 1101;
-            case 56:
+            }
+            case 56 -> {
                 return 1102;
-            case 58:
+            }
+            case 58 -> {
                 return 1118;
-            case 59:
+            }
+            case 59 -> {
                 return 1121;
-            case 60:
+            }
+            case 60 -> {
                 return 1122;
-            case 61:
+            }
+            case 61 -> {
                 return 1129;
-            case 62:
+            }
+            case 62 -> {
                 return 1139;
-            case 63:
-            case 64:
-            case 65:
-            case 66:
-            case 67:
-            case 68:
-            case 69:
-            case 70:
-            case 71:
-            case 72:
-            case 73:
-            case 74:
-            case 75:
-            case 76:
-            case 77:
-            case 78:
+            }
+            case 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78 -> {
                 return (sourceid % 1000) + 1080;
-            case 85:
-            case 86:
-            case 87:
+            }
+            case 85, 86, 87 -> {
                 return (sourceid % 1000) + 928;
-            case 88:
+            }
+            case 88 -> {
                 return 1065;
-
-            case 27:
+            }
+            case 27 -> {
                 return 1932049; //airplane
-            case 28:
+            }
+            case 28 -> {
                 return 1932050; //airplane
-            case 114:
+            }
+            case 114 -> {
                 return 1932099; //bunny buddy
-            //33 = hot air
-            //37 = bjorn
-            //38 = speedy chariot
-            //57 = law officer
-            //they all have in wz so its ok
+                //33 = hot air
+                //37 = bjorn
+                //38 = speedy chariot
+                //57 = law officer
+                //they all have in wz so its ok
+            }
         }
         return 0;
     }
@@ -2662,18 +2645,13 @@ public class GameConstants {
         //first line is always the best
         //but, sometimes it is possible to get second/third line as well
         //may seem like big chance, but it's not as it grabs random potential ID anyway
-        switch (newstate) {
-            case 20:
-                return (i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 40000 : potentialID >= 30000 && potentialID < 60004); // xml say so
-            case 19:
-                return (i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 30000 : potentialID >= 20000 && potentialID < 30000);
-            case 18:
-                return (i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 20000 && potentialID < 30000 : potentialID >= 10000 && potentialID < 20000);
-            case 17:
-                return (i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 10000 && potentialID < 20000 : potentialID < 10000);
-            default:
-                return false;
-        }
+        return switch (newstate) {
+            case 20 -> i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 40000 : potentialID >= 30000 && potentialID < 60004;
+            case 19 -> i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 30000 : potentialID >= 20000 && potentialID < 30000;
+            case 18 -> i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 20000 && potentialID < 30000 : potentialID >= 10000 && potentialID < 20000;
+            case 17 -> i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 10000 && potentialID < 20000 : potentialID < 10000;
+            default -> false;
+        }; // xml say so
     }
 
     public static boolean optionTypeFits(final int optionType, final int itemId) {
