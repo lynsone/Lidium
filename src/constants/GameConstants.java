@@ -31,7 +31,6 @@ import client.status.MonsterStatus;
 import handling.channel.ChannelServer;
 import java.awt.Point;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -237,13 +236,9 @@ public class GameConstants {
 
     public static boolean isRecoveryIncSkill(final int id) {
         switch (id) {
-            case 1110000:
-            case 2000000:
-            case 1210000:
-            case 11110000:
-            case 4100002:
-            case 4200001:
+            case 1110000, 2000000, 1210000, 11110000, 4100002, 4200001 -> {
                 return true;
+            }
         }
         return false;
     }
@@ -254,69 +249,63 @@ public class GameConstants {
 
     public static int getLinkedAranSkill(final int id) {
         switch (id) {
-            case 21110007:
-            case 21110008:
+            case 21110007, 21110008 -> {
                 return 21110002;
-            case 21120009:
-            case 21120010:
+            }
+            case 21120009, 21120010 -> {
                 return 21120002;
-            case 4321001:
+            }
+            case 4321001 -> {
                 return 4321000;
-            case 33101006:
-            case 33101007:
+            }
+            case 33101006, 33101007 -> {
                 return 33101005;
-            case 33101008:
+            }
+            case 33101008 -> {
                 return 33101004;
-            case 35101009:
-            case 35101010:
+            }
+            case 35101009, 35101010 -> {
                 return 35100008;
-            case 35111009:
-            case 35111010:
+            }
+            case 35111009, 35111010 -> {
                 return 35111001;
-            case 35121013:
+            }
+            case 35121013 -> {
                 return 35111004;
-            case 35121011:
+            }
+            case 35121011 -> {
                 return 35121009;
-            case 32001007:
-            case 32001008:
-            case 32001009:
-            case 32001010:
-            case 32001011:
+            }
+            case 32001007, 32001008, 32001009, 32001010, 32001011 -> {
                 return 32001001;
-            case 5300007:
+            }
+            case 5300007 -> {
                 return 5301001;
-            case 5320011:
+            }
+            case 5320011 -> {
                 return 5321004;
-            case 23101007:
+            }
+            case 23101007 -> {
                 return 23101001;
-            case 23111010:
-            case 23111009:
+            }
+            case 23111010, 23111009 -> {
                 return 23111008;
-            case 31001006:
-            case 31001007:
-            case 31001008:
+            }
+            case 31001006, 31001007, 31001008 -> {
                 return 31000004;
-            case 30010183:
-            case 30010184:
-            case 30010186:
+            }
+            case 30010183, 30010184, 30010186 -> {
                 return 30010110;
+            }
         }
         return id;
     }
 
     public final static boolean isForceIncrease(int skillid) {
         switch (skillid) {
-            case 31000004:
-            case 31001006:
-            case 31001007:
-            case 31001008:
-
-            case 30010166:
-            case 30011167:
-            case 30011168:
-            case 30011169:
-            case 30011170:
+            case 31000004, 31001006, 31001007, 31001008, 30010166, 30011167, 30011168, 30011169, 30011170 -> {
                 return true;
+            }
         }
         return false;
     }
@@ -331,29 +320,24 @@ public class GameConstants {
 
     public static boolean isElementAmp_Skill(final int skill) {
         switch (skill) {
-            case 2110001:
-            case 2210001:
-            case 12110001:
-            case 22150000:
+            case 2110001, 2210001, 12110001, 22150000 -> {
                 return true;
+            }
         }
         return false;
     }
 
     public static int getMPEaterForJob(final int job) {
         switch (job) {
-            case 210:
-            case 211:
-            case 212:
+            case 210, 211, 212 -> {
                 return 2100000;
-            case 220:
-            case 221:
-            case 222:
+            }
+            case 220, 221, 222 -> {
                 return 2200000;
-            case 230:
-            case 231:
-            case 232:
+            }
+            case 230, 231, 232 -> {
                 return 2300000;
+            }
         }
         return 2100000; // Default, in case GM
     }
@@ -528,15 +512,13 @@ public class GameConstants {
 
     public static boolean isSpecialScroll(final int scrollId) {
         switch (scrollId) {
-            case 2040727: // Spikes on show
-            case 2041058: // Cape for Cold protection
-            case 2530000:
-            case 2530001:
-            case 2531000:
-            case 5063000:
-            case 5064000:
+            case 2040727, 2041058, 2530000, 2530001, 2531000, 5063000, 5064000 -> // Spikes on show
+            {
                 return true;
+            }
         }
+        // Spikes on show
+        // Cape for Cold protection
         return false;
     }
 
@@ -598,28 +580,9 @@ public class GameConstants {
 
     public static boolean isOtherGem(final int id) {
         switch (id) {
-            case 4001174:
-            case 4001175:
-            case 4001176:
-            case 4001177:
-            case 4001178:
-            case 4001179:
-            case 4001180:
-            case 4001181:
-            case 4001182:
-            case 4001183:
-            case 4001184:
-            case 4001185:
-            case 4001186:
-            case 4031980:
-            case 2041058:
-            case 2040727:
-            case 1032062:
-            case 4032334:
-            case 4032312:
-            case 1142156:
-            case 1142157:
+            case 4001174, 4001175, 4001176, 4001177, 4001178, 4001179, 4001180, 4001181, 4001182, 4001183, 4001184, 4001185, 4001186, 4031980, 2041058, 2040727, 1032062, 4032334, 4032312, 1142156, 1142157 -> {
                 return true; //mostly quest items
+            }
         }
         return false;
     }
@@ -1946,115 +1909,18 @@ public class GameConstants {
     };
 
     public static boolean isReverseItem(int itemId) {
-        switch (itemId) {
-            case 1002790:
-            case 1002791:
-            case 1002792:
-            case 1002793:
-            case 1002794:
-            case 1082239:
-            case 1082240:
-            case 1082241:
-            case 1082242:
-            case 1082243:
-            case 1052160:
-            case 1052161:
-            case 1052162:
-            case 1052163:
-            case 1052164:
-            case 1072361:
-            case 1072362:
-            case 1072363:
-            case 1072364:
-            case 1072365:
-
-            case 1302086:
-            case 1312038:
-            case 1322061:
-            case 1332075:
-            case 1332076:
-            case 1372045:
-            case 1382059:
-            case 1402047:
-            case 1412034:
-            case 1422038:
-            case 1432049:
-            case 1442067:
-            case 1452059:
-            case 1462051:
-            case 1472071:
-            case 1482024:
-            case 1492025:
-
-            case 1342012:
-            case 1942002:
-            case 1952002:
-            case 1962002:
-            case 1972002:
-            case 1532016:
-            case 1522017:
-                return true;
-            default:
-                return false;
-        }
+        return switch (itemId) {
+            case 1002790, 1002791, 1002792, 1002793, 1002794, 1082239, 1082240, 1082241, 1082242, 1082243, 1052160, 1052161, 1052162, 1052163, 1052164, 1072361, 1072362, 1072363, 1072364, 1072365, 1302086, 1312038, 1322061, 1332075, 1332076, 1372045, 1382059, 1402047, 1412034, 1422038, 1432049, 1442067, 1452059, 1462051, 1472071, 1482024, 1492025, 1342012, 1942002, 1952002, 1962002, 1972002, 1532016, 1522017 -> true;
+            default -> false;
+        };
     }
 
     public static boolean isTimelessItem(int itemId) {
-        switch (itemId) {
-            case 1032031: //shield earring, but technically
-            case 1102172:
-            case 1002776:
-            case 1002777:
-            case 1002778:
-            case 1002779:
-            case 1002780:
-            case 1082234:
-            case 1082235:
-            case 1082236:
-            case 1082237:
-            case 1082238:
-            case 1052155:
-            case 1052156:
-            case 1052157:
-            case 1052158:
-            case 1052159:
-            case 1072355:
-            case 1072356:
-            case 1072357:
-            case 1072358:
-            case 1072359:
-            case 1092057:
-            case 1092058:
-            case 1092059:
-
-            case 1122011:
-            case 1122012:
-
-            case 1302081:
-            case 1312037:
-            case 1322060:
-            case 1332073:
-            case 1332074:
-            case 1372044:
-            case 1382057:
-            case 1402046:
-            case 1412033:
-            case 1422037:
-            case 1432047:
-            case 1442063:
-            case 1452057:
-            case 1462050:
-            case 1472068:
-            case 1482023:
-            case 1492023:
-            case 1342011:
-            case 1532015:
-            case 1522016:
-                //raven.
-                return true;
-            default:
-                return false;
-        }
+        return switch (itemId) {
+            case 1032031, 1102172, 1002776, 1002777, 1002778, 1002779, 1002780, 1082234, 1082235, 1082236, 1082237, 1082238, 1052155, 1052156, 1052157, 1052158, 1052159, 1072355, 1072356, 1072357, 1072358, 1072359, 1092057, 1092058, 1092059, 1122011, 1122012, 1302081, 1312037, 1322060, 1332073, 1332074, 1372044, 1382057, 1402046, 1412033, 1422037, 1432047, 1442063, 1452057, 1462050, 1472068, 1482023, 1492023, 1342011, 1532015, 1522016 -> true;
+            default -> false;
+        }; //shield earring, but technically
+        //raven.
     }
 
     public static boolean isRing(int itemId) {
@@ -2068,56 +1934,44 @@ public class GameConstants {
 
     public static boolean isMarriageRing(int itemId) {
         switch (itemId) {
-            case 1112803:
-            case 1112806:
-            case 1112807:
-            case 1112809:
+            case 1112803, 1112806, 1112807, 1112809 -> {
                 return true;
+            }
         }
         return false;
     }
 
     public static boolean isFriendshipRing(int itemId) {
         switch (itemId) {
-            case 1112800:
-            case 1112801:
-            case 1112802:
-            case 1112810: //new
-            case 1112811: //new, doesnt work in friendship?
-            case 1112812: //new, im ASSUMING it's friendship cuz of itemID, not sure.
-            case 1112816: //new, i'm also assuming
-            case 1112817:
-
-            case 1049000:
+            case 1112800, 1112801, 1112802, 1112810, 1112811, 1112812, 1112816, 1112817, 1049000 -> {
                 return true;
+            }
         }
+        //new
+        //new, doesnt work in friendship?
+        //new, im ASSUMING it's friendship cuz of itemID, not sure.
+        //new, i'm also assuming
         return false;
     }
 
     public static boolean isCrushRing(int itemId) {
         switch (itemId) {
-            case 1112001:
-            case 1112002:
-            case 1112003:
-            case 1112005: //new
-            case 1112006: //new
-            case 1112007:
-            case 1112012:
-            case 1112015: //new
-
-            case 1048000:
-            case 1048001:
-            case 1048002:
+            case 1112001, 1112002, 1112003, 1112005, 1112006, 1112007, 1112012, 1112015, 1048000, 1048001, 1048002 -> {
                 return true;
+            }
         }
+        //new
+        //new
+        //new
         return false;
     }
     public static int[] Equipments_Bonus = {1122017};
 
     public static int Equipment_Bonus_EXP(final int itemid) { // TODO : Add Time for more exp increase
         switch (itemid) {
-            case 1122017:
+            case 1122017 -> {
                 return 10;
+            }
         }
         return 0;
     }
@@ -2182,10 +2036,12 @@ public class GameConstants {
 
     public static int getXForStat(MonsterStatus stat) {
         switch (stat) {
-            case DARKNESS:
+            case DARKNESS -> {
                 return -70;
-            case SPEED:
+            }
+            case SPEED -> {
                 return -50;
+            }
         }
         return 0;
     }
@@ -2329,24 +2185,15 @@ public class GameConstants {
             return job - 2209;
         }
         switch (job) {
-            case 2310:
-            case 3110:
-            case 3210:
-            case 3310:
-            case 3510:
+            case 2310, 3110, 3210, 3310, 3510 -> {
                 return 1;
-            case 2311:
-            case 3111:
-            case 3211:
-            case 3311:
-            case 3511:
+            }
+            case 2311, 3111, 3211, 3311, 3511 -> {
                 return 2;
-            case 2312:
-            case 3112:
-            case 3212:
-            case 3312:
-            case 3512:
+            }
+            case 2312, 3112, 3212, 3312, 3512 -> {
                 return 3;
+            }
         }
         return 0;
     }
@@ -2504,28 +2351,38 @@ public class GameConstants {
 
     public static int getMountItem(final int sourceid, final MapleCharacter chr) {
         switch (sourceid) {
-            case 5221006:
+            case 5221006 -> {
                 return 1932000;
-            case 33001001: //temp.
+            }
+            case 33001001 -> {
+                //temp.
                 if (chr == null) {
                     return 1932015;
                 }
                 switch (chr.getIntNoRecord(JAGUAR)) {
-                    case 20:
+                    case 20 -> {
                         return 1932030;
-                    case 30:
+                }
+                    case 30 -> {
                         return 1932031;
-                    case 40:
+                }
+                    case 40 -> {
                         return 1932032;
-                    case 50:
+                }
+                    case 50 -> {
                         return 1932033;
-                    case 60:
+                }
+                    case 60 -> {
                         return 1932036;
                 }
+                }
                 return 1932015;
-            case 35001002:
-            case 35120000:
+            }
+            case 35001002, 35120000 -> {
                 return 1932016;
+                //case 30011109:
+                //	return 1932085;
+            }
             //case 30011109:
             //	return 1932085;
         }
@@ -2704,119 +2561,95 @@ public class GameConstants {
     }
 
     public static int getSuccessTablet(final int scrollId, final int level) {
-        if (scrollId % 1000 / 100 == 2) { //2047_2_00 = armor, 2047_3_00 = accessory
-            switch (level) {
-                case 0:
-                    return 70;
-                case 1:
-                    return 55;
-                case 2:
-                    return 43;
-                case 3:
-                    return 33;
-                case 4:
-                    return 26;
-                case 5:
-                    return 20;
-                case 6:
-                    return 16;
-                case 7:
-                    return 12;
-                case 8:
-                    return 10;
-                default:
-                    return 7;
+        switch (scrollId % 1000 / 100) {
+            case 2 -> {
+            //2047_2_00 = armor, 2047_3_00 = accessory
+            return switch (level) {
+                case 0 -> 70;
+                case 1 -> 55;
+                case 2 -> 43;
+                case 3 -> 33;
+                case 4 -> 26;
+                case 5 -> 20;
+                case 6 -> 16;
+                case 7 -> 12;
+                case 8 -> 10;
+                default -> 7;
+            };
             }
-        } else if (scrollId % 1000 / 100 == 3) {
-            switch (level) {
-                case 0:
-                    return 70;
-                case 1:
-                    return 35;
-                case 2:
-                    return 18;
-                case 3:
-                    return 12;
-                default:
-                    return 7;
+            case 3 -> {
+                return switch (level) {
+                    case 0 -> 70;
+                    case 1 -> 35;
+                    case 2 -> 18;
+                    case 3 -> 12;
+                    default -> 7;
+                };
             }
-        } else {
-            switch (level) {
-                case 0:
-                    return 70;
-                case 1:
-                    return 50; //-20
-                case 2:
-                    return 36; //-14
-                case 3:
-                    return 26; //-10
-                case 4:
-                    return 19; //-7
-                case 5:
-                    return 14; //-5
-                case 6:
-                    return 10; //-4
-                default:
-                    return 7;  //-3
+            default -> {
+                return switch (level) {
+                    case 0 -> 70;
+                    case 1 -> 50;
+                    case 2 -> 36;
+                    case 3 -> 26;
+                    case 4 -> 19;
+                    case 5 -> 14;
+                    case 6 -> 10;
+                    default -> 7;
+                }; //-20
+                //-14
+                //-10
+                //-7
+                //-5
+                //-4
+                //-3
             }
         }
     }
 
     public static int getCurseTablet(final int scrollId, final int level) {
-        if (scrollId % 1000 / 100 == 2) { //2047_2_00 = armor, 2047_3_00 = accessory
-            switch (level) {
-                case 0:
-                    return 10;
-                case 1:
-                    return 12;
-                case 2:
-                    return 16;
-                case 3:
-                    return 20;
-                case 4:
-                    return 26;
-                case 5:
-                    return 33;
-                case 6:
-                    return 43;
-                case 7:
-                    return 55;
-                case 8:
-                    return 70;
-                default:
-                    return 100;
+        switch (scrollId % 1000 / 100) {
+            case 2 -> {
+            //2047_2_00 = armor, 2047_3_00 = accessory
+            return switch (level) {
+                case 0 -> 10;
+                case 1 -> 12;
+                case 2 -> 16;
+                case 3 -> 20;
+                case 4 -> 26;
+                case 5 -> 33;
+                case 6 -> 43;
+                case 7 -> 55;
+                case 8 -> 70;
+                default -> 100;
+            };
             }
-        } else if (scrollId % 1000 / 100 == 3) {
-            switch (level) {
-                case 0:
-                    return 12;
-                case 1:
-                    return 18;
-                case 2:
-                    return 35;
-                case 3:
-                    return 70;
-                default:
-                    return 100;
+            case 3 -> {
+            return switch (level) {
+                case 0 -> 12;
+                case 1 -> 18;
+                case 2 -> 35;
+                case 3 -> 70;
+                default -> 100;
+            };
             }
-        } else {
-            switch (level) {
-                case 0:
-                    return 10;
-                case 1:
-                    return 14; //+4
-                case 2:
-                    return 19; //+5
-                case 3:
-                    return 26; //+7
-                case 4:
-                    return 36; //+10
-                case 5:
-                    return 50; //+14
-                case 6:
-                    return 70; //+20
-                default:
-                    return 100;  //+30
+            default -> {
+                return switch (level) {
+                    case 0 -> 10;
+                    case 1 -> 14;
+                    case 2 -> 19;
+                    case 3 -> 26;
+                    case 4 -> 36;
+                    case 5 -> 50;
+                    case 6 -> 70;
+                    default -> 100;
+                }; //+4
+                //+5
+                //+7
+                //+10
+                //+14
+                //+20
+                //+30
             }
         }
     }
@@ -2829,42 +2662,41 @@ public class GameConstants {
         //first line is always the best
         //but, sometimes it is possible to get second/third line as well
         //may seem like big chance, but it's not as it grabs random potential ID anyway
-        if (newstate == 20) {
-            return (i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 40000 : potentialID >= 30000 && potentialID < 60004); // xml say so
-        } else if (newstate == 19) {
-            return (i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 30000 : potentialID >= 20000 && potentialID < 30000);
-        } else if (newstate == 18) {
-            return (i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 20000 && potentialID < 30000 : potentialID >= 10000 && potentialID < 20000);
-        } else if (newstate == 17) {
-            return (i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 10000 && potentialID < 20000 : potentialID < 10000);
-        } else {
-            return false;
+        switch (newstate) {
+            case 20:
+                return (i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 40000 : potentialID >= 30000 && potentialID < 60004); // xml say so
+            case 19:
+                return (i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 30000 : potentialID >= 20000 && potentialID < 30000);
+            case 18:
+                return (i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 20000 && potentialID < 30000 : potentialID >= 10000 && potentialID < 20000);
+            case 17:
+                return (i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 10000 && potentialID < 20000 : potentialID < 10000);
+            default:
+                return false;
         }
     }
 
     public static boolean optionTypeFits(final int optionType, final int itemId) {
-        switch (optionType) {
-            case 10: // weapons
-                return isWeapon(itemId);
-            case 11: // all equipment except weapons
-                return !isWeapon(itemId);
-            case 20: // all armors
-                return !isAccessory(itemId) && !isWeapon(itemId);
-            case 40: // accessories
-                return isAccessory(itemId);
-            case 51: // hat
-                return itemId / 10000 == 100;
-            case 52: // top and overall
-                return itemId / 10000 == 104 || itemId / 10000 == 105;
-            case 53: // bottom and overall
-                return itemId / 10000 == 106 || itemId / 10000 == 105;
-            case 54: // glove
-                return itemId / 10000 == 108;
-            case 55: // shoe
-                return itemId / 10000 == 107;
-            default:
-                return true;
-        }
+        return switch (optionType) {
+            case 10 -> isWeapon(itemId);
+            case 11 -> !isWeapon(itemId);
+            case 20 -> !isAccessory(itemId) && !isWeapon(itemId);
+            case 40 -> isAccessory(itemId);
+            case 51 -> itemId / 10000 == 100;
+            case 52 -> itemId / 10000 == 104 || itemId / 10000 == 105;
+            case 53 -> itemId / 10000 == 106 || itemId / 10000 == 105;
+            case 54 -> itemId / 10000 == 108;
+            case 55 -> itemId / 10000 == 107;
+            default -> true;
+        }; // weapons
+        // all equipment except weapons
+        // all armors
+        // accessories
+        // hat
+        // top and overall
+        // bottom and overall
+        // glove
+        // shoe
     }
 
     public static int getNebuliteGrade(final int id) {
@@ -2886,23 +2718,18 @@ public class GameConstants {
     public static final boolean isMountItemAvailable(final int mountid, final int jobid) {
         if (jobid != 900 && mountid / 10000 == 190) {
             switch (mountid) {
-                case 1902000:
-                case 1902001:
-                case 1902002:
+                case 1902000, 1902001, 1902002 -> {
                     return isAdventurer(jobid);
-                case 1902005:
-                case 1902006:
-                case 1902007:
+                }
+                case 1902005, 1902006, 1902007 -> {
                     return isKOC(jobid);
-                case 1902015:
-                case 1902016:
-                case 1902017:
-                case 1902018:
+                }
+                case 1902015, 1902016, 1902017, 1902018 -> {
                     return isAran(jobid);
-                case 1902040:
-                case 1902041:
-                case 1902042:
+                }
+                case 1902040, 1902041, 1902042 -> {
                     return isEvan(jobid);
+                }
             }
 
             if (isResist(jobid)) {
@@ -2929,9 +2756,10 @@ public class GameConstants {
 
     public static boolean canHammer(final int itemId) {
         switch (itemId) {
-            case 1122000:
-            case 1122076: //ht, chaos ht
+            case 1122000, 1122076 -> {
+                //ht, chaos ht
                 return false;
+            }
         }
         if (!canScroll(itemId)) {
             return false;
@@ -2975,11 +2803,10 @@ public class GameConstants {
 
     public static String getCashBlockedMsg(final int id) {
         switch (id) {
-            case 5062000:
-            case 5050000:
-            case 5062001:
+            case 5062000, 5050000, 5062001 -> {
                 //cube
                 return "This item may only be purchased at the PlayerNPC in FM.";
+            }
         }
         return "This item is blocked from the Cash Shop.";
     }
@@ -3009,13 +2836,11 @@ public class GameConstants {
     }
 
     public static boolean isForceRespawn(int mapid) {
-        switch (mapid) {
-            case 103000800: //kerning PQ crocs
-            case 925100100: //crocs and stuff
-                return true;
-            default:
-                return mapid / 100000 == 9800 && (mapid % 10 == 1 || mapid % 1000 == 100);
-        }
+        return switch (mapid) {
+            case 103000800, 925100100 -> true;
+            default -> mapid / 100000 == 9800 && (mapid % 10 == 1 || mapid % 1000 == 100);
+        }; //kerning PQ crocs
+        //crocs and stuff
     }
 
     public static int getFishingTime(boolean vip, boolean gm) {
@@ -3028,15 +2853,10 @@ public class GameConstants {
     }
 
     public static boolean canForfeit(int questid) {
-        switch (questid) {
-            case 20000:
-            case 20010:
-            case 20015: //cygnus quests
-            case 20020:
-                return false;
-            default:
-                return true;
-        }
+        return switch (questid) {
+            case 20000, 20010, 20015, 20020 -> false;
+            default -> true;
+        }; //cygnus quests
     }
 
     public static double getAttackRange(MapleStatEffect def, int rangeInc) {
@@ -3065,11 +2885,12 @@ public class GameConstants {
 
     public static int getLowestPrice(int itemId) {
         switch (itemId) {
-            case 2340000: //ws
-            case 2531000:
-            case 2530000:
+            case 2340000, 2531000, 2530000 -> //ws
+            {
                 return 50000000;
+            }
         }
+        //ws
         return -1;
     }
 
@@ -3086,19 +2907,15 @@ public class GameConstants {
             return 0;
         }
         switch (itemId) {
-            case 2022459:
-            case 2860179:
-            case 2860193:
-            case 2860207:
+            case 2022459, 2860179, 2860193, 2860207 -> {
                 return 130;
-            case 2022460:
-            case 2022462:
-            case 2022730:
+            }
+            case 2022460, 2022462, 2022730 -> {
                 return 150;
-            case 2860181:
-            case 2860195:
-            case 2860209:
+            }
+            case 2860181, 2860195, 2860209 -> {
                 return 200;
+            }
         }
         if (itemId / 10000 == 286) { //familiars
             return 150;
@@ -3108,22 +2925,18 @@ public class GameConstants {
 
     public static short getSlotMax(int itemId) {
         switch (itemId) {
-            case 4030003:
-            case 4030004:
-            case 4030005:
+            case 4030003, 4030004, 4030005 -> {
                 return 1;
-            case 4001168:
-            case 4031306:
-            case 4031307:
-            case 3993000:
-            case 3993002:
-            case 3993003:
+            }
+            case 4001168, 4031306, 4031307, 3993000, 3993002, 3993003 -> {
                 return 100;
-            case 5220010:
-            case 5220013:
+            }
+            case 5220010, 5220013 -> {
                 return 1000;
-            case 5220020:
+            }
+            case 5220020 -> {
                 return 2000;
+            }
         }
         return 0;
     }
@@ -3138,47 +2951,57 @@ public class GameConstants {
 
     public static short getStat(int itemId, int def) {
         switch (itemId) {
-            case 1002419:
+            case 1002419 -> {
                 return 5;
-            case 1002959:
+            }
+            case 1002959 -> {
                 return 25;
-            case 1142002:
+            }
+            case 1142002 -> {
                 return 10;
-            case 1122121:
+            }
+            case 1122121 -> {
                 return 7;
+            }
         }
         return (short) def;
     }
 
     public static short getHpMp(int itemId, int def) {
         switch (itemId) {
-            case 1122121:
+            case 1122121 -> {
                 return 500;
-            case 1142002:
-            case 1002959:
+            }
+            case 1142002, 1002959 -> {
                 return 1000;
+            }
         }
         return (short) def;
     }
 
     public static short getATK(int itemId, int def) {
         switch (itemId) {
-            case 1122121:
+            case 1122121 -> {
                 return 3;
-            case 1002959:
+            }
+            case 1002959 -> {
                 return 4;
-            case 1142002:
+            }
+            case 1142002 -> {
                 return 9;
+            }
         }
         return (short) def;
     }
 
     public static short getDEF(int itemId, int def) {
         switch (itemId) {
-            case 1122121:
+            case 1122121 -> {
                 return 250;
-            case 1002959:
+            }
+            case 1002959 -> {
                 return 500;
+            }
         }
         return (short) def;
     }
@@ -3189,70 +3012,77 @@ public class GameConstants {
 
     public static int getPartyPlayHP(int mobID) {
         switch (mobID) {
-            case 4250000:
+            case 4250000 -> {
                 return 836000;
-            case 4250001:
+            }
+            case 4250001 -> {
                 return 924000;
-            case 5250000:
+            }
+            case 5250000 -> {
                 return 1100000;
-            case 5250001:
+            }
+            case 5250001 -> {
                 return 1276000;
-            case 5250002:
+            }
+            case 5250002 -> {
                 return 1452000;
+            }
 
-            case 9400661:
+            case 9400661 -> {
                 return 15000000;
-            case 9400660:
+            }
+            case 9400660 -> {
                 return 30000000;
-            case 9400659:
+            }
+            case 9400659 -> {
                 return 45000000;
-            case 9400658:
+            }
+            case 9400658 -> {
                 return 20000000;
+            }
         }
         return 0;
     }
 
     public static int getPartyPlayEXP(int mobID) {
         switch (mobID) {
-            case 4250000:
+            case 4250000 -> {
                 return 5770;
-            case 4250001:
+            }
+            case 4250001 -> {
                 return 6160;
-            case 5250000:
+            }
+            case 5250000 -> {
                 return 7100;
-            case 5250001:
+            }
+            case 5250001 -> {
                 return 7975;
-            case 5250002:
+            }
+            case 5250002 -> {
                 return 8800;
+            }
 
-            case 9400661:
+            case 9400661 -> {
                 return 40000;
-            case 9400660:
+            }
+            case 9400660 -> {
                 return 70000;
-            case 9400659:
+            }
+            case 9400659 -> {
                 return 90000;
-            case 9400658:
+            }
+            case 9400658 -> {
                 return 50000;
+            }
         }
         return 0;
     }
 
     public static int getPartyPlay(int mapId) {
         switch (mapId) {
-            case 300010000:
-            case 300010100:
-            case 300010200:
-            case 300010300:
-            case 300010400:
-            case 300020000:
-            case 300020100:
-            case 300020200:
-            case 300030000:
-
-            case 683070400:
-            case 683070401:
-            case 683070402:
+            case 300010000, 300010100, 300010200, 300010300, 300010400, 300020000, 300020100, 300020200, 300030000, 683070400, 683070401, 683070402 -> {
                 return 25;
+            }
         }
         return 0;
     }
@@ -3287,132 +3117,14 @@ public class GameConstants {
     public static void achievementRatio(MapleClient c) {
         //PQs not affected: Amoria, MV, CWK, English, Zakum, Horntail(?), Carnival, Ghost, Guild, LudiMaze, Elnath(?) 
         switch (c.getPlayer().getMapId()) {
-            case 240080600:
-            case 920010000:
-            case 930000000:
-            case 930000100:
-            case 910010000:
-            case 922010100:
-            case 910340100:
-            case 925100000:
-            case 926100000:
-            case 926110000:
-            case 921120005:
-            case 932000100:
-            case 923040100:
-            case 921160100:
-                c.getSession().write(CField.achievementRatio(0));
-                break;
-            case 930000200:
-            case 922010200:
-            case 922010300:
-            case 922010400:
-            case 922010401:
-            case 922010402:
-            case 922010403:
-            case 922010404:
-            case 922010405:
-            case 925100100:
-            case 926100001:
-            case 926110001:
-            case 921160200:
-                c.getSession().write(CField.achievementRatio(10));
-                break;
-            case 930000300:
-            case 910340200:
-            case 922010500:
-            case 922010600:
-            case 925100200:
-            case 925100201:
-            case 925100202:
-            case 926100100:
-            case 926110100:
-            case 921120100:
-            case 932000200:
-            case 923040200:
-            case 921160300:
-            case 921160310:
-            case 921160320:
-            case 921160330:
-            case 921160340:
-            case 921160350:
-                c.getSession().write(CField.achievementRatio(25));
-                break;
-            case 930000400:
-            case 926100200:
-            case 926110200:
-            case 926100201:
-            case 926110201:
-            case 926100202:
-            case 926110202:
-            case 921160400:
-                c.getSession().write(CField.achievementRatio(35));
-                break;
-            case 910340300:
-            case 922010700:
-            case 930000500:
-            case 925100300:
-            case 925100301:
-            case 925100302:
-            case 926100203:
-            case 926110203:
-            case 921120200:
-            case 932000300:
-            case 240080700:
-            case 240080800:
-            case 923040300:
-            case 921160500:
-                c.getSession().write(CField.achievementRatio(50));
-                break;
-            case 910340400:
-            case 922010800:
-            case 930000600:
-            case 925100400:
-            case 926100300:
-            case 926110300:
-            case 926100301:
-            case 926110301:
-            case 926100302:
-            case 926110302:
-            case 926100303:
-            case 926110303:
-            case 926100304:
-            case 926110304:
-            case 921120300:
-            case 932000400:
-            case 923040400:
-            case 921160600:
-                c.getSession().write(CField.achievementRatio(70));
-                break;
-            case 910340500:
-            case 922010900:
-            case 930000700:
-            case 920010800:
-            case 925100500:
-            case 926100400:
-            case 926110400:
-            case 926100401:
-            case 926110401:
-            case 921120400:
-            case 921160700:
-                c.getSession().write(CField.achievementRatio(85));
-                break;
-            case 922011000:
-            case 922011100:
-            case 930000800:
-            case 920011000:
-            case 920011100:
-            case 920011200:
-            case 920011300:
-            case 925100600:
-            case 926100500:
-            case 926110500:
-            case 926100600:
-            case 926110600:
-            case 921120500:
-            case 921120600:
-                c.getSession().write(CField.achievementRatio(100));
-                break;
+            case 240080600, 920010000, 930000000, 930000100, 910010000, 922010100, 910340100, 925100000, 926100000, 926110000, 921120005, 932000100, 923040100, 921160100 -> c.getSession().write(CField.achievementRatio(0));
+            case 930000200, 922010200, 922010300, 922010400, 922010401, 922010402, 922010403, 922010404, 922010405, 925100100, 926100001, 926110001, 921160200 -> c.getSession().write(CField.achievementRatio(10));
+            case 930000300, 910340200, 922010500, 922010600, 925100200, 925100201, 925100202, 926100100, 926110100, 921120100, 932000200, 923040200, 921160300, 921160310, 921160320, 921160330, 921160340, 921160350 -> c.getSession().write(CField.achievementRatio(25));
+            case 930000400, 926100200, 926110200, 926100201, 926110201, 926100202, 926110202, 921160400 -> c.getSession().write(CField.achievementRatio(35));
+            case 910340300, 922010700, 930000500, 925100300, 925100301, 925100302, 926100203, 926110203, 921120200, 932000300, 240080700, 240080800, 923040300, 921160500 -> c.getSession().write(CField.achievementRatio(50));
+            case 910340400, 922010800, 930000600, 925100400, 926100300, 926110300, 926100301, 926110301, 926100302, 926110302, 926100303, 926110303, 926100304, 926110304, 921120300, 932000400, 923040400, 921160600 -> c.getSession().write(CField.achievementRatio(70));
+            case 910340500, 922010900, 930000700, 920010800, 925100500, 926100400, 926110400, 926100401, 926110401, 921120400, 921160700 -> c.getSession().write(CField.achievementRatio(85));
+            case 922011000, 922011100, 930000800, 920011000, 920011100, 920011200, 920011300, 925100600, 926100500, 926110500, 926100600, 926110600, 921120500, 921120600 -> c.getSession().write(CField.achievementRatio(100));
         }
     }
 
@@ -3426,46 +3138,46 @@ public class GameConstants {
 
     public static int getRewardPot(int itemid, int closeness) {
         switch (itemid) {
-            case 2440000:
+            case 2440000 -> {
                 switch (closeness / 10) {
-                    case 0:
-                    case 1:
-                    case 2:
+                    case 0, 1, 2 -> {
                         return 2028041 + (closeness / 10);
-                    case 3:
-                    case 4:
-                    case 5:
+                }
+                    case 3, 4, 5 -> {
                         return 2028046 + (closeness / 10);
-                    case 6:
-                    case 7:
-                    case 8:
+                }
+                    case 6, 7, 8 -> {
                         return 2028049 + (closeness / 10);
+                }
                 }
                 return 2028057;
-            case 2440001:
+            }
+            case 2440001 -> {
                 switch (closeness / 10) {
-                    case 0:
-                    case 1:
-                    case 2:
+                    case 0, 1, 2 -> {
                         return 2028044 + (closeness / 10);
-                    case 3:
-                    case 4:
-                    case 5:
+                }
+                    case 3, 4, 5 -> {
                         return 2028049 + (closeness / 10);
-                    case 6:
-                    case 7:
-                    case 8:
+                }
+                    case 6, 7, 8 -> {
                         return 2028052 + (closeness / 10);
                 }
+                }
                 return 2028060;
-            case 2440002:
+            }
+            case 2440002 -> {
                 return 2028069;
-            case 2440003:
+            }
+            case 2440003 -> {
                 return 2430278;
-            case 2440004:
+            }
+            case 2440004 -> {
                 return 2430381;
-            case 2440005:
+            }
+            case 2440005 -> {
                 return 2430393;
+            }
         }
         return 0;
     }
@@ -3477,13 +3189,14 @@ public class GameConstants {
     public static boolean isMagicChargeSkill(final int skillid) {
 
         switch (skillid) {
-            case 2121001: // Big Bang
-            case 2221001:
-            case 2321001:
+            case 2121001, 2221001, 2321001 -> // Big Bang
+            {
                 //case 22121000: //breath
                 //case 22151001:
                 return true;
+            }
         }
+        // Big Bang
         return false;
     }
 
@@ -3493,16 +3206,21 @@ public class GameConstants {
 
     public static int getStatDice(int stat) {
         switch (stat) {
-            case 2:
+            case 2 -> {
                 return 30;
-            case 3:
+            }
+            case 3 -> {
                 return 20;
-            case 4:
+            }
+            case 4 -> {
                 return 15;
-            case 5:
+            }
+            case 5 -> {
                 return 20;
-            case 6:
+            }
+            case 6 -> {
                 return 30;
+            }
         }
         return 0;
     }
@@ -3518,14 +3236,18 @@ public class GameConstants {
 
     public static int getMPByJob(int job) {
         switch (job) {
-            case 3100:
+            case 3100 -> {
                 return 30;
-            case 3110:
+            }
+            case 3110 -> {
                 return 50;
-            case 3111:
+            }
+            case 3111 -> {
                 return 100;
-            case 3112:
+            }
+            case 3112 -> {
                 return 120;
+            }
         }
         return 30; // beginner or 3100
     }
@@ -3560,27 +3282,38 @@ public class GameConstants {
 
     public static boolean isValidLinkSkillForJob(int skillID, short jobID) {
         switch (jobID) {
-            case 2312: //Mercedes
-            case 2311:
+            case 2312, 2311 -> //Mercedes
+            {
                 return skillID == 20021110;
-            case 3112: //Demon Slayer
-            case 3111:
+            }
+            case 3112, 3111 -> {
                 return skillID == 30010112;
-            case 532: //Cannoneer
-            case 531:
+            }
+            case 532, 531 -> //Demon Slayer
+            {
                 return skillID == 110;
+            }
         }
+        //Mercedes
+        //Demon Slayer
+        //Cannoneer
         return false;
     }
 
     public static int getRelatedLinkSkill(final int skillID) {
         switch (skillID) {
-            case 20021110: //merc
+            case 20021110 -> {
+                //merc
                 return 80001040;
-            case 110: //cannon
+            }
+            case 110 -> {
+                //cannon
                 return 80000000;
-            case 30010112://ds
+            }
+            case 30010112 -> {
+                //ds
                 return 80000001;
+            }
         }
         return 0;
     }
