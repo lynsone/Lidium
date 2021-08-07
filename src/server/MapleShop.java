@@ -260,6 +260,7 @@ public class MapleShop {
     public static MapleShop createFromDB(int id, boolean isShopId) {
         MapleShop ret = null;
         int shopId;
+        
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         try {
             Connection con = DatabaseConnection.getConnection();
@@ -280,7 +281,7 @@ public class MapleShop {
             ps = con.prepareStatement("SELECT * FROM shopitems WHERE shopid = ? ORDER BY position ASC;");
             ps.setInt(1, shopId);
             rs = ps.executeQuery();
-            List<Integer> recharges = new ArrayList<Integer>(rechargeableItems);
+            List<Integer> recharges = new ArrayList<>(rechargeableItems);
             while (rs.next()) {
                 if (!ii.itemExists(rs.getInt("itemid"))) {
                     continue;
@@ -296,7 +297,7 @@ public class MapleShop {
                 }
             }
             for (Integer recharge : recharges) {
-                ret.addItem(new MapleShopItem((short) 1, recharge.intValue(), 0, 0, 0, (byte) 0, 0, 0, 0));
+                ret.addItem(new MapleShopItem((short) 1, recharge, 0, 0, 0, (byte) 0, 0, 0, 0));
             }
             rs.close();
             ps.close();
@@ -308,13 +309,13 @@ public class MapleShop {
                 if (!ii.itemExists(rs.getInt("itemid"))) {
                     continue;
                 }
-                ret.ranks.add(new Pair<Integer, String>(rs.getInt("itemid"), rs.getString("name")));
+                ret.ranks.add(new Pair<>(rs.getInt("itemid"), rs.getString("name")));
             }
             rs.close();
             ps.close();
         } catch (SQLException e) {
-            System.err.println("Could not load shop");
-            e.printStackTrace();
+            System.out.println("Something went wrong while loading this shop.");
+            System.err.println(e);
         }
         return ret;
     }
