@@ -7,7 +7,7 @@ var status = 0;
 
 function start() {
     status = -1;
-    //var em = cm.getEventManager("Cabin");
+    var em = cm.getEventManager("Cabin");
     action(1, 0, 0);
 }
 
@@ -16,9 +16,10 @@ function action(mode, type, selection) {
     if(mode == 0) {
 	cm.sendNext("You must have some business to take care of here, right?");
 	cm.dispose();
+	return;
     }
     if (status == 0) {
-	/*if(em == null) {
+	if(em == null) {
 	    cm.sendNext("The boats are currently down.");
 	    cm.dispose();
 	} else if(em.getProperty("entry").equals("true")) {
@@ -30,11 +31,8 @@ function action(mode, type, selection) {
 	    cm.sendNext("We will begin boarding 1 minutes before the takeoff. Please be patient and wait for a few minutes. Be aware that the subway will take off on time, and we stop receiving tickets 1 minute before that, so please make sure to be here on time.");
 	    cm.dispose();
 	}
-	*/
-	cm.sendYesNo("It looks like there's plenty of room for this ride. Please have your ticket ready so I can let you in, The ride will be long, but you'll get to your destination just fine. What do you think? Do you want to get on this ride?");
     } else if(status == 1) {
-	//cm.warp(240000111, 0);
-	cm.warp(200000100, 0);
+	cm.warp(240000111, 0);
 	cm.dispose();
     }
 }
