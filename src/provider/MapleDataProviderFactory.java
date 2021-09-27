@@ -27,8 +27,8 @@ public class MapleDataProviderFactory {
     private final static String wzPath = System.getProperty("net.sf.odinms.wzpath", "wz");
 
     private static MapleDataProvider getWZ(Object in) {
-        if (in instanceof File) {
-            return new MapleDataProvider((File) in);
+        if (in instanceof File file) {
+            return new MapleDataProvider(file);
         }
         throw new IllegalArgumentException("Can't create data provider for input " + in);
     }

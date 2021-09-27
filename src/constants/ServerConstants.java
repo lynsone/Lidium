@@ -46,8 +46,8 @@ public class ServerConstants {
 
     // Start of Poll
     public static final boolean PollEnabled = false;
-    public static final String Poll_Question = "Are you mudkiz?";
-    public static final String[] Poll_Answers = { "test1", "test2", "test3" };
+    public static final String Poll_Question = "Are you there?";
+    public static final String[] Poll_Answers = { "Yeah!", "No...", "Maybe." };
     // End of Poll
     public static final short MAPLE_VERSION = (short) 111;
     public static final String MAPLE_PATCH = "1";

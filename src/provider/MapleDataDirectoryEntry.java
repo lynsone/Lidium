@@ -32,9 +32,9 @@ import java.util.Map;
  */
 public class MapleDataDirectoryEntry extends MapleDataEntry {
 
-    private List<MapleDataDirectoryEntry> subdirs = new ArrayList<MapleDataDirectoryEntry>();
-    private List<MapleDataFileEntry> files = new ArrayList<MapleDataFileEntry>();
-    private Map<String, MapleDataEntry> entries = new HashMap<String, MapleDataEntry>();
+    private List<MapleDataDirectoryEntry> subdirs = new ArrayList<>();
+    private List<MapleDataFileEntry> files = new ArrayList<>();
+    private Map<String, MapleDataEntry> entries = new HashMap<>();
 
     public MapleDataDirectoryEntry(String name, int size, int checksum, MapleDataEntity parent) {
         super(name, size, checksum, parent);

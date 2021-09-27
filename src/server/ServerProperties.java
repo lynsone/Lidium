@@ -26,20 +26,19 @@ public class ServerProperties {
         if (getProperty("GMS") != null) {
             GameConstants.GMS = Boolean.parseBoolean(getProperty("GMS"));
         }
-        var con=DatabaseConnection.getConnection();
+        var con = DatabaseConnection.getConnection();
         try (PreparedStatement ps = con.prepareStatement("SELECT * FROM auth_server_channel_ip"); ResultSet rs = ps.executeQuery();) {
             while (rs.next()) {
                 props.put(rs.getString("name") + rs.getInt("channelid"), rs.getString("value"));
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.exit(0); //Big ass error.
-        }finally{
+        } finally {
             try {
-                if(con!=null && !con.isClosed()){
+                if( con!=null && !con.isClosed()) {
                     con.close();
                 }
-            } catch (Exception ignore) {
+            } catch (SQLException ignore) {
             }
         }
         loadProperties(GameConstants.GMS ? "worldGMS.properties" : "world.properties");

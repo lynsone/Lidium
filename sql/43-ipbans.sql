@@ -1,7 +1,0 @@
-CREATE TABLE IF NOT EXISTS `ipbans` (
-  `ipbanid` int(10) UNSIGNED NOT NULL,
-  `ip` varchar(40) NOT NULL DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
-
-ALTER TABLE `ipbans`
-  ADD PRIMARY KEY (`ipbanid`);
