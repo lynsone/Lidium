@@ -37,7 +37,6 @@ public class MapleOla extends MapleSurvival { //survival/ola so similar.
     @Override
     public void finished(final MapleCharacter chr) {
         givePrize(chr);
-        chr.finishAchievement(21);
     }
 
     @Override

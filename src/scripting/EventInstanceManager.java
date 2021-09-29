@@ -537,15 +537,6 @@ public class EventInstanceManager {
         return mobs;
     }
 
-    public final void giveAchievement(final int type) {
-        if (disposed) {
-            return;
-        }
-        getPlayers().forEach(chr -> {
-            chr.finishAchievement(type);
-        });
-    }
-
     public final void broadcastPlayerMsg(final int type, final String msg) {
         if (disposed) {
             return;

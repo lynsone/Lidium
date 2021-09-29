@@ -307,7 +307,6 @@ public class FamilyHandler {
                         MapleFamily.setOfflineFamilyStatus(id, 0, c.getPlayer().getId(), 0, inviter.getCurrentRep(), inviter.getTotalRep(), inviter.getId());
                         MapleFamily.setOfflineFamilyStatus(id, inviter.getId(), oldj1 <= 0 ? 0 : oldj1, oldj2 <= 0 ? 0 : oldj2, c.getPlayer().getCurrentRep(), c.getPlayer().getTotalRep(), c.getPlayer().getId());
                         inviter.setFamily(id, 0, c.getPlayer().getId(), 0); //load the family
-			inviter.finishAchievement(36);
                         c.getPlayer().setFamily(id, inviter.getId(), oldj1 <= 0 ? 0 : oldj1, oldj2 <= 0 ? 0 : oldj2);
                         MapleFamily fam = World.Family.getFamily(id);
                         fam.setOnline(inviter.getId(), true, inviter.getClient().getChannel());

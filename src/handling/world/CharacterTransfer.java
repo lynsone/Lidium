@@ -67,7 +67,7 @@ public class CharacterTransfer implements Externalizable {
     public Map<Byte, Integer> reports = new LinkedHashMap<Byte, Integer>();
     public Map<Integer, Pair<Byte, Integer>> keymap;
     public Map<Integer, MonsterFamiliar> familiars;
-    public List<Integer> finishedAchievements = null, famedcharacters = null, extendedSlots = null;
+    public List<Integer> famedcharacters = null, extendedSlots = null;
     public List<Item> rebuy = null;
     public final Map<MapleTraitType, Integer> traits = new EnumMap<MapleTraitType, Integer>(MapleTraitType.class);
     public final Map<CharacterNameAndId, Boolean> buddies = new LinkedHashMap<CharacterNameAndId, Boolean>();
@@ -81,7 +81,6 @@ public class CharacterTransfer implements Externalizable {
 
     /*End of Custom Feature*/
     public CharacterTransfer() {
-        finishedAchievements = new ArrayList<Integer>();
         famedcharacters = new ArrayList<Integer>();
         extendedSlots = new ArrayList<Integer>();
         rebuy = new ArrayList<Item>();
@@ -192,8 +191,6 @@ public class CharacterTransfer implements Externalizable {
         } else {
             this.messengerid = 0;
         }
-
-        this.finishedAchievements = chr.getFinishedAchievements();
 
         this.InfoQuest = chr.getInfoQuest_Map();
 
@@ -349,11 +346,6 @@ public class CharacterTransfer implements Externalizable {
         final int rzsize = in.readByte();
         for (int i = 0; i < rzsize; i++) {
             this.reports.put(in.readByte(), in.readInt());
-        }
-
-        final int achievesize = in.readByte();
-        for (int i = 0; i < achievesize; i++) {
-            this.finishedAchievements.add(in.readInt());
         }
 
         final int famesize = in.readByte(); //max 31
@@ -565,11 +557,6 @@ public class CharacterTransfer implements Externalizable {
         for (Entry<Byte, Integer> ss : reports.entrySet()) {
             out.writeByte(ss.getKey());
             out.writeInt(ss.getValue());
-        }
-
-        out.writeByte(this.finishedAchievements.size());
-        for (final Integer zz : finishedAchievements) {
-            out.writeInt(zz.intValue());
         }
 
         out.writeByte(this.famedcharacters.size());

@@ -93,7 +93,6 @@ import handling.world.guild.MapleGuildCharacter;
 import scripting.EventInstanceManager;
 import scripting.NPCScriptManager;
 import server.CashShop;
-import server.MapleAchievements;
 import server.MapleCarnivalChallenge;
 import server.MapleCarnivalParty;
 import server.MapleInventoryManipulator;
@@ -211,7 +210,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
     private MapleStorage storage;
     private transient MapleTrade trade;
     private MapleMount mount;
-    private List<Integer> finishedAchievements;
     private MapleMessenger messenger;
     private byte[] petStore;
     private transient IMaplePlayerShop playerShop;
@@ -231,7 +229,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
     private transient Map<Integer, Integer> linkMobs;
 
     private boolean changed_wishlist, changed_trocklocations, changed_regrocklocations, changed_hyperrocklocations,
-            changed_skillmacros, changed_achievements, changed_savedlocations, changed_questinfo, changed_skills,
+            changed_skillmacros, changed_savedlocations, changed_questinfo, changed_skills,
             changed_reports, changed_extendedSlots;
     /* Start of Custom Feature */
  /* All custom shit declare here */
@@ -261,7 +259,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         if (ChannelServer) {
             changed_reports = false;
             changed_skills = false;
-            changed_achievements = false;
             changed_wishlist = false;
             changed_trocklocations = false;
             changed_regrocklocations = false;
@@ -305,7 +302,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             followon = false;
             rebuy = new ArrayList<>();
             linkMobs = new HashMap<>();
-            finishedAchievements = new ArrayList<>();
             reports = new EnumMap<>(ReportType.class);
             teleportname = "";
             smega = true;
@@ -519,9 +515,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         ct.Skills.entrySet().forEach(qs -> {
             ret.skills.put(SkillFactory.getSkill(qs.getKey()), qs.getValue());
         });
-        ct.finishedAchievements.forEach(zz -> {
-            ret.finishedAchievements.add(zz);
-        });
         ct.traits.entrySet().forEach(t -> {
             ret.traits.get(t.getKey()).setExp(t.getValue());
         });
@@ -683,12 +676,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 }
                 rs.close();
                 ps.close();
-                ps = con.prepareStatement("SELECT * FROM achievements WHERE accountid = ?");
                 ps.setInt(1, ret.accountid);
                 rs = ps.executeQuery();
-                while (rs.next()) {
-                    ret.finishedAchievements.add(rs.getInt("achievementid"));
-                }
                 ps.close();
                 rs.close();
 
@@ -1503,21 +1492,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 ps.close();
             }
 
-            if (changed_achievements) {
-                ps = con.prepareStatement("DELETE FROM achievements WHERE accountid = ?");
-                ps.setInt(1, accountid);
-                ps.executeUpdate();
-                ps.close();
-                ps = con.prepareStatement("INSERT INTO achievements(charid, achievementid, accountid) VALUES(?, ?, ?)");
-                for (Integer achid : finishedAchievements) {
-                    ps.setInt(1, id);
-                    ps.setInt(2, achid);
-                    ps.setInt(3, accountid);
-                    ps.execute();
-                }
-                ps.close();
-            }
-
             if (changed_reports) {
                 deleteWhereCharacterId(con, "DELETE FROM reports WHERE characterid = ?");
                 ps = con.prepareStatement("INSERT INTO reports VALUES(DEFAULT, ?, ?, ?)");
@@ -1662,7 +1636,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             changed_skillmacros = false;
             changed_savedlocations = false;
             changed_questinfo = false;
-            changed_achievements = false;
             changed_extendedSlots = false;
             changed_skills = false;
             changed_reports = false;
@@ -2837,9 +2810,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
     public void addFame(int famechange) {
         this.fame += famechange;
         getTrait(MapleTraitType.charm).addLocalExp(famechange);
-        if (this.fame >= 50) {
-            finishAchievement(7);
-        }
     }
 
     public void updateFame() {
@@ -3962,18 +3932,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             return;
         }
         meso += gain;
-        if (meso >= 1000000) {
-            finishAchievement(31);
-        }
-        if (meso >= 10000000) {
-            finishAchievement(32);
-        }
-        if (meso >= 100000000) {
-            finishAchievement(33);
-        }
-        if (meso >= 1000000000) {
-            finishAchievement(34);
-        }
         updateSingleStat(MapleStat.MESO, meso, false);
         client.getSession().write(CWvsContext.enableActions());
         if (show) {
@@ -4191,18 +4149,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             exp += getNeededExp() / 10;
         }
 
-        if (level == 30) {
-            finishAchievement(2);
-        }
-        if (level == 70) {
-            finishAchievement(3);
-        }
-        if (level == 120) {
-            finishAchievement(4);
-        }
-        if (level == 200) {
-            finishAchievement(5);
-        }
         if (level == 200 && !isGM()) {
             final StringBuilder sb = new StringBuilder("[Congratulation] ");
             final Item medal = getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -46);
@@ -5819,35 +5765,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         client.getSession().write(MonsterCarnivalPacket.playerDiedMessage(name, lostCP, team));
     }
 
-    public void setAchievementFinished(int id) {
-        /*
-        if (!finishedAchievements.contains(id)) {
-            finishedAchievements.add(id);
-            changed_achievements = true;
-        }
-        */
-        return;
-    }
-
-    public boolean achievementFinished(int achievementid) {
-        //return finishedAchievements.contains(achievementid);
-        return false;
-    }
-
-    public void finishAchievement(int id) {
-       /* if (!achievementFinished(id)) {
-            if (isAlive() && !isClone()) {
-                MapleAchievements.getInstance().getById(id).finishAchievement(this);
-            }
-        } */
-       return;
-    }
-
-    public List<Integer> getFinishedAchievements() {
-        //return finishedAchievements;
-        return null;
-    }
-
     public boolean getCanTalk() {
         return this.canTalk;
     }
@@ -5870,9 +5787,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
 
     public void setPoints(int p) {
         this.points = p;
-        if (this.points >= 1) {
-            finishAchievement(1);
-        }
     }
 
     public int getPoints() {

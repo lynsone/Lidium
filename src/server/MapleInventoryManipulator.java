@@ -834,16 +834,6 @@ public class MapleInventoryManipulator {
         if (source.getItemId() / 10000 == 190 || source.getItemId() / 10000 == 191) {
             c.getPlayer().cancelEffectFromBuffStat(MapleBuffStat.MONSTER_RIDING);
             c.getPlayer().cancelEffectFromBuffStat(MapleBuffStat.MECH_CHANGE);
-        } else if (GameConstants.isReverseItem(source.getItemId())) {
-            chr.finishAchievement(9);
-        } else if (GameConstants.isTimelessItem(source.getItemId())) {
-            chr.finishAchievement(10);
-        } else if (stats.containsKey("reqLevel") && stats.get("reqLevel") >= 140) {
-            chr.finishAchievement(41);
-        } else if (stats.containsKey("reqLevel") && stats.get("reqLevel") >= 130) {
-            chr.finishAchievement(40);
-        } else if (source.getItemId() == 1122017) {
-            chr.startFairySchedule(true, true);
         }
         if (source.getState() >= 17) {
             final Map<Skill, SkillEntry> ss = new HashMap<>();

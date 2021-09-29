@@ -65,9 +65,6 @@ public class ChatHandler {
                         chr.getMap().broadcastMessage(CField.getChatText(chr.getId(), text, c.getPlayer().isHeadGM(), unk), c.getPlayer().getTruePosition());
                     }
                 }
-                if (text.equalsIgnoreCase(c.getChannelServer().getServerName() + " rocks")) {
-                    chr.finishAchievement(11);
-                }
             } else {
                 c.getSession().write(CWvsContext.serverNotice(6, "You have been muted and are therefore unable to talk."));
             }

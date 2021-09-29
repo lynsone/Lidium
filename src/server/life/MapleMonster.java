@@ -472,16 +472,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             if (killer != null && killer.getParty() != null) {
                 for (MaplePartyCharacter mp : killer.getParty().getMembers()) {
                     final MapleCharacter mpc = killer.getMap().getCharacterById(mp.getId());
-                    if (mpc != null) {
-                        mpc.finishAchievement(achievement);
-                    }
                 }
-            } else if (killer != null) {
-                killer.finishAchievement(achievement);
             }
-        }
-        if (killer != null && stats.isBoss()) {
-            killer.finishAchievement(18);
         }
         spawnRevives(getMap());
         if (eventInstance != null) {

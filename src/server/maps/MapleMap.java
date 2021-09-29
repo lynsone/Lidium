@@ -678,14 +678,6 @@ public final class MapleMap {
         ExpeditionType type = null;
         if (mobid == 8810018 && mapid == 240060200) { // Horntail
             World.Broadcast.broadcastMessage(CWvsContext.serverNotice(6, "To the crew that have finally conquered Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!!"));
-            charactersLock.readLock().lock();
-            try {
-                characters.forEach(c -> {
-                    c.finishAchievement(16);
-                });
-            } finally {
-                charactersLock.readLock().unlock();
-            }
             //FileoutputUtil.log(FileoutputUtil.Horntail_Log, MapDebug_Log());
             if (speedRunStart > 0) {
                 type = ExpeditionType.Horntail;
@@ -693,14 +685,6 @@ public final class MapleMap {
             doShrine(true);
         } else if (mobid == 8810122 && mapid == 240060201) { // Horntail
             World.Broadcast.broadcastMessage(CWvsContext.serverNotice(6, "To the crew that have finally conquered Chaos Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!!"));
-            charactersLock.readLock().lock();
-            try {
-                characters.forEach(c -> {
-                    c.finishAchievement(24);
-                });
-            } finally {
-                charactersLock.readLock().unlock();
-            }
 //            FileoutputUtil.log(FileoutputUtil.Horntail_Log, MapDebug_Log());
             if (speedRunStart > 0) {
                 type = ExpeditionType.ChaosHT;
@@ -729,68 +713,28 @@ public final class MapleMap {
             doShrine(getAllReactor().isEmpty());
         } else if (mobid == 8820001 && mapid == 270050100) {
             World.Broadcast.broadcastMessage(CWvsContext.serverNotice(6, "Oh, the exploration team who has defeated Pink Bean with undying fervor! You are the true victors of time!"));
-            charactersLock.readLock().lock();
-            try {
-                characters.forEach(c -> {
-                    c.finishAchievement(17);
-                });
-            } finally {
-                charactersLock.readLock().unlock();
-            }
             if (speedRunStart > 0) {
                 type = ExpeditionType.Pink_Bean;
             }
             doShrine(true);
         } else if (mobid == 8850011 && mapid == 274040200) {
             World.Broadcast.broadcastMessage(CWvsContext.serverNotice(6, "To you whom have defeated Empress Cygnus in the future, you are the heroes of time!"));
-            charactersLock.readLock().lock();
-            try {
-                characters.forEach(c -> {
-                    c.finishAchievement(39);
-                });
-            } finally {
-                charactersLock.readLock().unlock();
-            }
             if (speedRunStart > 0) {
                 type = ExpeditionType.Cygnus;
             }
             doShrine(true);
         } else if (mobid == 8840000 && mapid == 211070100) {
-            charactersLock.readLock().lock();
-            try {
-                characters.forEach(c -> {
-                    c.finishAchievement(38);
-                });
-            } finally {
-                charactersLock.readLock().unlock();
-            }
             if (speedRunStart > 0) {
                 type = ExpeditionType.Von_Leon;
             }
             doShrine(true);
         } else if (mobid == 8800002 && mapid == 280030000) {
-            charactersLock.readLock().lock();
-            try {
-                characters.forEach(c -> {
-                    c.finishAchievement(15);
-                });
-            } finally {
-                charactersLock.readLock().unlock();
-            }
 //            FileoutputUtil.log(FileoutputUtil.Zakum_Log, MapDebug_Log());
             if (speedRunStart > 0) {
                 type = ExpeditionType.Zakum;
             }
             doShrine(true);
         } else if (mobid == 8800102 && mapid == 280030001) {
-            charactersLock.readLock().lock();
-            try {
-                characters.forEach(c -> {
-                    c.finishAchievement(23);
-                });
-            } finally {
-                charactersLock.readLock().unlock();
-            }
             //FileoutputUtil.log(FileoutputUtil.Zakum_Log, MapDebug_Log());
             if (speedRunStart > 0) {
                 type = ExpeditionType.Chaos_Zakum;
