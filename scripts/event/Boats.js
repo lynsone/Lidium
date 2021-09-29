@@ -26,12 +26,12 @@ function init() {
     invasionDelayTime = em.getTransportationTime(invasionDelayTime);
     
     Orbis_btf = em.getChannelServer().getMapFactory().getMap(200000112);
-    Ellinia_btf = em.getChannelServer().getMapFactory().getMap(101000301);
+    Ellinia_btf = em.getChannelServer().getMapFactory().getMap(104020111);
     Boat_to_Orbis = em.getChannelServer().getMapFactory().getMap(200090010);
     Boat_to_Ellinia = em.getChannelServer().getMapFactory().getMap(200090000);
     Orbis_Boat_Cabin = em.getChannelServer().getMapFactory().getMap(200090011);
     Ellinia_Boat_Cabin = em.getChannelServer().getMapFactory().getMap(200090001);
-    Ellinia_docked = em.getChannelServer().getMapFactory().getMap(101000300);
+    Ellinia_docked = em.getChannelServer().getMapFactory().getMap(104020110);
     Orbis_Station = em.getChannelServer().getMapFactory().getMap(200000100);
     Orbis_docked = em.getChannelServer().getMapFactory().getMap(200000111);
     
@@ -60,6 +60,7 @@ function stopentry() {
 function takeoff() {
     Orbis_btf.warpEveryone(Boat_to_Ellinia.getId());
     Ellinia_btf.warpEveryone(Boat_to_Orbis.getId());
+    
     Ellinia_docked.broadcastShip(false);
     Orbis_docked.broadcastShip(false);
     

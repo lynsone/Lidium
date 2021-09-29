@@ -51,8 +51,8 @@ public class MapleMapFactory {
 
     private final MapleDataProvider source = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Map.wz"));
     private final MapleData nameData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")).getData("Map.img");
-    private final HashMap<Integer, MapleMap> maps = new HashMap<Integer, MapleMap>();
-    private final HashMap<Integer, MapleMap> instanceMap = new HashMap<Integer, MapleMap>();
+    private final HashMap<Integer, MapleMap> maps = new HashMap<>();
+    private final HashMap<Integer, MapleMap> instanceMap = new HashMap<>();
     private final ReentrantLock lock = new ReentrantLock();
     private int channel;
 

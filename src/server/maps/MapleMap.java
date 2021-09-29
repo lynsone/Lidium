@@ -129,12 +129,12 @@ public final class MapleMap {
     private boolean town, clock, personalShop, everlast = false, dropsDisabled = false, gDropsDisabled = false,
             soaring, squadTimer = false, isSpawns = true, checkStates = true;
     private String mapName, streetName, onUserEnter, onFirstUserEnter, speedRunLeader = "";
-    private final List<Integer> dced = new ArrayList<Integer>();
+    private final List<Integer> dced = new ArrayList<>();
     private ScheduledFuture<?> squadSchedule;
     private long speedRunStart = 0, lastSpawnTime = 0, lastHurtTime = 0;
     private MapleNodes nodes;
     private MapleSquadType squad;
-    private final Map<String, Integer> environment = new LinkedHashMap<String, Integer>();
+    private final Map<String, Integer> environment = new LinkedHashMap<>();
     private boolean boat;
     private boolean docked = false;
 
