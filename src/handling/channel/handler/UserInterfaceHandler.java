@@ -40,7 +40,9 @@ public class UserInterfaceHandler {
     }
 
     public static final void InGame_Poll(final LittleEndianAccessor slea, final MapleClient c) {
-        /*if (ServerConstants.PollEnabled) {
+
+        /*
+        if (ServerConstants.PollEnabled) {
             c.getPlayer().updateTick(slea.readInt());
             final int selection = slea.readInt();
 
@@ -50,56 +52,65 @@ public class UserInterfaceHandler {
                     //idk what goes here lol
                 }
             }
-        }*/
+        }
+        */
     }
 
     public static final void ShipObjectRequest(final int mapid, final MapleClient c) {
-        /*// BB 00 6C 24 05 06 00 - Ellinia
+    /*        
+        // BB 00 6C 24 05 06 00 - Ellinia
         // BB 00 6E 1C 4E 0E 00 - Leafre
-
+        
         EventManager em;
 
         switch (mapid) {
-            case 101000300: // Ellinia Station >> Orbis
-            case 200000111: // Orbis Station >> Ellinia
+            case 101000300, 200000111 -> // Ellinia Station >> Orbis
+            {
+                // Orbis Station >> Ellinia
                 em = c.getChannelServer().getEventSM().getEventManager("Boats");
                 if (em != null && em.getProperty("docked").equals("true")) {
                     broadcastMessage(CField.boatStatePacket(true));
                 }
-                break;
-            case 200000121: // Orbis Station >> Ludi
-            case 220000110: // Ludi Station >> Orbis
+            }
+            case 200000121, 220000110 -> {
+                // Ludi Station >> Orbis
                 em = c.getChannelServer().getEventSM().getEventManager("Trains");
                 if (em != null && em.getProperty("docked").equals("true")) {
                     broadcastMessage(CField.boatStatePacket(true));
                 }
-                break;
-            case 200000151: // Orbis Station >> Ariant
-            case 260000100: // Ariant Station >> Orbis
+            }
+            case 200000151, 260000100 -> // Orbis Station >> Ludi
+            {
+                // Ariant Station >> Orbis
                 em = c.getChannelServer().getEventSM().getEventManager("Genie");
                 if (em != null && em.getProperty("docked").equals("true")) {
                     broadcastMessage(CField.boatStatePacket(true));
                 }
-                break;
-            case 240000110: // Leafre Station >> Orbis
-            case 200000131: // Orbis Station >> Leafre
+            }
+            case 240000110, 200000131 -> {
+                // Orbis Station >> Leafre
                 em = c.getChannelServer().getEventSM().getEventManager("Cabin");
                 if (em != null && em.getProperty("docked").equals("true")) {
                     broadcastMessage(CField.boatStatePacket(true));
                 }
-                break;
-            case 200090010: // During the ride to Orbis
-            case 200090000: // During the ride to Ellinia
+            }
+            case 200090010, 200090000 -> // Orbis Station >> Ariant
+            {
+                // During the ride to Ellinia
                 em = c.getChannelServer().getEventSM().getEventManager("Boats");
                 if (em != null && em.getProperty("haveBalrog").equals("true")) {
                     broadcastMessage(CField.boatStatePacket(true));
                 } else {
                     break; // shyt, fixme!
                 }
-                break;
-            default:
-                System.out.println("Unhandled ship object, MapID : " + mapid);
-                break;
-        }*/       
+            }
+            default -> System.out.println("Unhandled ship object, MapID : " + mapid);
+        }
+        // Ellinia Station >> Orbis
+        // Orbis Station >> Ludi
+        // Orbis Station >> Ariant
+        // Leafre Station >> Orbis
+        // During the ride to Orbis
+*/
     }
 }

@@ -12,3 +12,4 @@ manifest.mf
 Log_Script_Except.rtf
 .vscode/*
 *.iml
+*.rtf

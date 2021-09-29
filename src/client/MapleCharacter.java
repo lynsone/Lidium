@@ -648,7 +648,8 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             /* Start of Custom Features */
             ret.reborns = rs.getInt("reborns");
             ret.apstorage = rs.getInt("apstorage");
-            ret.claimedStarterKit = rs.getInt("claimedStarterKit") == 1 ? true : false;
+            //ret.claimedStarterKit = rs.getInt("claimedStarterKit") == 1 ? true : false;
+            ret.claimedStarterKit = true; //make optional
             /* End of Custom Features */
             for (MapleTrait t : ret.traits.values()) {
                 t.setExp(rs.getInt(t.getType().name()));
@@ -1287,7 +1288,7 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             con.setAutoCommit(false);
 
             ps = con.prepareStatement(
-                    "UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, demonMarking = ?, map = ?, meso = ?, hpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, pets = ?, subcategory = ?, marriageId = ?, currentrep = ?, totalrep = ?, gachexp = ?, fatigue = ?, charm = ?, charisma = ?, craft = ?, insight = ?, sense = ?, will = ?, totalwins = ?, totallosses = ?, pvpExp = ?, pvpPoints = ?, reborns = ?, apstorage = ?, claimedStarterKit = ?, name = ? WHERE id = ?",
+                    "UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, demonMarking = ?, map = ?, meso = ?, hpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, pets = ?, subcategory = ?, marriageId = ?, currentrep = ?, totalrep = ?, gachexp = ?, fatigue = ?, charm = ?, charisma = ?, craft = ?, insight = ?, sense = ?, will = ?, totalwins = ?, totallosses = ?, pvpExp = ?, pvpPoints = ?, reborns = ?, apstorage = ?, name = ? WHERE id = ?",
                     Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, level);
             ps.setInt(2, fame);
@@ -1371,10 +1372,10 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
             /* Start of Custom Features */
             ps.setInt(44, reborns);
             ps.setInt(45, apstorage);
-            ps.setInt(46, claimedStarterKit ? 1 : 0);
+            //ps.setInt(46, claimedStarterKit ? 1 : 0); //make optional
             /* End of Custom Features */
-            ps.setString(47, name);
-            ps.setInt(48, id);
+            ps.setString(46, name);
+            ps.setInt(47, id);
             if (ps.executeUpdate() < 1) {
                 ps.close();
                 throw new DatabaseException("Character not in database (" + id + ")");
@@ -5819,26 +5820,32 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
     }
 
     public void setAchievementFinished(int id) {
+        /*
         if (!finishedAchievements.contains(id)) {
             finishedAchievements.add(id);
             changed_achievements = true;
         }
+        */
+        return;
     }
 
     public boolean achievementFinished(int achievementid) {
-        return finishedAchievements.contains(achievementid);
+        //return finishedAchievements.contains(achievementid);
+        return false;
     }
 
     public void finishAchievement(int id) {
-        if (!achievementFinished(id)) {
+       /* if (!achievementFinished(id)) {
             if (isAlive() && !isClone()) {
                 MapleAchievements.getInstance().getById(id).finishAchievement(this);
             }
-        }
+        } */
+       return;
     }
 
     public List<Integer> getFinishedAchievements() {
-        return finishedAchievements;
+        //return finishedAchievements;
+        return null;
     }
 
     public boolean getCanTalk() {
