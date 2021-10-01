@@ -676,10 +676,6 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
                 }
                 rs.close();
                 ps.close();
-                ps.setInt(1, ret.accountid);
-                rs = ps.executeQuery();
-                ps.close();
-                rs.close();
 
                 ps = con.prepareStatement("SELECT * FROM reports WHERE characterid = ?");
                 ps.setInt(1, charid);
