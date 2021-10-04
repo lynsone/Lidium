@@ -50,6 +50,7 @@ import server.quest.MapleQuest;
 import tools.packet.CField;
 import tools.packet.LoginPacket;
 import tools.data.LittleEndianAccessor;
+import tools.packet.CWvsContext;
 import tools.packet.PacketHelper;
 
 public class CharLoginHandler {
@@ -173,8 +174,13 @@ public class CharLoginHandler {
         final byte unk2 = slea.readByte(); // 08
         final boolean mercedes = (jobType == JobType.Mercedes);
         final boolean demon = (jobType == JobType.Demon);
+        final boolean resistance = (jobType == jobType.Resistance);
         final int face = slea.readInt();
         final int hair = slea.readInt();
+        if (mercedes || demon || resistance || jobType == null) { //remove this if you want these jobs available
+            c.getSession().write(CWvsContext.serverMessage(0, c.getChannel(), "This class is not available.", false));
+            return;
+        }
         if (!mercedes && !demon) { //mercedes/demon dont need hair color since its already in the hair
             hairColor = slea.readInt();
             skinColor = (byte) slea.readInt();

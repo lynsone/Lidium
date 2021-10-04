@@ -2990,7 +2990,7 @@ public class CWvsContext {
         return serverMessage(type, channel, message, smegaEar);
     }
 
-    private static byte[] serverMessage(int type, int channel, String message, boolean megaEar) {
+    public static byte[] serverMessage(int type, int channel, String message, boolean megaEar) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         // 0: [Notice] <Msg>
