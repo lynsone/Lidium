@@ -7106,6 +7106,10 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         return rebuy;
     }
 
+    public void denyEvent() {
+        client.getSession().write(CWvsContext.serverMessage(1, client.getChannel(), "Not available.", false));
+    }
+    
     public Map<Integer, MonsterFamiliar> getFamiliars() {
         return familiars;
     }

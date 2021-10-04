@@ -2125,9 +2125,8 @@ public class InventoryHandler {
         if (used) {
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (short) 1, false, true);
         } else {
-
             c.getPlayer().dropMessage(1,
-                    "This item cannot be used. Report this to an administrator:\r\nItemID: " + itemId);
+                "This item cannot be used. Report this to an administrator:\r\nItemID: " + itemId);
         }
         c.getSession().write(CWvsContext.enableActions());
         if (cc) {

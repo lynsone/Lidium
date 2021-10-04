@@ -8,6 +8,7 @@ var status = -1;
 var BATTLE_SQUARE = 960000000;
 
 function action(mode, type, selection) {
+    cm.getPlayer().denyEvent();
     cm.dispose();
 }
 function action_(mode, type, selection) {
