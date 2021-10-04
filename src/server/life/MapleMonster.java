@@ -353,9 +353,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         listener = null;
     }
 
-    private void giveExpToCharacter(final MapleCharacter attacker, int exp, final boolean highestDamage, final int numExpSharers, final byte pty, final byte Class_Bonus_EXP_PERCENT, final byte Premium_Bonus_EXP_PERCENT, final int lastskillID) {
+    private void giveExpToCharacter(final MapleCharacter attacker, int exp, final boolean highestDamage, final int numExpSharers, final byte pty, final byte Class_Bonus_EXP_PERCENT, final byte Premium_Bonus_EXP_PERCENT, final int lastskillID) {      
+        /*
         attacker.addKillCount(); 
         var killCount = attacker.killCount; // Custom, make toggleable
+        */
         
         if (highestDamage) {
             if (eventInstance != null) {
@@ -383,6 +385,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             exp = (int) Math.min(Integer.MAX_VALUE, Math.round(exp * attacker.getEXPMod() * (attacker.getStat().expBuff / 100.0f) * GameConstants.getExpRateByLevel(attacker.getLevel(), map.getChannel())));
             
             //check burning exp and status
+            /*
             if(killCount == 30 || killCount == 100 || killCount == 200) {
                 exp = (int) exp + (exp * killCount);
                 if(exp < 0) return;
@@ -397,6 +400,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             if(attacker.burning) {
                 exp = (int)Math.floor(exp * 1.25);
             }
+            */
             //do this last just incase someone has a 2x exp card and its set to max value
             int Class_Bonus_EXP = 0;
             if (Class_Bonus_EXP_PERCENT > 0) {
