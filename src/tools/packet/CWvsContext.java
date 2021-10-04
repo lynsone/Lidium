@@ -560,9 +560,9 @@ public class CWvsContext {
                     mplew.writeLong(stat.getValue().longValue());
                 } else {
                     if (stat.getKey() == MapleBuffStat.SPIRIT_SURGE) {
-                        mplew.writeInt(stat.getValue().intValue());
+                        mplew.writeInt(stat.getValue());
                     } else {
-                        mplew.writeShort(stat.getValue().intValue());
+                        mplew.writeShort(stat.getValue());
                     }
                     mplew.writeInt(buffid);
                 }

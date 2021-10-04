@@ -198,34 +198,14 @@ public class MapleStatEffect implements Serializable {
 
         if (ret.skill) {
             switch (sourceid) {
-                case 1100002:
-                case 1200002:
-                case 1300002:
-                case 3100001:
-                case 3200001:
-                case 11101002:
-                case 13101002:
-                case 2111007:
-                case 2211007:
-                case 2311007:
-                case 32111010:
-                case 33100009:
-                case 22150004:
-                case 22181004: // All Final Attack
-                case 1120013:
-                case 3120008:
-                case 23100006:
-                case 23120012:
-                case 24100003: // TODO: for now, or could it be card stack? (1 count)
+                case 1100002, 1200002, 1300002, 3100001, 3200001, 11101002, 13101002, 2111007, 2211007, 2311007, 32111010, 33100009, 22150004, 22181004, 1120013, 3120008, 23100006, 23120012, 24100003 -> // TODO: for now, or could it be card stack? (1 count)
                     ret.mobCount = 6;
-                    break;
-                case 35121005:
-                case 35111004:
-                case 35121013:
+                case 35121005, 35111004, 35121013 -> {
                     ret.attackCount = 6;
                     ret.bulletCount = 6;
-                    break;
+                }
             }
+            // All Final Attack
             if (GameConstants.isNoDelaySkill(sourceid)) {
                 ret.mobCount = 6;
             }
@@ -238,7 +218,7 @@ public class MapleStatEffect implements Serializable {
             ret.subTime *= 1000;
             ret.overTime = overTime || ret.isMorph() || ret.isPirateMorph() || ret.isFinalAttack() || ret.isAngel();
         }
-        ret.statups = new EnumMap<MapleBuffStat, Integer>(MapleBuffStat.class);
+        ret.statups = new EnumMap<>(MapleBuffStat.class);
         ret.mastery = (byte) parseEval("mastery", source, 0, variables, level);
         ret.watk = (short) parseEval("pad", source, 0, variables, level);
         ret.wdef = (short) parseEval("pdd", source, 0, variables, level);
@@ -302,7 +282,7 @@ public class MapleStatEffect implements Serializable {
             ret.charColor |= Integer.parseInt("0x" + cColor.substring(4, 6) + "0000");
             ret.charColor |= Integer.parseInt("0x" + cColor.substring(6, 8) + "000000");
         }
-        ret.traits = new EnumMap<MapleTraitType, Integer>(MapleTraitType.class);
+        ret.traits = new EnumMap<>(MapleTraitType.class);
         for (MapleTraitType t : MapleTraitType.values()) {
             int expz = parseEval(t.name() + "EXP", source, 0, variables, level);
             if (expz != 0) {
@@ -318,7 +298,7 @@ public class MapleStatEffect implements Serializable {
         ret.effectedOnAlly = (byte) parseEval("effectedOnAlly", source, 0, variables, level);
         ret.effectedOnEnemy = (byte) parseEval("effectedOnEnemy", source, 0, variables, level);
 
-        List<MapleDisease> cure = new ArrayList<MapleDisease>(5);
+        List<MapleDisease> cure = new ArrayList<>(5);
         if (parseEval("poison", source, 0, variables, level) > 0) {
             cure.add(MapleDisease.POISON);
         }
@@ -336,7 +316,7 @@ public class MapleStatEffect implements Serializable {
         }
         ret.cureDebuffs = cure;
 
-        ret.petsCanConsume = new ArrayList<Integer>();
+        ret.petsCanConsume = new ArrayList<>();
         for (int i = 0; true; i++) {
             final int dd = parseEval(String.valueOf(i), source, 0, variables, level);
             if (dd > 0) {
@@ -355,7 +335,7 @@ public class MapleStatEffect implements Serializable {
         }
         final MapleData pd = source.getChildByPath("randomPickup");
         if (pd != null) {
-            ret.randomPickup = new ArrayList<Integer>();
+            ret.randomPickup = new ArrayList<>();
             for (MapleData p : pd) {
                 ret.randomPickup.add(MapleDataTool.getInt(p));
             }
@@ -368,9 +348,9 @@ public class MapleStatEffect implements Serializable {
 
         final MapleData ltc = source.getChildByPath("con");
         if (ltc != null) {
-            ret.availableMap = new ArrayList<Pair<Integer, Integer>>();
+            ret.availableMap = new ArrayList<>();
             for (MapleData ltb : ltc) {
-                ret.availableMap.add(new Pair<Integer, Integer>(MapleDataTool.getInt("sMap", ltb, 0),
+                ret.availableMap.add(new Pair<>(MapleDataTool.getInt("sMap", ltb, 0),
                         MapleDataTool.getInt("eMap", ltb, 999999999)));
             }
         }
@@ -381,7 +361,7 @@ public class MapleStatEffect implements Serializable {
             ret.familiarTarget = (byte) parseEval("target", ltb, 0, variables, level);
             final MapleData lta = ltb.getChildByPath("targetList");
             if (lta != null) {
-                ret.familiars = new ArrayList<Integer>();
+                ret.familiars = new ArrayList<>();
                 for (MapleData ltz : lta) {
                     ret.familiars.add(MapleDataTool.getInt(ltz, 0));
                 }
@@ -395,9 +375,9 @@ public class MapleStatEffect implements Serializable {
             ret.rewardMeso = parseEval("meso", lta, 0, variables, level);
             final MapleData ltz = lta.getChildByPath("case");
             if (ltz != null) {
-                ret.rewardItem = new ArrayList<Triple<Integer, Integer, Integer>>();
+                ret.rewardItem = new ArrayList<>();
                 for (MapleData lty : ltz) {
-                    ret.rewardItem.add(new Triple<Integer, Integer, Integer>(MapleDataTool.getInt("id", lty, 0),
+                    ret.rewardItem.add(new Triple<>(MapleDataTool.getInt("id", lty, 0),
                             MapleDataTool.getInt("count", lty, 0), MapleDataTool.getInt("prop", lty, 0)));
                     totalprob += MapleDataTool.getInt("prob", lty, 0);
                 }
@@ -424,7 +404,7 @@ public class MapleStatEffect implements Serializable {
         ret.itemCon = parseEval("itemCon", source, 0, variables, level);
         ret.itemConNo = parseEval("itemConNo", source, 0, variables, level);
         ret.moveTo = parseEval("moveTo", source, -1, variables, level);
-        ret.monsterStatus = new EnumMap<MonsterStatus, Integer>(MonsterStatus.class);
+        ret.monsterStatus = new EnumMap<>(MonsterStatus.class);
         if (ret.overTime && ret.getSummonMovementType() == null && !ret.isEnergyCharge()) {
             addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.WATK, Integer.valueOf(ret.watk));
             addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.WDEF, Integer.valueOf(ret.wdef));
@@ -433,21 +413,21 @@ public class MapleStatEffect implements Serializable {
             addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.ACC, Integer.valueOf(ret.acc));
             addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.AVOID, Integer.valueOf(ret.avoid));
             addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.SPEED,
-                    sourceid == 32120001 || sourceid == 32101003 ? Integer.valueOf(ret.x) : Integer.valueOf(ret.speed));
+                    sourceid == 32120001 || sourceid == 32101003 ? ret.x : Integer.valueOf(ret.speed));
             addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.JUMP, Integer.valueOf(ret.jump));
             addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.MAXHP, (int) ret.mhpR);
             addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.MAXMP, (int) ret.mmpR);
-            addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.BOOSTER, Integer.valueOf(ret.booster));
+            addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.BOOSTER, ret.booster);
             addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.HP_LOSS_GUARD, Integer.valueOf(ret.thaw));
-            addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.EXPRATE, Integer.valueOf(ret.expBuff)); // EXP
-            addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.ACASH_RATE, Integer.valueOf(ret.cashup)); // custom
+            addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.EXPRATE, ret.expBuff); // EXP
+            addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.ACASH_RATE, ret.cashup); // custom
             addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.DROP_RATE,
-                    Integer.valueOf(GameConstants.getModifier(ret.sourceid, ret.itemup))); // defaults to 2x
+                    GameConstants.getModifier(ret.sourceid, ret.itemup)); // defaults to 2x
             addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.MESO_RATE,
-                    Integer.valueOf(GameConstants.getModifier(ret.sourceid, ret.mesoup))); // defaults to 2x
-            addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.BERSERK_FURY, Integer.valueOf(ret.berserk2));
-            addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.ILLUSION, Integer.valueOf(ret.illusion));
-            addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.PYRAMID_PQ, Integer.valueOf(ret.berserk));
+                    GameConstants.getModifier(ret.sourceid, ret.mesoup)); // defaults to 2x
+            addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.BERSERK_FURY, ret.berserk2);
+            addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.ILLUSION, ret.illusion);
+            addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.PYRAMID_PQ, ret.berserk);
             addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.ENHANCED_MAXHP, Integer.valueOf(ret.ehp));
             addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.ENHANCED_MAXMP, Integer.valueOf(ret.emp));
             addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.ENHANCED_WATK, Integer.valueOf(ret.ewatk));
@@ -476,8 +456,7 @@ public class MapleStatEffect implements Serializable {
             addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.PVP_ATTACK, Integer.valueOf(ret.PVPdamage));
             addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.INVINCIBILITY, Integer.valueOf(ret.immortal));
             addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.NO_SLIP, Integer.valueOf(ret.preventslip));
-            addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.FAMILIAR_SHADOW,
-                    Integer.valueOf(ret.charColor > 0 ? 1 : 0));
+            addBuffStatPairToListIfNotZero(ret.statups, MapleBuffStat.FAMILIAR_SHADOW, ret.charColor > 0 ? 1 : 0);
             if (sourceid == 5221006 || ret.isPirateMorph()) { // HACK: add stance :D and also this buffstat has to be
                 // the first one..
                 ret.statups.put(MapleBuffStat.STANCE, 100); // 100% :D:D:D
