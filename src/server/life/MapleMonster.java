@@ -410,14 +410,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 Equipment_Bonus_EXP += (int) ((exp / 100.0) * attacker.getFairyExp());
             }
             
-            if(attacker.getMap().getMonsterById(0) != null) { //Check for totems
-                System.out.println("Totem is on this map");
-            } else if(attacker.getMap().getMonsterById(1) != null) {
-                System.out.println("Totem is on this map");
-            } else if (attacker.getMap().getMonsterById(2) != null) {
-                System.out.println("Totem is on this map");
-            }
-            
             attacker.getTrait(MapleTraitType.charisma).addExp(stats.getCharismaEXP(), attacker);
             attacker.gainExpMonster(exp, true, highestDamage, pty, Class_Bonus_EXP, Equipment_Bonus_EXP, Premium_Bonus_EXP, stats.isPartyBonus(), stats.getPartyBonusRate());
         }
