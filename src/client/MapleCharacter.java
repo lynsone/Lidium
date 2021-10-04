@@ -1796,11 +1796,16 @@ public class MapleCharacter extends AnimatedMapleMapObject implements Serializab
         }
     }
     
-    public final void addKillCount() {
-        killCount = killCount + 1;
-        //add check for aran so we don't send two combo counts
-        client.getSession().write(CField.testCombo(killCount)); 
-        //
+    public final void addKillCount() {  
+        return;
+        /* comment out until added to config
+        if (JobType.getById(this.getJob()) == JobType.Aran) {
+           killCount = killCount + 1; 
+        } else {
+            killCount = killCount + 1;
+            client.getSession().write(CField.testCombo(killCount)); 
+        }
+        */
     }
     
     public final void resetKillCount() {
