@@ -1,6 +1,10 @@
 var status = -1;
 
 function action(mode, type, selection) {
+    cm.dispose();
+}
+
+function action_(mode, type, selection) {
     if (mode == 1) {
 	status++;
     } else {

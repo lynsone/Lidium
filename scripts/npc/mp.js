@@ -64,7 +64,7 @@ function action(mode, type, selection) {
                 }
             }
 
-			if (option == 5) {//gach
+            if (option == 5) { //gach
                 if (mPoint >= 10) {
                     cm.sendYesNo("NX Gacha gives 5 Random NX Equips and 1 Random NX Weapon.\r\n Do you confirm you want to spend 5 MP for this?");
                 } else {
@@ -83,7 +83,7 @@ function action(mode, type, selection) {
                 }
             }
 
-            if (option == 2) {//guardian totem
+            if (option == 2) { //guardian totem
                 cost = 50;//250 base
                 if (mPoint >= cost) {
                     cm.sendYesNo("Are you sure you want to spend "+cost+" MP for a Guardin Totem? This totem reduces all damage by 50%.");
@@ -93,8 +93,8 @@ function action(mode, type, selection) {
                 }
             }
 
-            if (option == 3) {//raging totem
-                cost = 50;//500 base
+            if (option == 3) { //raging totem
+                cost = 50; //500 base
                 if (mPoint >= cost) {
                     cm.sendYesNo("Are you sure you want to spend "+cost+" MP for a Frenzy Totem? This totem forces all monsters to spawn where totem is spawned.");
                 } else {
@@ -103,7 +103,7 @@ function action(mode, type, selection) {
                 }
             }
 
-            if (option == 4) {//gm buff
+            if (option == 4) { //gm buff
                 cm.getPlayer().getCashShop().gainCash(2, -1);
                 cm.getPlayer().basicBuff();
                 cm.sendOk("5 Maple point have been removed from your account. Enjoy your GM Buff.");
@@ -161,8 +161,7 @@ function action(mode, type, selection) {
             }
             
         } else if (status == 3) {
-            cm.dispose();
-			//wat
+            cm.dispose(); //wat
         } else {
             cm.sendOk("Have a good day.");
             cm.dispose();
