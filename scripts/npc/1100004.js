@@ -42,7 +42,7 @@ function action(mode, type, selection) {
                 cm.dispose();
             } else {
                 cm.gainMeso(-1000);
-                cm.warp(200090021);
+                cm.warp(200000100);
                 cm.dispose();
             }
         }

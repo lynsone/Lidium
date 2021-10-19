@@ -535,6 +535,7 @@ public class MapleClient implements Serializable {
                                 }
                                 if (updatePasswordHash) {
                                     if (updatePasswordHash) {
+                                        /*
                                         try (PreparedStatement pss = con.prepareStatement("UPDATE `accounts` SET `password` = ?, `salt` = ? WHERE id = ?")) {
                                             final String newSalt = LoginCrypto.makeSalt();
                                             pss.setString(1, LoginCrypto.makeSaltedSha512Hash(pwd, newSalt));
@@ -543,6 +544,7 @@ public class MapleClient implements Serializable {
                                             pss.executeUpdate();
                                             pss.close();
                                         }
+                                        */                                  
                                     }
                                 }
                             }
