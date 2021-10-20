@@ -1387,11 +1387,16 @@ public class CField {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.WARP_TO_MAP.getValue());
+        //
         mplew.writeShort(2);
-        mplew.writeLong(1);
-        mplew.writeLong(2);
-        mplew.writeLong(chr.getClient().getChannel() - 1);
+        mplew.writeInt(1);
+        mplew.writeInt(0);
+        mplew.writeInt(2);
+        mplew.writeInt(0);
+        //
+        mplew.writeInt(chr.getClient().getChannel() - 1);
         mplew.write(0);
+        mplew.writeInt(0);
         mplew.write(1);
         mplew.writeInt(0);
         mplew.write(1);
@@ -1414,12 +1419,21 @@ public class CField {
 
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendPacketOpcode.WARP_TO_MAP.getValue());
+        //
         mplew.writeShort(2);
-        mplew.writeLong(1);
-        mplew.writeLong(2);
-        mplew.writeLong(chr.getClient().getChannel() - 1);
+        mplew.writeInt(1);
+        mplew.writeInt(0);
+        mplew.writeInt(2);
+        mplew.writeInt(0);
+        //
+        mplew.writeInt(chr.getClient().getChannel() - 1);
         mplew.write(0);
-        mplew.writeLong(2); // Count
+        mplew.writeInt(0);
+        mplew.write(2);
+        mplew.writeInt(0);
+        mplew.write(0);
+        mplew.writeShort(0);
+        //
         mplew.write(0);
         mplew.writeInt(to.getId());
         mplew.write(spawnPoint);
