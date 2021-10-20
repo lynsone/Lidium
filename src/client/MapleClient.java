@@ -534,17 +534,13 @@ public class MapleClient implements Serializable {
                                     loginok = 4;
                                 }
                                 if (updatePasswordHash) {
-                                    if (updatePasswordHash) {
-                                        /*
-                                        try (PreparedStatement pss = con.prepareStatement("UPDATE `accounts` SET `password` = ?, `salt` = ? WHERE id = ?")) {
-                                            final String newSalt = LoginCrypto.makeSalt();
-                                            pss.setString(1, LoginCrypto.makeSaltedSha512Hash(pwd, newSalt));
-                                            pss.setString(2, newSalt);
-                                            pss.setInt(3, accId);
-                                            pss.executeUpdate();
-                                            pss.close();
-                                        }
-                                        */                                  
+                                    try (PreparedStatement pss = con.prepareStatement("UPDATE `accounts` SET `password` = ?, `salt` = ? WHERE id = ?")) {
+                                        final String newSalt = LoginCrypto.makeSalt();
+                                        pss.setString(1, LoginCrypto.makeSaltedSha512Hash(pwd, newSalt));
+                                        pss.setString(2, newSalt);
+                                        pss.setInt(3, accId);
+                                        pss.executeUpdate();
+                                        pss.close();
                                     }
                                 }
                             }
