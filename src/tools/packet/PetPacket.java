@@ -29,7 +29,6 @@ import client.MapleCharacter;
 
 import constants.GameConstants;
 import handling.SendPacketOpcode;
-import java.awt.Point;
 import server.movement.LifeMovementFragment;
 import tools.data.MaplePacketLittleEndianWriter;
 
